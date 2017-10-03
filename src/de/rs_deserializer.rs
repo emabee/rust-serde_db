@@ -4,7 +4,7 @@ use super::{DbValue, DbValueInto, DeserError};
 use super::DeserializableResultset as DesrlResultset;
 use super::DeserializableRow as DesrlRow;
 use super::deserialization_error::{DeserResult, prog_err};
-
+use super::row_deserializer::RowDeserializer;
 
 #[derive(Debug)]
 enum MCD {
@@ -128,16 +128,6 @@ impl<RS> RsDeserializer<RS>
         self.next_key = next_key;
     }
 
-
-    fn switch_to_next_row(&mut self) {
-        self.rs.pop_row();
-        self.cols_treat = match self.rs_struct {
-            RsStructure::Matrix | RsStructure::SingleRow => MCD::Must,
-            RsStructure::SingleColumn |
-            RsStructure::SingleValue => MCD::Can,
-        };
-    }
-
     fn last_row_length(&self) -> Option<usize> {
         self.rs.last_row().map(|row| row.len())
     }
@@ -146,8 +136,14 @@ impl<RS> RsDeserializer<RS>
         self.rs.get_fieldname(idx)
     }
 
-    fn has_rows(&mut self) -> Result<bool, DeserError> {
-        Ok(self.rs.len()? > 0)
+
+
+    fn pop_single_row(&mut self) -> DeserResult<<RS as DesrlResultset>::ROW> {
+        self.value_deserialization_allowed()?;
+        match self.rs.pop_row()? {
+            None => Err(prog_err("no row found in resultset")),
+            Some(row) => Ok(row),
+        }
     }
 
     fn current_value_pop(&mut self) -> DeserResult<<<RS as DesrlResultset>::ROW as DesrlRow>::V>
@@ -312,7 +308,10 @@ impl<'x, 'a, RS: DesrlResultset> serde::Deserializer<'x> for &'a mut RsDeseriali
         where V: serde::de::Visitor<'x>
     {
         trace!("RsDeserializer::deserialize_string() called");
-        visitor.visit_string(self.current_value_pop()?.try_into()?)
+        // visitor.visit_string(self.current_value_pop()?.try_into()?)
+        let row = self.pop_single_row()?;
+        let s: String = serde::de::Deserialize::deserialize(&mut RowDeserializer::new(row))?;
+        visitor.visit_string(s)
     }
 
     /// This method hints that the `Deserialize` type is expecting an `unit` value.
@@ -540,23 +539,28 @@ impl<'x, 'a, R: DesrlResultset> serde::de::SeqAccess<'x> for RowsVisitor<'a, R> 
         where T: serde::de::DeserializeSeed<'x>
     {
         trace!("RowsVisitor.next_element_seed()");
-        match self.de.has_rows()? {
-            false => {
+        match self.de.rs.pop_row()? {
+            None => {
                 trace!("RowsVisitor::visit(): no more rows");
                 Ok(None)
             }
-            _ => {
+            Some(row) => {
                 trace!("RowsVisitor.next_element_seed() calls seed.deserialize(...)");
 
-                let value = seed.deserialize(&mut *self.de);
+                let value = seed.deserialize(&mut RowDeserializer::new(row));
+
                 match value {
                     Err(_) => {
                         trace!("RowsVisitor::next_element_seed() fails");
                         Err(From::from(DeserError::BadStructure("no next element".to_owned())))
                     }
                     Ok(v) => {
-                        trace!("RowsVisitor::next_element_seed(): switch to next row");
-                        self.de.switch_to_next_row();
+                        self.de.cols_treat = match self.de.rs_struct {
+                            RsStructure::Matrix | RsStructure::SingleRow => MCD::Must,
+                            RsStructure::SingleColumn |
+                            RsStructure::SingleValue => MCD::Can,
+                        };
+
                         Ok(Some(v))
                     }
                 }
@@ -564,7 +568,6 @@ impl<'x, 'a, R: DesrlResultset> serde::de::SeqAccess<'x> for RowsVisitor<'a, R> 
         }
     }
 }
-
 
 struct FieldsVisitor<'a, R: 'a> {
     de: &'a mut RsDeserializer<R>,

@@ -1,6 +1,8 @@
-use serde_db::de::{ConversionError, DbValue, DbValueInto};
 use chrono::{NaiveDateTime, Datelike, Timelike};
 use std::fmt;
+use serde;
+use serde_db::de::{ConversionError, DbValue, DbValueInto};
+use super::mock_error::MockError;
 
 #[derive(Clone,Debug)]
 pub struct MockTimestamp(pub NaiveDateTime);
@@ -39,6 +41,15 @@ impl MockValue {
     }
     pub fn new_ts(ts: NaiveDateTime) -> MockValue {
         MockValue::TIMESTAMP(MockTimestamp(ts))
+    }
+
+    /// Converts the DbValue into a plain rust value.
+    pub fn into_typed<'de, T>(self) -> Result<T, MockError>
+        where T: serde::de::Deserialize<'de>
+    {
+        trace!("MockValue::into_typed()");
+        Ok(DbValue::into_typed(self)?)
+        // Ok(serde::de::Deserialize::deserialize(FieldDeserializer::new(self))?)
     }
 }
 

@@ -5,9 +5,10 @@ mod conversion_error;
 mod deserializable_resultset;
 mod deserializable_row;
 mod deserialization_error;
-mod rs_deserializer;
+mod field_deserializer;
 pub mod row;
 mod row_deserializer;
+mod rs_deserializer;
 
 pub use de::conversion_error::ConversionError;
 pub use self::deserialization_error::DeserError;

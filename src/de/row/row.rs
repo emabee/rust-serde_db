@@ -1,3 +1,4 @@
+use serde;
 use std::fmt;
 use std::vec;
 use std::sync::Arc;
@@ -23,14 +24,9 @@ impl<MD, TV> Row<MD, TV>
             values: values,
         }
     }
-}
-
-impl<MD: Metadata, TV: DbValue> DeserializableRow for Row<MD, TV> {
-    type V = TV;
-    type E = DeserError;
 
     /// Returns a clone of the ith value.
-    fn get(&self, i: usize) -> Result<&TV, Self::E> {
+    pub fn cloned_value(&self, i: usize) -> Result<TV, DeserError> {
         trace!("<Row as DeserializableRow>::get() called");
         self.values
             .get(i)
@@ -38,6 +34,37 @@ impl<MD: Metadata, TV: DbValue> DeserializableRow for Row<MD, TV> {
             .ok_or(DeserError::BadStructure("element with index {} does not exist".to_owned()))
     }
 
+    /// Converts the field into a plain rust value.
+    pub fn pop_into_typed<'de, T>(&mut self) -> Result<T, <Row<MD, TV> as DeserializableRow>::E>
+        where T: serde::de::Deserialize<'de>,
+              TV: DbValue
+    {
+        trace!("Row::pop_into_typed()");
+        Ok(DbValue::into_typed(DeserializableRow::pop(self).unwrap())?)
+    }
+
+    /// Converts the field into a plain rust value.
+    pub fn field_into_typed<'de, T>(&self,
+                                    i: usize)
+                                    -> Result<T, <Row<MD, TV> as DeserializableRow>::E>
+        where T: serde::de::Deserialize<'de>
+    {
+        trace!("Row::field_into_typed()");
+        Ok(DbValue::into_typed(self.cloned_value(i)?)?)
+    }
+
+    /// Converts the Row into a rust value.
+    pub fn into_typed<'de, T>(self) -> Result<T, DeserError>
+        where T: serde::de::Deserialize<'de>
+    {
+        trace!("Row::into_typed()");
+        Ok(DeserializableRow::into_typed(self)?)
+    }
+}
+
+impl<MD: Metadata, TV: DbValue> DeserializableRow for Row<MD, TV> {
+    type V = TV;
+    type E = DeserError;
 
     /// Returns the length of the row.
     fn len(&self) -> usize {

@@ -2,6 +2,7 @@ extern crate chrono;
 extern crate flexi_logger;
 #[macro_use]
 extern crate log;
+extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_db;
@@ -11,11 +12,11 @@ mod util;
 use chrono::NaiveDateTime;
 use util::{MockResult, MockResultset, MockValue as MV, MockTimestamp};
 
-use serde_db::de::{DeserializableResultset, DeserializableRow, DeserError};
+use serde_db::de::{DeserializableResultset, DeserError};
 
 #[test] // cargo test --test test_resultset -- --nocapture
 pub fn test_resultset() {
-    util::init_logger("debug");
+    util::init_logger("trace");
 
     match impl_test_resultset() {
         Err(e) => {
@@ -46,15 +47,17 @@ fn evaluate_resultset() -> MockResult<()> {
         f1: String,
     };
 
-    const SIZE: usize = 5;
+    const SIZE: usize = 20;
     info!("Convert a whole resultset into a Vec of structs");
-    let vtd: Vec<TestData> = get_resultset_string_ts_short_short(7).into_typed()?;
+    let vtd: Vec<TestData> = get_resultset_string_ts_short_short(20).into_typed()?;
+    assert_eq!(SIZE, vtd.len());
     for td in vtd {
         debug!("Got {}, {}, {}, {:?}", td.f1, td.f2, td.f3, td.f4);
     }
 
     info!("Convert a whole resultset into a Vec of fields");
-    let vec_s: Vec<String> = get_resultset_string(7).into_typed()?;
+    let vec_s: Vec<String> = get_resultset_string(SIZE).into_typed()?;
+    assert_eq!(SIZE, vec_s.len());
     for s in vec_s {
         debug!("Got {}", s);
     }

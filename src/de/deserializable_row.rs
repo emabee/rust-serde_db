@@ -14,9 +14,6 @@ pub trait DeserializableRow: fmt::Debug + Sized {
     /// The value type used by the database driver.
     type V: DbValue + fmt::Debug;
 
-    /// Returns a clone of the ith value.
-    fn get(&self, i: usize) -> Result<&Self::V, Self::E>;
-
     /// Returns the length of the row.
     fn len(&self) -> usize;
 

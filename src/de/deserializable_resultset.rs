@@ -28,8 +28,8 @@ pub trait DeserializableResultset: fmt::Debug + Sized {
     /// Reverses the order of the rows
     fn reverse_rows(&mut self);
 
-    /// Removes the last row and returns it, or None if it is empty.
-    fn pop_row(&mut self) -> Option<Self::ROW>;
+    /// Removes the last row and returns it, or None if it is empty, or an error.
+    fn pop_row(&mut self) -> Result<Option<Self::ROW>, DeserError>;
 
     /// Returns the number of fields in each row
     fn number_of_fields(&self) -> usize;

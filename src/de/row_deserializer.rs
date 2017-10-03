@@ -36,6 +36,13 @@ impl<ROW> RowDeserializer<ROW>
         }
     }
 
+    fn value_deserialization_allowed(&self) -> DeserResult<()> {
+        match self.cols_treat {
+            MCD::Must => Err(DeserError::TrailingCols),
+            _ => Ok(()),
+        }
+    }
+
     fn set_next_key(&mut self, next_key: Option<usize>) {
         trace!("RowDeserializer::set_next_key({:?})", next_key);
         self.next_key = next_key;
@@ -51,7 +58,7 @@ impl<ROW> RowDeserializer<ROW>
         self.value_deserialization_allowed()?;
         match self.row.pop() {
             Some(tv) => {
-                // FIXME trace!("RowDeserializer::current_value_pop(): {:?}", tv);
+                trace!("RowDeserializer::current_value_pop(): {:?}", tv);
                 Ok(tv)
             }
             None => Err(prog_err("current_value_pop(): no more value found in row")),
@@ -63,13 +70,6 @@ impl<ROW> RowDeserializer<ROW>
         match self.row.last() {
             Some(tv) => Ok(tv),
             None => Err(prog_err("current_value_ref(): no more value found in row")),
-        }
-    }
-
-    fn value_deserialization_allowed(&self) -> DeserResult<()> {
-        match self.cols_treat {
-            MCD::Must => Err(DeserError::TrailingCols),
-            _ => Ok(()),
         }
     }
 }

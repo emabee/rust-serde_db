@@ -45,8 +45,8 @@ impl DeserializableResultset for MockResultset {
         self.rows.reverse()
     }
 
-    fn pop_row(&mut self) -> Option<<Self as DeserializableResultset>::ROW> {
-        self.rows.pop()
+    fn pop_row(&mut self) -> Result<Option<<Self as DeserializableResultset>::ROW>, DeserError> {
+        Ok(self.rows.pop())
     }
 
     fn number_of_fields(&self) -> usize {

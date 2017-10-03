@@ -2,6 +2,7 @@ extern crate chrono;
 extern crate flexi_logger;
 #[macro_use]
 extern crate log;
+extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_db;
@@ -11,10 +12,8 @@ mod util;
 use chrono::NaiveDateTime;
 use util::{MockResult, MockResultset, MockValue as MV, MockTimestamp};
 
-use serde_db::de::{DbValueInto, DeserializableRow, DeserError};
-
 #[test] // cargo test --test test_resultset -- --nocapture
-pub fn test_resultset() {
+pub fn test_row() {
     util::init_logger("info");
 
     match impl_test_resultset() {
@@ -47,12 +46,6 @@ fn evaluate_resultset() -> MockResult<()> {
     };
 
     const SIZE: usize = 5;
-    // info!("Convert a whole resultset into a Vec of structs");
-    // let vtd: Vec<TestData> = get_resultset_string_string_short_short(7).into_typed()?;
-    // for td in vtd {
-    //     debug!("Got {}, {}, {}, {:?}", td.f1, td.f2, td.f3, td.f4);
-    // }
-
     info!("Loop over rows (streaming support), convert row into struct");
     let mut sum: usize = 0;
     for row in get_resultset_string_ts_short_short(SIZE) {
@@ -89,7 +82,7 @@ fn evaluate_resultset() -> MockResult<()> {
     let sum = get_resultset_string_ts_short_short(SIZE)
         .into_iter()
         .map(|r| {
-            let i: i32 = r.get(2).unwrap().clone().try_into().unwrap();
+            let i: i32 = r.cloned_value(2).unwrap().into_typed().unwrap();
             i
         })
         .fold(0, |acc, i| acc + i);
@@ -112,17 +105,25 @@ fn evaluate_resultset() -> MockResult<()> {
 
     info!("Loop over rows, pick out single values individually, in arbitrary order");
     for row in get_resultset_string_ts_short_short(5) {
-        // FIXME this must be much easier to do!!
-        let f2: NaiveDateTime = row.get(1).unwrap().clone().try_into()?;
-        let f1: String = row.get(0).as_mut().unwrap().clone().try_into()?;
-        let f4: Option<i32> = Some(row.get(3).unwrap().clone().try_into()?);
-        let f3: i32 = row.get(2).unwrap().clone().try_into()?;
+        let f2: NaiveDateTime = row.field_into_typed(1)?;
+        let f1: String = row.field_into_typed(0)?;
+        let f4: Option<i32> = Some(row.field_into_typed(3)?);
+        let f3: i32 = row.field_into_typed(2)?;
+        debug!("Got {}, {}, {}, {:?}", f1, f2, f3, f4);
+    }
+
+    info!("Loop over rows, pick out single values individually, in reverse order");
+    for mut row in get_resultset_string_ts_short_short(5) {
+        let f4: Option<i32> = Some(row.pop_into_typed()?);
+        let f3: i32 = row.pop_into_typed()?;
+        let f2: NaiveDateTime = row.pop_into_typed()?;
+        let f1: String = row.pop_into_typed()?;
         debug!("Got {}, {}, {}, {:?}", f1, f2, f3, f4);
     }
 
     info!("Negative test: no conversion of row into field if two or more colums");
     for row in get_resultset_string_ts_short_short(SIZE) {
-        let test: Result<String, DeserError> = row.into_typed();
+        let test: Result<String, _> = row.into_typed();
         if let Ok(_) = test {
             assert!(false,
                     "Illegal conversion into a field for a row with two or more colums")
