@@ -3,7 +3,6 @@ use serde;
 use std::fmt;
 use de::conversion_error::ConversionError;
 
-
 /// The errors that can arise while deserializing a ResultSet into a standard rust type/struct/Vec
 pub enum DeserError {
     /// Deserialization failed due to a conversion error.
@@ -93,4 +92,5 @@ impl fmt::Display for DeserError {
         }
     }
 }
+/// Shortcut
 pub type DeserResult<T> = Result<T, DeserError>;

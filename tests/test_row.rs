@@ -130,6 +130,7 @@ fn evaluate_resultset() -> MockResult<()> {
         }
     }
 
+    // FIXME tests for Option<T> -> T and T -> Option<T>
     Ok(())
 }
 

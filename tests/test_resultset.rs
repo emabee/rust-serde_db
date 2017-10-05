@@ -31,6 +31,10 @@ fn impl_test_resultset() -> MockResult<()> {
     Ok(())
 }
 
+//   Matrix:         [[x..]..]  =>   Vec<struct>     -           -           -
+//   Single column:  [[x]..]    =>   Vec<struct>     Vec<val>    -           -
+//   Single row:     [[x,..]]   =>   Vec<struct>     -           struct      -
+//   Single value:   [[x]]      =>   Vec<struct>     Vec<val>    struct      val
 fn evaluate_resultset() -> MockResult<()> {
     #[derive(Debug, Deserialize)]
     struct TestData {

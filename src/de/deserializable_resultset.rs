@@ -17,12 +17,6 @@ pub trait DeserializableResultset: fmt::Debug + Sized {
     /// eventually not yet fetched rows)
     fn has_multiple_rows(&mut self) -> Result<bool, DeserError>;
 
-    /// Returns a reference to the last row
-    fn last_row(&self) -> Option<&Self::ROW>;
-
-    /// Returns a mutable reference to the last row
-    fn last_row_mut(&mut self) -> Option<&mut Self::ROW>;
-
     /// Reverses the order of the rows
     fn reverse_rows(&mut self);
 
@@ -44,7 +38,7 @@ pub trait DeserializableResultset: fmt::Debug + Sized {
 
     /// a _provided method_ that translates a generic resultset into a given rust type
     /// (which implements serde::de::Deserialize).
-    ///
+    /// FIXME check this doc part
     /// A resultset is essentially a two-dimensional structure, given as a list of rows
     /// (a <code>Vec&lt;Row&gt;</code>),
     /// where each row is a list of fields (a <code>Vec&lt;TypedValue&gt;</code>);

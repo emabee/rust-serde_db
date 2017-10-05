@@ -23,7 +23,7 @@ impl MockResultset {
         self.rows.push(Row::new(self.md.clone(), values))
     }
 
-    /// Converts the ResultSet into a rust value.
+    /// Expose the capability from serde_db
     pub fn into_typed<'de, T>(self) -> Result<T, MockError>
         where T: serde::de::Deserialize<'de>
     {
@@ -37,14 +37,6 @@ impl DeserializableResultset for MockResultset {
     type ROW = Row<MockMetadata, MockValue>;
     fn has_multiple_rows(&mut self) -> Result<bool, DeserError> {
         Ok(self.rows.len() > 1_usize)
-    }
-
-    fn last_row(&self) -> Option<&<Self as DeserializableResultset>::ROW> {
-        self.rows.last()
-    }
-
-    fn last_row_mut(&mut self) -> Option<&mut <Self as DeserializableResultset>::ROW> {
-        self.rows.last_mut()
     }
 
     fn reverse_rows(&mut self) {
