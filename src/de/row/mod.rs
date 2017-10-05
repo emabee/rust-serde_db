@@ -1,4 +1,4 @@
-//! Generic row class that implements DeserializableRow.
+//! [Optional] Module containing a reusable implementation of DeserializableRow.
 mod row;
 mod metadata;
 

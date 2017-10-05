@@ -1,5 +1,4 @@
-//! Support for deserializing database resultsets, or individual rows, or individual values,
-//! into rust types.
+//! Support for serialization (planned) and deserialization for database artifacts.
 #![warn(missing_docs)]
 
 extern crate chrono;

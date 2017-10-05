@@ -10,13 +10,11 @@ extern crate serde_db;
 mod util;
 
 use chrono::NaiveDateTime;
-use util::{MockResult, MockResultset, MockValue as MV, MockTimestamp};
-
-use serde_db::de::{DeserializableResultset, DeserError};
+use util::{MockError, MockResult, MockResultset, MockValue as MV, MockTimestamp};
 
 #[test] // cargo test --test test_resultset -- --nocapture
 pub fn test_resultset() {
-    util::init_logger("trace");
+    util::init_logger("info");
 
     match impl_test_resultset() {
         Err(e) => {
@@ -48,21 +46,21 @@ fn evaluate_resultset() -> MockResult<()> {
     };
 
     const SIZE: usize = 20;
-    info!("Convert a whole resultset into a Vec of structs");
-    let vtd: Vec<TestData> = get_resultset_string_ts_short_short(20).into_typed()?;
+    info!("Convert a mxn resultset into a Vec of structs");
+    let vtd: Vec<TestData> = get_resultset_string_ts_short_short(SIZE).into_typed()?;
     assert_eq!(SIZE, vtd.len());
     for td in vtd {
         debug!("Got {}, {}, {}, {:?}", td.f1, td.f2, td.f3, td.f4);
     }
 
-    info!("Convert a whole resultset into a Vec of fields");
+    info!("Convert a nx1 resultset into a Vec of fields");
     let vec_s: Vec<String> = get_resultset_string(SIZE).into_typed()?;
     assert_eq!(SIZE, vec_s.len());
     for s in vec_s {
         debug!("Got {}", s);
     }
 
-    info!("Convert a whole resultset into a single field");
+    info!("Convert a 1x1 resultset into a single field");
     let s: String = get_resultset_string(1).into_typed()?;
     debug!("Got {}", s);
 
@@ -76,13 +74,32 @@ fn evaluate_resultset() -> MockResult<()> {
     assert!(sum == SIZE * (SIZE + 1) / 2);
 
 
-    info!("Negative test: no conversion of row into field if two or more colums");
-    for row in get_resultset_string_ts_short_short(SIZE) {
-        let test: Result<String, DeserError> = row.into_typed();
-        if let Ok(_) = test {
-            assert!(false,
-                    "Illegal conversion into a field for a row with two or more colums")
-        }
+    let s = "Negative test: no conversion of nxm resultset into Vec<field>";
+    info!("{}", s);
+    let test: Result<Vec<String>, MockError> = get_resultset_string_ts_short_short(SIZE)
+        .into_typed();
+    if let Ok(_) = test {
+        assert!(false, "Failed \"{}\"", s);
+    }
+
+
+    let s = "Negative test: no conversion of nxm resultset into field";
+    info!("{}", s);
+    let test: Result<String, MockError> = get_resultset_string_ts_short_short(SIZE).into_typed();
+    if let Ok(_) = test {
+        assert!(false, "Failed \"{}\"", s);
+    }
+
+    let s = "Negative test: no conversion of nx1 resultset into field";
+    info!("{}", s);
+    let test: Result<String, MockError> = get_resultset_string(SIZE).into_typed();
+    if let Ok(_) = test {
+        assert!(false, "Failed \"{}\" (1)", s);
+    }
+
+    let test: Result<i32, MockError> = get_resultset_string(SIZE).into_typed();
+    if let Ok(_) = test {
+        assert!(false, "Failed \"{}\" (2)", s);
     }
 
     Ok(())
@@ -103,19 +120,6 @@ fn get_resultset_string_ts_short_short(len: usize) -> MockResultset {
     trace!("Resultset = {:?}", rs);
     rs
 }
-
-// fn get_resultset_string_string_short_short(len: usize) -> MockResultset {
-//     assert!(len < 60);
-//     let mut rs = MockResultset::new(vec!["f1", "f2", "f3", "f4"]);
-//     for i in 1..len + 1 {
-//         rs.push(vec![MV::STRING(String::from_utf8(vec!['a' as u8 + i as u8]).unwrap()),
-//                      MV::STRING(String::from_utf8(vec!['A' as u8 + i as u8]).unwrap()),
-//                      MV::SHORT(10 * i as i16 + 6),
-//                      MV::SHORT(10 * i as i16 + 7)]);
-//     }
-//     trace!("Resultset = {:?}", rs);
-//     rs
-// }
 
 fn get_resultset_string(len: usize) -> MockResultset {
     assert!(len < 60);

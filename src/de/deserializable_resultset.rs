@@ -13,11 +13,9 @@ pub trait DeserializableResultset: fmt::Debug + Sized {
     /// Concrete type for the DB row, which must implement DeserializabeRow.
     type ROW: DeserializableRow;
 
-    /// Returns true if more than one row is contained
+    /// Returns true if more than one row is contained (implementors should consider
+    /// eventually not yet fetched rows)
     fn has_multiple_rows(&mut self) -> Result<bool, DeserError>;
-
-    /// Returns the number of contained rows
-    fn len(&mut self) -> Result<usize, DeserError>;
 
     /// Returns a reference to the last row
     fn last_row(&self) -> Option<&Self::ROW>;
@@ -39,9 +37,9 @@ pub trait DeserializableResultset: fmt::Debug + Sized {
 
     /// Fetches all not yet transported result rows from the server.
     ///
-    /// Bigger resultsets are typically not transported in one DB roundtrip;
-    /// the number of roundtrips depends on the size of the resultset
-    /// and the configured fetch_size of the connection.
+    /// Bigger resultsets may be transported in multiple DB roundtrips;
+    /// not yet fetched rows are typically fetched on demand; after this method,
+    /// the resultset is expected to be loaded completely.
     fn fetch_all(&mut self) -> Result<(), Self::E>;
 
     /// a _provided method_ that translates a generic resultset into a given rust type

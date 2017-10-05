@@ -26,7 +26,9 @@ pub trait DeserializableRow: fmt::Debug + Sized {
     /// Returns the name of the column at the specified index
     fn get_fieldname(&self, field_idx: usize) -> Option<&String>;
 
-    /// Reverses the order of the values
+    /// Reverses the order of the values;
+    /// will be called before deserialization into a tuple starts,
+    /// which uses pop() to access individual values.
     fn reverse_values(&mut self);
 
     /// Converts the row into a struct, a tuple, or (if applicable) into a plain rust value.

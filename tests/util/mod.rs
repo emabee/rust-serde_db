@@ -14,8 +14,8 @@ use flexi_logger::Logger;
 
 pub fn init_logger(log_spec: &str) {
     Logger::with_str(log_spec)
-        .log_to_file()
-        .suppress_timestamp()
+        // .log_to_file()
+        // .suppress_timestamp()
         .start()
         .unwrap_or_else(|e| panic!("Logger initialization failed with {}", e));
 }

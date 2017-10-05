@@ -9,6 +9,7 @@ use super::deserialization_error::DeserError;
 use super::field_deserializer::FieldDeserializer;
 
 /// Defines into which rust types we support deserialization of fields.
+/// FIXME Add more info + example how to implement i32
 pub trait DbValue:
     fmt::Debug
     + Clone

@@ -1,3 +1,5 @@
+use serde;
+
 use serde_db::de::{DeserError, DeserializableResultset};
 use serde_db::de::row::{Row, Metadata};
 
@@ -20,17 +22,21 @@ impl MockResultset {
         assert_eq!(self.md.number_of_fields(), values.len());
         self.rows.push(Row::new(self.md.clone(), values))
     }
+
+    /// Converts the ResultSet into a rust value.
+    pub fn into_typed<'de, T>(self) -> Result<T, MockError>
+        where T: serde::de::Deserialize<'de>
+    {
+        trace!("MockResultset::into_typed()");
+        Ok(DeserializableResultset::into_typed(self)?)
+    }
 }
 
 impl DeserializableResultset for MockResultset {
     type E = MockError;
     type ROW = Row<MockMetadata, MockValue>;
     fn has_multiple_rows(&mut self) -> Result<bool, DeserError> {
-        Ok(self.len()? > 1_usize)
-    }
-
-    fn len(&mut self) -> Result<usize, DeserError> {
-        Ok(self.rows.len())
+        Ok(self.rows.len() > 1_usize)
     }
 
     fn last_row(&self) -> Option<&<Self as DeserializableResultset>::ROW> {
@@ -77,30 +83,3 @@ impl IntoIterator for MockResultset {
         self.rows.into_iter()
     }
 }
-
-// pub struct MockRowIterator {
-//     rs: MockResultset,
-// }
-// impl MockRowIterator {
-//     fn next_int(&mut self) -> HdbResult<Option<HdbRow>> {
-//         if self.rs.rows.len() == 0 {
-//             if self.rs.is_complete()? {
-//                 return Ok(None);
-//             } else {
-//                 self.rs.fetch_next()?;
-//             }
-//         }
-//         Ok(self.rs.rows.pop())
-//     }
-// }
-//
-// impl Iterator for MockRowIterator {
-//     type Item = HdbResult<HdbRow>;
-//     fn next(&mut self) -> Option<HdbResult<HdbRow>> {
-//         match self.next_int() {
-//             Ok(Some(row)) => Some(Ok(row)),
-//             Ok(None) => None,
-//             Err(e) => Some(Err(e)),
-//         }
-//     }
-// }
