@@ -1,7 +1,5 @@
-use std::fmt;
-
 /// A simple view on the metadata.
-pub trait Metadata: fmt::Display + fmt::Debug {
+pub trait Metadata {
     /// Returns the number of fields in each row
     fn number_of_fields(&self) -> usize;
 

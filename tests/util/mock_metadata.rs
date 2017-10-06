@@ -1,7 +1,5 @@
 use serde_db::de::row::Metadata;
-use std::fmt;
 
-#[derive(Debug)]
 pub struct MockMetadata {
     fields: Vec<String>,
 }
@@ -17,18 +15,5 @@ impl Metadata for MockMetadata {
 
     fn get_fieldname(&self, i: usize) -> Option<&String> {
         self.fields.get(i)
-    }
-}
-
-impl fmt::Display for MockMetadata {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(fmt, "Some MockMetadata")?;
-        // for field_metadata in &self.fields {
-        //     match self.names.get(field_metadata.column_displayname as usize) {
-        //         Some(fieldname) => write!(fmt, "{}, ", fieldname).unwrap(),
-        //         None => write!(fmt, "<unnamed>, ").unwrap(),
-        //     };
-        // }
-        Ok(())
     }
 }

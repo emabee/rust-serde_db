@@ -10,13 +10,14 @@ extern crate serde_db;
 mod util;
 
 use chrono::NaiveDateTime;
+use flexi_logger::ReconfigurationHandle;
 use util::{MockResult, MockResultset, MockValue as MV, MockTimestamp};
 
 #[test] // cargo test --test test_resultset -- --nocapture
 pub fn test_row() {
-    util::init_logger("info");
+    let loghandle = util::init_logger("info");
 
-    match impl_test_resultset() {
+    match impl_test_resultset(&loghandle) {
         Err(e) => {
             error!("impl_test_resultset() failed with {:?}", e);
             assert!(false)
@@ -26,18 +27,34 @@ pub fn test_row() {
 }
 
 // Test the various ways to evaluate a resultset
-fn impl_test_resultset() -> MockResult<()> {
-    evaluate_resultset()?;
+fn impl_test_resultset(loghandle: &ReconfigurationHandle) -> MockResult<()> {
+    evaluate_resultset(loghandle)?;
     Ok(())
 }
 
-fn evaluate_resultset() -> MockResult<()> {
+fn evaluate_resultset(_loghandle: &ReconfigurationHandle) -> MockResult<()> {
     #[derive(Debug, Deserialize)]
     struct TestData {
         f1: String,
         f2: NaiveDateTime,
         f3: i32,
         f4: Option<i32>,
+    };
+
+    #[allow(dead_code)]
+    struct ShortData {
+        f1: String,
+        f2: NaiveDateTime,
+        f3: i32,
+    };
+
+    #[allow(dead_code)]
+    struct LongData {
+        f1: String,
+        f2: NaiveDateTime,
+        f3: i32,
+        f4: Option<i32>,
+        f5: Option<i32>,
     };
 
     #[derive(Debug, Deserialize)]
@@ -131,6 +148,8 @@ fn evaluate_resultset() -> MockResult<()> {
     }
 
     // FIXME tests for Option<T> -> T and T -> Option<T>
+    // FIXME tests for too big tuples or structs
+    // FIXME tests for too small tuples or structs
     Ok(())
 }
 
@@ -146,22 +165,8 @@ fn get_resultset_string_ts_short_short(len: usize) -> MockResultset {
                      MV::SHORT(i as i16),
                      MV::SHORT(10 * i as i16 + 7)]);
     }
-    trace!("Resultset = {:?}", rs);
     rs
 }
-
-// fn get_resultset_string_string_short_short(len: usize) -> MockResultset {
-//     assert!(len < 60);
-//     let mut rs = MockResultset::new(vec!["f1", "f2", "f3", "f4"]);
-//     for i in 1..len + 1 {
-//         rs.push(vec![MV::STRING(String::from_utf8(vec!['a' as u8 + i as u8]).unwrap()),
-//                      MV::STRING(String::from_utf8(vec!['A' as u8 + i as u8]).unwrap()),
-//                      MV::SHORT(10 * i as i16 + 6),
-//                      MV::SHORT(10 * i as i16 + 7)]);
-//     }
-//     trace!("Resultset = {:?}", rs);
-//     rs
-// }
 
 fn get_resultset_string(len: usize) -> MockResultset {
     assert!(len < 60);

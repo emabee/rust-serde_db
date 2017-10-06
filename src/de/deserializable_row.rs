@@ -1,6 +1,5 @@
 use serde;
 use std::convert::From;
-use std::fmt;
 use std::marker::Sized;
 use super::db_value::DbValue;
 
@@ -8,11 +7,11 @@ use de::row_deserializer::RowDeserializer;
 use de::deserialization_error::DeserError;
 
 /// A minimal interface for the Row type to support the deserialization.
-pub trait DeserializableRow: fmt::Debug + Sized {
+pub trait DeserializableRow: Sized {
     /// The error type used by the database driver.
     type E: From<DeserError> + Sized;
     /// The value type used by the database driver.
-    type V: DbValue + fmt::Debug;
+    type V: DbValue;
 
     /// Returns the length of the row.
     fn len(&self) -> usize;
@@ -26,8 +25,8 @@ pub trait DeserializableRow: fmt::Debug + Sized {
     /// Returns the name of the column at the specified index
     fn get_fieldname(&self, field_idx: usize) -> Option<&String>;
 
-    /// Reverses the order of the values;
-    /// will be called before deserialization into a tuple starts,
+    /// Reverses the order of the values. This method
+    /// will be called before deserialization of the row into a tuple starts,
     /// which uses pop() to access individual values.
     fn reverse_values(&mut self);
 

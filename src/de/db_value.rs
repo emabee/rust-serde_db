@@ -1,8 +1,6 @@
-use chrono::NaiveDateTime;
 use serde;
 use std::{u8, u16, u32, i8, i16, i32};
 use std::marker::Sized;
-use std::fmt;
 
 use super::conversion_error::ConversionError;
 use super::deserialization_error::DeserError;
@@ -11,8 +9,7 @@ use super::field_deserializer::FieldDeserializer;
 /// Defines into which rust types we support deserialization of fields.
 /// FIXME Add more info + example how to implement i32
 pub trait DbValue:
-    fmt::Debug
-    + Clone
+    Clone
     + Sized
     + DbValueInto<bool>
     + DbValueInto<u8>
@@ -26,7 +23,6 @@ pub trait DbValue:
     + DbValueInto<f32>
     + DbValueInto<f64>
     + DbValueInto<String>
-    + DbValueInto<NaiveDateTime>
     + DbValueInto<Vec<u8>>
 {
 /// Returns true if this is a NULL value.

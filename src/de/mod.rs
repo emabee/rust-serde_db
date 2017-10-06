@@ -4,12 +4,30 @@
 //! Implementing DB drivers just need to implement DeserializableResultset,
 //! DeserializableRow, and -- more effort -- DbValue.
 //!
-//! We further recommend to implement the methods into_typed() directly on the
+//! We further recommend to implement the method <code>into_typed()</code> directly on the
 //! driver's classes for Resultset and Row with a plain delegation to the provided methods
-//! DeserializableResultset::into_typed() and DeserializableRow::into_typed().
+//! <code>DeserializableResultset::into_typed()</code> and <code>DeserializableRow::into_typed()</code>.
 //!
-//! This provides the functionality of this crate to the users of the DB driver without the need
-//! of importing DeserializableResultset or DeserializableRow.
+//! By this extension of the driver's API, the functionality of serde_db canbe provided
+//! to the users of a DB driver without the need to
+//! import DeserializableResultset or DeserializableRow.
+//!
+//! It depends on the dimension of the resultset what target data structure you can
+//! choose for deserialization:
+//!
+//! * You can always use a <code>Vec&lt;line_struct&gt;</code>, where
+//!   <code>line_struct</code> matches the field list of the resultset.
+//!
+//! * If the resultset contains only a single line (e.g. because you specified
+//!   TOP 1 in your select),
+//!   then you can optionally choose to deserialize into a plain <code>line_struct</code>.
+//!
+//! * If the resultset contains only a single column, then you can optionally choose to
+//!   deserialize into a <code>Vec&lt;plain_field&gt;</code>.
+//!
+//! * If the resultset contains only a single value (one row with one column),
+//!   then you can optionally choose to deserialize into a plain <code>line_struct</code>,
+//!   or a <code>Vec&lt;plain_field&gt;</code>, or a plain variable.
 //!
 //! # Examples
 //!

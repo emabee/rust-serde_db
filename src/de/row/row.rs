@@ -7,7 +7,7 @@ use super::super::{DbValue, DeserializableRow, DeserError};
 use super::Metadata;
 
 /// A generic implementation of a single line of a ResultSet.
-#[derive(Debug,Clone)]
+#[derive(Clone)]
 pub struct Row<MD: Metadata, TV: DbValue> {
     metadata: Arc<MD>,
     values: Vec<TV>,
@@ -76,7 +76,6 @@ impl<MD: Metadata, TV: DbValue> DeserializableRow for Row<MD, TV> {
     fn pop(&mut self) -> Option<TV> {
         trace!("<Row as DeserializableRow>::pop() called");
         let result = self.values.pop();
-        trace!("<Row as DeserializableRow>::pop() returns {:?}", result);
         result
     }
 

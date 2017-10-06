@@ -3,7 +3,6 @@ use serde;
 use serde_db::de::{DeserError, DeserializableResultset};
 use serde_db::de::row::{Row, Metadata};
 
-use std::fmt;
 use std::sync::Arc;
 use super::*;
 
@@ -59,13 +58,6 @@ impl DeserializableResultset for MockResultset {
         Ok(())
     }
 }
-
-impl fmt::Debug for MockResultset {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(fmt, "Some MockResultSet")
-    }
-}
-
 
 impl IntoIterator for MockResultset {
     type Item = Row<MockMetadata, MockValue>;

@@ -1,5 +1,4 @@
 use serde;
-use std::fmt;
 use std::marker::Sized;
 
 use super::rs_deserializer::RsDeserializer;
@@ -7,7 +6,7 @@ use super::deserializable_row::DeserializableRow;
 use super::deserialization_error::DeserError;
 
 /// Interface for a database resultset to support deserialization.
-pub trait DeserializableResultset: fmt::Debug + Sized {
+pub trait DeserializableResultset: Sized {
     /// Error type of the database driver.
     type E: From<DeserError> + Sized;
     /// Concrete type for the DB row, which must implement DeserializabeRow.
@@ -39,30 +38,6 @@ pub trait DeserializableResultset: fmt::Debug + Sized {
     /// a _provided method_ that translates a generic resultset into a given rust type
     /// (which implements serde::de::Deserialize).
     /// FIXME check this doc part
-    /// A resultset is essentially a two-dimensional structure, given as a list of rows
-    /// (a <code>Vec&lt;Row&gt;</code>),
-    /// where each row is a list of fields (a <code>Vec&lt;TypedValue&gt;</code>);
-    /// the name of each field is given in the metadata of the resultset.
-    ///
-    /// The method supports a variety of target data structures, with the only strong limitation
-    /// that no data loss is supported.
-    ///
-    /// * It depends on the dimension of the resultset what target data structure
-    ///   you can choose for deserialization:
-    ///
-    ///     * You can always use a <code>Vec&lt;line_struct&gt;</code>, where
-    ///       <code>line_struct</code> matches the field list of the resultset.
-    ///
-    ///     * If the resultset contains only a single line (e.g. because you specified
-    ///       TOP 1 in your select),
-    ///       then you can optionally choose to deserialize into a plain <code>line_struct</code>.
-    ///
-    ///     * If the resultset contains only a single column, then you can optionally choose to
-    ///       deserialize into a <code>Vec&lt;plain_field&gt;</code>.
-    ///
-    ///     * If the resultset contains only a single value (one row with one column),
-    ///       then you can optionally choose to deserialize into a plain <code>line_struct</code>,
-    ///       or a <code>Vec&lt;plain_field&gt;</code>, or a plain variable.
     ///
     /// * Also the translation of the individual field values provides a lot of flexibility.
     ///   You can e.g. convert values from a nullable column into a plain field,

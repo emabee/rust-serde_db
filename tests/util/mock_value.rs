@@ -127,15 +127,6 @@ impl DbValueInto<String> for MockValue {
         }
     }
 }
-impl DbValueInto<NaiveDateTime> for MockValue {
-    fn try_into(self) -> Result<NaiveDateTime, ConversionError> {
-        trace!("try_into -> NaiveDateTime");
-        match self {
-            MockValue::TIMESTAMP(MockTimestamp(ts)) => Ok(ts),
-            mv => panic!("DbValueInto<NaiveDateTime> not implemented for {:?}", mv),
-        }
-    }
-}
 impl DbValueInto<Vec<u8>> for MockValue {
     fn try_into(self) -> Result<Vec<u8>, ConversionError> {
         panic!("DbValueInto<Vec<u8>> not implemented")

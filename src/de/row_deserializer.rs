@@ -3,8 +3,7 @@ use serde;
 use de::DeserializableRow;
 use de::deserialization_error::{DeserError, DeserResult, prog_err};
 use de::db_value::{DbValue, DbValueInto};
-
-#[derive(Debug)]
+use de::field_deserializer::FieldDeserializer;
 enum MCD {
     Must,
     Can,
@@ -12,13 +11,14 @@ enum MCD {
 }
 
 /// Deserialize a single Row into a normal rust type.
-#[derive(Debug)]
 pub struct RowDeserializer<ROW> {
     row: ROW,
     cols_treat: MCD,
     next_key: Option<usize>,
 }
 
+// FIXME make use of FieldDeserializer
+// FIXME can we get rid of next_key? size of row should be sufficient
 impl<ROW> RowDeserializer<ROW>
     where ROW: DeserializableRow,
           <ROW as DeserializableRow>::V: DbValue
@@ -57,10 +57,7 @@ impl<ROW> RowDeserializer<ROW>
         trace!("RowDeserializer::current_value_pop()");
         self.value_deserialization_allowed()?;
         match self.row.pop() {
-            Some(tv) => {
-                trace!("RowDeserializer::current_value_pop(): {:?}", tv);
-                Ok(tv)
-            }
+            Some(tv) => Ok(tv),
             None => Err(prog_err("current_value_pop(): no more value found in row")),
         }
     }
@@ -310,7 +307,7 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
     fn deserialize_byte_buf<V>(mut self, visitor: V) -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RowDeserializer::deserialize_bytes() called");
+        trace!("RowDeserializer::deserialize_byte_buf() called");
         visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.current_value_pop()?)?)
     }
 
@@ -367,12 +364,17 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
         }
     }
 
-    /// This method hints that the Deserialize type needs to deserialize a value
-    /// whose type doesn't matter because it is ignored.
+    // This method hints that the Deserialize type needs to deserialize a value
+    // whose type doesn't matter because it is ignored.
+    // We end up here most likely because the target structure misses the current field.
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
     {
-        panic!("RowDeserializer::deserialize_ignored_any() not implemented")
+        trace!("RowDeserializer::deserialize_ignored_any() called");
+        let fieldname = self.get_fieldname(self.row.len() - 1)
+            .map(|s| s.clone())
+            .unwrap_or("unknown".to_string());
+        Err(DeserError::UnknownField(fieldname))
     }
 }
 
@@ -454,34 +456,19 @@ impl<'a, R: DeserializableRow> FieldsSeqVisitor<'a, R>
     }
 }
 
-impl<'x, 'a, R: DeserializableRow> serde::de::SeqAccess<'x> for FieldsSeqVisitor<'a, R>
-    where <R as DeserializableRow>::V: DbValue
+impl<'x, 'a, R> serde::de::SeqAccess<'x> for FieldsSeqVisitor<'a, R>
+    where R: DeserializableRow,
+          <R as DeserializableRow>::V: DbValue
 {
     type Error = DeserError;
 
-    //
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
         where T: serde::de::DeserializeSeed<'x>
     {
-        match self.de.row.len() {
-            0 => {
-                trace!("FieldsSeqVisitor::next_element_seed() called on empty row");
-                Ok(None)
-            }
-            len => {
-                let idx = len - 1;
-                trace!("FieldsSeqVisitor::next_element_seed() for column {}", idx);
-                self.de.set_next_key(Some(idx));
-                let value = seed.deserialize(&mut *self.de);
-                match value {
-                    Ok(res) => Ok(Some(res)),
-                    Err(_) => {
-                        let fname = self.de.get_fieldname(idx).unwrap();
-                        trace!("FieldsMapVisitor::next_element_seed(): Error at {}", fname);
-                        Err(DeserError::UnknownField(fname.clone()))
-                    }
-                }
-            }
+        trace!("FieldsSeqVisitor.next_element_seed()");
+        match self.de.row.pop() {
+            None => Ok(None),
+            Some(val) => seed.deserialize(FieldDeserializer::new(val)).map(|v| Some(v)),
         }
     }
 }

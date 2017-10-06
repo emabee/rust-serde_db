@@ -4,7 +4,6 @@ use de::deserialization_error::{DeserError, DeserResult};
 use de::db_value::{DbValue, DbValueInto};
 
 /// Deserialize a single DbValue into a normal rust type.
-#[derive(Debug)]
 pub struct FieldDeserializer<DBV>(DBV);
 
 impl<DBV> FieldDeserializer<DBV>
@@ -23,7 +22,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_any<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize() called");
+        panic!("FieldDeserializer::deserialize_any() called");
     }
 
     /// This method hints that the `Deserialize` type is expecting a `bool` value.
