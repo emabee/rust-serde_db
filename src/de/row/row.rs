@@ -31,7 +31,7 @@ impl<MD, TV> Row<MD, TV>
         self.values
             .get(i)
             .map(|tv| tv.clone())
-            .ok_or(DeserError::BadStructure("element with index {} does not exist".to_owned()))
+            .ok_or(DeserError::Implementation("element with index {} does not exist".to_owned()))
     }
 
     /// Converts the field into a plain rust value.

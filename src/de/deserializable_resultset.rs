@@ -36,18 +36,7 @@ pub trait DeserializableResultset: Sized {
     fn fetch_all(&mut self) -> Result<(), Self::E>;
 
     /// a _provided method_ that translates a generic resultset into a given rust type
-    /// (which implements serde::de::Deserialize).
-    /// FIXME check this doc part
-    ///
-    /// * Also the translation of the individual field values provides a lot of flexibility.
-    ///   You can e.g. convert values from a nullable column into a plain field,
-    ///   provided that no NULL values are given in the resultset.
-    ///
-    ///   Vice versa, you always can use an Option<code>&lt;plain_field&gt;</code>,
-    ///   even if the column is marked as NOT NULL.
-    ///
-    /// * Similarly, integer types can differ, as long as the concrete values can
-    ///   be assigned without loss.
+    /// that implements serde::de::Deserialize.
     ///
     /// Note that you need to specify the type of your target variable explicitly, so that
     /// <code>into_typed()</code> can derive the type it needs to serialize into:

@@ -10,7 +10,9 @@ pub enum DeserError {
     /// Raised when there is a general error in the serde framework when deserializing a type.
     SerdeError(String),
     /// Structure of target object does not fit to the structure of the resultset or row being deserialized
-    BadStructure(String),
+    Implementation(String),
+    ///
+    NotImplemented(&'static str),
     ///
     UnknownField(String),
     ///
@@ -25,9 +27,8 @@ impl Error for DeserError {
         match *self {
             DeserError::ConversionError(_) => "Conversion of database type to rust type failed",
             DeserError::SerdeError(_) => "general error from the deserialization framework",
-            DeserError::BadStructure(_) => {
-                "error in the implementation of the resultset deserialization"
-            }
+            DeserError::Implementation(_) => "error in the implementation of the serde_db",
+            DeserError::NotImplemented(_) => "function not implemented",
             DeserError::UnknownField(_) => {
                 "the target structure misses a field for which data are provided"
             }
@@ -40,16 +41,11 @@ impl Error for DeserError {
     }
 }
 
-pub fn prog_err(s: &str) -> DeserError {
-    DeserError::BadStructure(String::from(s))
-}
-
 impl From<ConversionError> for DeserError {
     fn from(error: ConversionError) -> DeserError {
         DeserError::ConversionError(error)
     }
 }
-
 
 impl serde::de::Error for DeserError {
     fn custom<T: fmt::Display>(msg: T) -> Self {
@@ -62,8 +58,11 @@ impl fmt::Debug for DeserError {
         match *self {
             DeserError::ConversionError(ref e) => write!(formatter, "{:?}", e),
             DeserError::SerdeError(ref s) |
-            DeserError::BadStructure(ref s) |
+            DeserError::Implementation(ref s) |
             DeserError::UnknownField(ref s) => {
+                write!(formatter, "{} (\"{}\")", self.description(), s)
+            }
+            DeserError::NotImplemented(s) => {
                 write!(formatter, "{} (\"{}\")", self.description(), s)
             }
             DeserError::MissingField(ref s) => {
@@ -84,9 +83,10 @@ impl fmt::Display for DeserError {
         match *self {
             DeserError::ConversionError(ref e) => write!(fmt, "{}", e),
             DeserError::SerdeError(ref s) |
-            DeserError::BadStructure(ref s) |
+            DeserError::Implementation(ref s) |
             DeserError::UnknownField(ref s) |
             DeserError::MissingField(ref s) => write!(fmt, "{} ", s),
+            DeserError::NotImplemented(ref s) => write!(fmt, "{} ", s),
             DeserError::TrailingRows => write!(fmt, "{} ", "TrailingRows"),
             DeserError::TrailingCols => write!(fmt, "{} ", "TrailingCols"),
         }

@@ -22,14 +22,14 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_any<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_any() called");
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_any()"))
     }
 
     /// This method hints that the `Deserialize` type is expecting a `bool` value.
     fn deserialize_bool<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_bool() called");
+        trace!("FieldDeserializer::deserialize_bool()");
         visitor.visit_bool(self.0.try_into()?)
     }
 
@@ -37,7 +37,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_u8<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_u8() called");
+        trace!("FieldDeserializer::deserialize_u8()");
         visitor.visit_u8(self.0.try_into()?)
     }
 
@@ -45,7 +45,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_u16<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_u16() called");
+        trace!("FieldDeserializer::deserialize_u16()");
         visitor.visit_u16(self.0.try_into()?)
     }
 
@@ -53,7 +53,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_u32<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_u32() called");
+        trace!("FieldDeserializer::deserialize_u32()");
         visitor.visit_u32(self.0.try_into()?)
     }
 
@@ -61,7 +61,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_u64<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_u64() called");
+        trace!("FieldDeserializer::deserialize_u64()");
         visitor.visit_u64(self.0.try_into()?)
     }
 
@@ -69,7 +69,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_i8<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_i8() called");
+        trace!("FieldDeserializer::deserialize_i8()");
         visitor.visit_i8(self.0.try_into()?)
     }
 
@@ -77,7 +77,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_i16<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_i16() called");
+        trace!("FieldDeserializer::deserialize_i16()");
         visitor.visit_i16(self.0.try_into()?)
     }
 
@@ -85,7 +85,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_i32<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_i32() called");
+        trace!("FieldDeserializer::deserialize_i32()");
         visitor.visit_i32(self.0.try_into()?)
     }
 
@@ -93,7 +93,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_i64<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_i64() called");
+        trace!("FieldDeserializer::deserialize_i64()");
         visitor.visit_i64(self.0.try_into()?)
     }
 
@@ -101,7 +101,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_f32<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_f32() called");
+        trace!("FieldDeserializer::deserialize_f32()");
         visitor.visit_f32(self.0.try_into()?)
     }
 
@@ -109,7 +109,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_f64<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_f64() called");
+        trace!("FieldDeserializer::deserialize_f64()");
         visitor.visit_f64(self.0.try_into()?)
     }
 
@@ -117,14 +117,14 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_char<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_char() not implemented!");
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_char()"))
     }
 
     /// This method hints that the `Deserialize` type is expecting a `&str` value.
     fn deserialize_str<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_str() called, delegates to deserialize_string()");
+        trace!("FieldDeserializer::deserialize_str(), delegates to deserialize_string()");
         self.deserialize_string(visitor)
     }
 
@@ -132,7 +132,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_string<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_string() called");
+        trace!("FieldDeserializer::deserialize_string()");
         visitor.visit_string(self.0.try_into()?)
     }
 
@@ -140,7 +140,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_unit<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_unit(): not implemented!");
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_unit()"))
     }
 
     /// This method hints that the `Deserialize` type is expecting an `Option` value. This allows
@@ -149,7 +149,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_option<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_option() called");
+        trace!("FieldDeserializer::deserialize_option()");
         match self.0.is_null() {
             false => visitor.visit_some(self),
             true => visitor.visit_none(),
@@ -162,7 +162,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_seq<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_seq() not implemented");
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_seq()"))
     }
 
     /// This method hints that the `Deserialize` type is expecting a map of values. This allows
@@ -170,7 +170,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_map<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_map(): not implemented!");
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_map()"))
     }
 
     /// This method hints that the `Deserialize` type is expecting a unit struct. This allows
@@ -178,7 +178,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_unit_struct<V>(self, _name: &'static str, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_unit_struct(): not implemented!");
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_unit_struct()"))
     }
 
     /// This method hints that the `Deserialize` type is expecting a newtype struct. This allows
@@ -186,8 +186,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_newtype_struct() called with _name = {}",
-               _name);
+        trace!("FieldDeserializer::deserialize_newtype_struct()");
         visitor.visit_newtype_struct(self)
     }
 
@@ -200,7 +199,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
                                    -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_tuple_struct(): not implemented!");
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_tuple_struct()"))
     }
 
     /// This method hints that the `Deserialize` type is expecting a struct. This allows
@@ -212,7 +211,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
                              -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_struct() not implemented");
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_struct()"))
     }
 
     /// Hint that the `Deserialize` type is expecting a byte array and does not
@@ -225,7 +224,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_bytes<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_bytes() called");
+        trace!("FieldDeserializer::deserialize_bytes()");
         visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.0)?)
     }
 
@@ -239,7 +238,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
     {
-        trace!("FieldDeserializer::deserialize_bytes() called");
+        trace!("FieldDeserializer::deserialize_bytes()");
         visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.0)?)
     }
 
@@ -249,7 +248,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_tuple<V>(self, _len: usize, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_tuple() not implemented");
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_tuple()"))
     }
 
     /// Hint that the `Deserialize` type is expecting an enum value with a
@@ -261,7 +260,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
                            -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_enum() not implemented")
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_enum()"))
     }
 
 
@@ -271,7 +270,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_identifier<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_identifier() not implemented")
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_identifier()"))
     }
 
     /// This method hints that the Deserialize type needs to deserialize a value
@@ -279,6 +278,6 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
     {
-        panic!("FieldDeserializer::deserialize_ignored_any() not implemented")
+        Err(DeserError::NotImplemented("FieldDeserializer::deserialize_ignored_any()"))
     }
 }
