@@ -1,10 +1,8 @@
 use serde;
-
 use serde::de::Deserialize as SD;
 
-use super::{DbValue, DeserError, DeserResult, DeserializableRow};
-use super::DeserializableResultset as De_Resultset;
-use super::row_deserializer::RowDeserializer;
+use de::{DbValue, DeserError, DeserResult, DeserializableResultset, DeserializableRow};
+use de::row_deserializer::RowDeserializer;
 
 enum MCD {
     Must,
@@ -19,8 +17,8 @@ pub struct RsDeserializer<RS> {
 }
 
 impl<RS> RsDeserializer<RS>
-    where RS: De_Resultset,
-          <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue
+    where RS: DeserializableResultset,
+          <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue
 {
     pub fn new(mut rs: RS) -> Result<RsDeserializer<RS>, DeserError> {
         trace!("RsDeserializer::new()");
@@ -34,7 +32,7 @@ impl<RS> RsDeserializer<RS>
         })
     }
 
-    fn pop_single_row(&mut self) -> DeserResult<<RS as De_Resultset>::ROW> {
+    fn pop_single_row(&mut self) -> DeserResult<<RS as DeserializableResultset>::ROW> {
         self.single_row_deserialization_allowed()?;
         match self.rs.pop_row()? {
             None => Err(DeserError::Implementation(String::from("no row found in resultset"))),
@@ -50,8 +48,8 @@ impl<RS> RsDeserializer<RS>
     }
 }
 
-impl<'x, 'a, RS: De_Resultset> serde::Deserializer<'x> for &'a mut RsDeserializer<RS>
-where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
+impl<'x, 'a, RS: DeserializableResultset> serde::Deserializer<'x> for &'a mut RsDeserializer<RS>
+where <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue {
     type Error = DeserError;
 
     fn deserialize_any<V>(self, _visitor: V) -> DeserResult<V::Value>
@@ -291,7 +289,7 @@ impl<'a, R> RowsVisitor<'a, R> {
     }
 }
 
-impl<'x, 'a, R: De_Resultset> serde::de::SeqAccess<'x> for RowsVisitor<'a, R> {
+impl<'x, 'a, R: DeserializableResultset> serde::de::SeqAccess<'x> for RowsVisitor<'a, R> {
     type Error = DeserError;
 
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>

@@ -1,10 +1,9 @@
 use serde;
 use std::convert::From;
 use std::marker::Sized;
-use super::db_value::DbValue;
 
+use de::{DeserError, DbValue};
 use de::row_deserializer::RowDeserializer;
-use de::deserialization_error::DeserError;
 
 /// A minimal interface for the Row type to support the deserialization.
 pub trait DeserializableRow: Sized {
@@ -31,7 +30,6 @@ pub trait DeserializableRow: Sized {
     fn into_typed<'de, T>(self) -> Result<T, Self::E>
         where T: serde::de::Deserialize<'de>
     {
-        trace!("DeserializableRow::into_typed()");
         Ok(serde::de::Deserialize::deserialize(&mut RowDeserializer::new(self))?)
     }
 }

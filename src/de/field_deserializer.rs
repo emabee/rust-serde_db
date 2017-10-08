@@ -1,7 +1,6 @@
 use serde;
 
-use de::deserialization_error::{DeserError, DeserResult};
-use de::db_value::{DbValue, DbValueInto};
+use de::{DeserError, DeserResult, DbValue, DbValueInto};
 
 /// Deserialize a single DbValue into a normal rust type.
 pub struct FieldDeserializer<DBV>(DBV);
@@ -162,19 +161,14 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
         visitor.visit_newtype_struct(self)
     }
 
-    fn deserialize_tuple_struct<V>(self,
-                                   _name: &'static str,
-                                   _len: usize,
-                                   _visitor: V)
+    fn deserialize_tuple_struct<V>(self, _name: &'static str, _len: usize, _visitor: V)
                                    -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         Err(DeserError::NotImplemented("FieldDeserializer::deserialize_tuple_struct()"))
     }
 
-    fn deserialize_struct<V>(self,
-                             _name: &'static str,
-                             _fields: &'static [&'static str],
+    fn deserialize_struct<V>(self, _name: &'static str, _fields: &'static [&'static str],
                              _visitor: V)
                              -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
@@ -202,9 +196,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
         Err(DeserError::NotImplemented("FieldDeserializer::deserialize_tuple()"))
     }
 
-    fn deserialize_enum<V>(self,
-                           _name: &'static str,
-                           _variants: &'static [&'static str],
+    fn deserialize_enum<V>(self, _name: &'static str, _variants: &'static [&'static str],
                            _visitor: V)
                            -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>

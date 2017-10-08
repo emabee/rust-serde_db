@@ -197,24 +197,18 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
     fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RowDeserializer::deserialize_newtype_struct() with _name = {}",
-               _name);
+        trace!("RowDeserializer::deserialize_newtype_struct() with _name = {}", _name);
         visitor.visit_newtype_struct(self)
     }
 
-    fn deserialize_tuple_struct<V>(self,
-                                   _name: &'static str,
-                                   _len: usize,
-                                   _visitor: V)
+    fn deserialize_tuple_struct<V>(self, _name: &'static str, _len: usize, _visitor: V)
                                    -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         Err(DeserError::NotImplemented("RowDeserializer::deserialize_tuple_struct()"))
     }
 
-    fn deserialize_struct<V>(mut self,
-                             _name: &'static str,
-                             _fields: &'static [&'static str],
+    fn deserialize_struct<V>(mut self, _name: &'static str, _fields: &'static [&'static str],
                              visitor: V)
                              -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
@@ -258,9 +252,7 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
         }
     }
 
-    fn deserialize_enum<V>(self,
-                           _name: &'static str,
-                           _variants: &'static [&'static str],
+    fn deserialize_enum<V>(self, _name: &'static str, _variants: &'static [&'static str],
                            _visitor: V)
                            -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
@@ -291,8 +283,8 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
     {
         trace!("RowDeserializer::deserialize_ignored_any()");
         let fieldname = self.get_fieldname(self.row.len() - 1)
-            .map(|s| s.clone())
-            .unwrap_or("unknown".to_string());
+                            .map(|s| s.clone())
+                            .unwrap_or("unknown".to_string());
         Err(DeserError::UnknownField(fieldname))
     }
 }

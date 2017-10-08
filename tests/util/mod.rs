@@ -1,7 +1,6 @@
 #![allow(dead_code)]
 
 mod mock_error;
-mod mock_metadata;
 mod mock_resultset;
 mod mock_row;
 mod mock_value;

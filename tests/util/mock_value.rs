@@ -1,7 +1,8 @@
 use chrono::{NaiveDateTime, Datelike, Timelike};
-use std::fmt;
 use serde;
 use serde_db::de::{ConversionError, DbValue, DbValueInto};
+use std::fmt;
+
 use super::MockResult;
 
 #[derive(Clone,Debug)]

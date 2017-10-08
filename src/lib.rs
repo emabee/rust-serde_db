@@ -20,9 +20,3 @@ extern crate log;
 extern crate serde;
 
 pub mod de;
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {}
-}

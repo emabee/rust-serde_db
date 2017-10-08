@@ -1,9 +1,9 @@
 use serde;
+use serde_db::de::{DbValue, DeserializableRow, DeserError};
 use std::vec;
 use std::rc::Rc;
 
 use super::{MockError, MockResult, MockValue};
-use serde_db::de::{DbValue, DeserializableRow, DeserError};
 
 /// A generic implementation of a single line of a ResultSet.
 #[derive(Clone)]

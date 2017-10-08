@@ -86,9 +86,8 @@ mod field_deserializer;
 mod row_deserializer;
 mod rs_deserializer;
 
-pub use de::conversion_error::ConversionError;
-pub use self::deserialization_error::{DeserError, DeserResult};
-
+pub use self::conversion_error::ConversionError;
 pub use self::db_value::{DbValue, DbValueInto};
+pub use self::deserialization_error::{DeserError, DeserResult};
 pub use self::deserializable_resultset::DeserializableResultset;
 pub use self::deserializable_row::DeserializableRow;

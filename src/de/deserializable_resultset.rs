@@ -1,9 +1,8 @@
 use serde;
 use std::marker::Sized;
 
-use super::rs_deserializer::RsDeserializer;
-use super::deserializable_row::DeserializableRow;
-use super::deserialization_error::DeserError;
+use de::rs_deserializer::RsDeserializer;
+use de::{DeserError, DeserResult, DeserializableRow};
 
 /// Interface for a database resultset to support deserialization.
 pub trait DeserializableResultset: Sized {
@@ -14,13 +13,13 @@ pub trait DeserializableResultset: Sized {
 
     /// Returns true if more than one row is contained (implementors should consider
     /// eventually not yet fetched rows)
-    fn has_multiple_rows(&mut self) -> Result<bool, DeserError>;
+    fn has_multiple_rows(&mut self) -> DeserResult<bool>;
 
     /// Reverses the order of the rows
     fn reverse_rows(&mut self);
 
     /// Removes the last row and returns it, or None if it is empty, or an error.
-    fn pop_row(&mut self) -> Result<Option<Self::ROW>, DeserError>;
+    fn pop_row(&mut self) -> DeserResult<Option<Self::ROW>>;
 
     /// Returns the number of fields in each row
     fn number_of_fields(&self) -> usize;
@@ -52,7 +51,6 @@ pub trait DeserializableResultset: Sized {
         where T: serde::de::Deserialize<'de>,
               Self: Sized
     {
-        trace!("DeserializableResultSet::into_typed()");
         self.fetch_all()?;
         Ok(serde::de::Deserialize::deserialize(&mut RsDeserializer::new(self)?)?)
     }
