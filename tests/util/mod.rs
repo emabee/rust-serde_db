@@ -3,12 +3,13 @@
 mod mock_error;
 mod mock_metadata;
 mod mock_resultset;
+mod mock_row;
 mod mock_value;
 
 pub use self::mock_error::*;
-pub use self::mock_metadata::*;
 pub use self::mock_value::*;
 pub use self::mock_resultset::*;
+pub use self::mock_row::*;
 
 use flexi_logger::{Logger, ReconfigurationHandle};
 

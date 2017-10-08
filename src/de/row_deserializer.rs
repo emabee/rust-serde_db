@@ -1,9 +1,9 @@
 use serde;
+use serde::de::Deserialize as SD;
 
-use de::DeserializableRow;
-use de::deserialization_error::{DeserError, DeserResult};
-use de::db_value::{DbValue, DbValueInto};
+use de::{DbValue, DbValueInto, DeserError, DeserResult, DeserializableRow};
 use de::field_deserializer::FieldDeserializer;
+
 enum MCD {
     Must,
     Can,
@@ -16,7 +16,6 @@ pub struct RowDeserializer<ROW> {
     cols_treat: MCD,
 }
 
-// FIXME make use of FieldDeserializer
 impl<ROW> RowDeserializer<ROW>
     where ROW: DeserializableRow,
           <ROW as DeserializableRow>::V: DbValue
@@ -45,20 +44,12 @@ impl<ROW> RowDeserializer<ROW>
     }
 
 
-    fn current_value_pop(&mut self) -> DeserResult<ROW::V> {
-        trace!("RowDeserializer::current_value_pop()");
+    fn value_pop(&mut self) -> DeserResult<ROW::V> {
+        trace!("RowDeserializer::value_pop()");
         self.value_deserialization_allowed()?;
         match self.row.pop() {
             Some(tv) => Ok(tv),
-            None => Err(impl_err("current_value_pop(): no more value found in row")),
-        }
-    }
-
-    fn current_value_ref(&self) -> DeserResult<&ROW::V> {
-        self.value_deserialization_allowed()?;
-        match self.row.last() {
-            Some(tv) => Ok(tv),
-            None => Err(impl_err("current_value_ref(): no more value found in row")),
+            None => Err(impl_err("value_pop(): no more value found in row")),
         }
     }
 }
@@ -68,149 +59,122 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
 {
     type Error = DeserError;
 
-    // This method walks a visitor through a value as it is being deserialized.
     fn deserialize_any<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         Err(DeserError::NotImplemented("RowDeserializer::deserialize()"))
     }
 
-    // This method hints that the `Deserialize` type is expecting a `bool` value.
     fn deserialize_bool<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_bool()");
-        visitor.visit_bool(self.current_value_pop()?.try_into()?)
+        visitor.visit_bool(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting an `u8` value.
     fn deserialize_u8<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_u8()");
-        visitor.visit_u8(self.current_value_pop()?.try_into()?)
+        visitor.visit_u8(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting an `u16` value.
     fn deserialize_u16<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_u16()");
-        visitor.visit_u16(self.current_value_pop()?.try_into()?)
+        visitor.visit_u16(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting an `u32` value.
     fn deserialize_u32<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_u32()");
-        visitor.visit_u32(self.current_value_pop()?.try_into()?)
+        visitor.visit_u32(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting an `u64` value.
     fn deserialize_u64<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_u64()");
-        visitor.visit_u64(self.current_value_pop()?.try_into()?)
+        visitor.visit_u64(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting an `i8` value.
     fn deserialize_i8<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_i8()");
-        visitor.visit_i8(self.current_value_pop()?.try_into()?)
+        visitor.visit_i8(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting an `i16` value.
     fn deserialize_i16<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_i16()");
-        visitor.visit_i16(self.current_value_pop()?.try_into()?)
+        visitor.visit_i16(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting an `i32` value.
     fn deserialize_i32<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_i32()");
-        visitor.visit_i32(self.current_value_pop()?.try_into()?)
+        visitor.visit_i32(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting an `i64` value.
     fn deserialize_i64<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_i64()");
-        visitor.visit_i64(self.current_value_pop()?.try_into()?)
+        visitor.visit_i64(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting a `f32` value.
     fn deserialize_f32<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_f32()");
-        visitor.visit_f32(self.current_value_pop()?.try_into()?)
+        visitor.visit_f32(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting a `f64` value.
     fn deserialize_f64<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_f64()");
-        visitor.visit_f64(self.current_value_pop()?.try_into()?)
+        visitor.visit_f64(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting a `char` value.
     fn deserialize_char<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         Err(DeserError::NotImplemented("RowDeserializer::deserialize_char()!"))
     }
 
-    // This method hints that the `Deserialize` type is expecting a `&str` value.
     fn deserialize_str<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RowDeserializer::deserialize_str() called, delegates to deserialize_string()");
+        trace!("RowDeserializer::deserialize_str(), delegates to deserialize_string()");
         self.deserialize_string(visitor)
     }
 
-    // This method hints that the `Deserialize` type is expecting a `String` value.
     fn deserialize_string<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_string()");
-        visitor.visit_string(self.current_value_pop()?.try_into()?)
+        visitor.visit_string(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
-    // This method hints that the `Deserialize` type is expecting an `unit` value.
     fn deserialize_unit<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         Err(DeserError::NotImplemented("RowDeserializer::deserialize_unit()"))
     }
 
-    // This method hints that the `Deserialize` type is expecting an `Option` value. This allows
-    // deserializers that encode an optional value as a nullable value to convert the null value
-    // into a `None`, and a regular value as `Some(value)`.
     fn deserialize_option<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_option()");
-        match self.current_value_ref()?.is_null() {
-            false => visitor.visit_some(self),
-            true => {
-                self.current_value_pop().unwrap();
-                visitor.visit_none()
-            }
-        }
+        FieldDeserializer::new(self.value_pop()?).deserialize_option(visitor)
     }
 
-    // This method hints that the `Deserialize` type is expecting a sequence value. This allows
-    // deserializers to parse sequences that aren't tagged as sequences.
     #[inline]
     fn deserialize_seq<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
@@ -218,34 +182,26 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
         Err(DeserError::NotImplemented("RowDeserializer::deserialize_seq()"))
     }
 
-    // This method hints that the `Deserialize` type is expecting a map of values. This allows
-    // deserializers to parse sequences that aren't tagged as maps.
     fn deserialize_map<V>(self, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         Err(DeserError::NotImplemented("RowDeserializer::deserialize_map()"))
     }
 
-    // This method hints that the `Deserialize` type is expecting a unit struct. This allows
-    // deserializers to a unit struct that aren't tagged as a unit struct.
     fn deserialize_unit_struct<V>(self, _name: &'static str, _visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         Err(DeserError::NotImplemented("RowDeserializer::deserialize_unit_struct()"))
     }
 
-    // This method hints that the `Deserialize` type is expecting a newtype struct. This allows
-    // deserializers to a newtype struct that aren't tagged as a newtype struct.
     fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RowDeserializer::deserialize_newtype_struct() called with _name = {}",
+        trace!("RowDeserializer::deserialize_newtype_struct() with _name = {}",
                _name);
         visitor.visit_newtype_struct(self)
     }
 
-    // This method hints that the `Deserialize` type is expecting a tuple struct. This allows
-    // deserializers to parse sequences that aren't tagged as sequences.
     fn deserialize_tuple_struct<V>(self,
                                    _name: &'static str,
                                    _len: usize,
@@ -256,8 +212,6 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
         Err(DeserError::NotImplemented("RowDeserializer::deserialize_tuple_struct()"))
     }
 
-    // This method hints that the `Deserialize` type is expecting a struct. This allows
-    // deserializers to parse sequences that aren't tagged as maps.
     fn deserialize_struct<V>(mut self,
                              _name: &'static str,
                              _fields: &'static [&'static str],
@@ -275,37 +229,20 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
         }
     }
 
-    // Hint that the `Deserialize` type is expecting a byte array and does not
-    // benefit from taking ownership of buffered data owned by the
-    // `Deserializer`.
-    ///
-    // If the `Visitor<'x> would benefit from taking ownership of `Vec<u8>` data,
-    // indicate this to the `Deserializer` by using `deserialize_byte_buf`
-    // instead.
     fn deserialize_bytes<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_bytes()");
-        visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.current_value_pop()?)?)
+        visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.value_pop()?)?)
     }
 
-    // Hint that the `Deserialize` type is expecting a byte array and would
-    // benefit from taking ownership of buffered data owned by the
-    // `Deserializer`.
-    ///
-    // If the `Visitor<'x>` would not benefit from taking ownership of `Vec<u8>`
-    // data, indicate that to the `Deserializer` by using `deserialize_bytes`
-    // instead.
     fn deserialize_byte_buf<V>(mut self, visitor: V) -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
     {
         trace!("RowDeserializer::deserialize_byte_buf()");
-        visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.current_value_pop()?)?)
+        visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.value_pop()?)?)
     }
 
-    // This method hints that the `Deserialize` type is expecting a tuple value.
-    // This allows deserializers that provide a custom tuple serialization
-    // to properly deserialize the type.
     fn deserialize_tuple<V>(mut self, _len: usize, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
@@ -321,8 +258,6 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
         }
     }
 
-    // Hint that the `Deserialize` type is expecting an enum value with a
-    // particular name and possible variants.
     fn deserialize_enum<V>(self,
                            _name: &'static str,
                            _variants: &'static [&'static str],
@@ -333,10 +268,6 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
         Err(DeserError::NotImplemented("RowDeserializer::deserialize_enum()"))
     }
 
-
-    // This method hints that the Deserialize type is expecting some sort of struct field name.
-    // This allows deserializers to choose between &str, usize, or &[u8] to properly deserialize
-    // a struct field.
     fn deserialize_identifier<V>(self, visitor: V) -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
     {
@@ -355,9 +286,6 @@ impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDese
         }
     }
 
-    // This method hints that the Deserialize type needs to deserialize a value
-    // whose type doesn't matter because it is ignored.
-    // We end up here most likely because the target structure misses the current field.
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
     {
@@ -391,14 +319,12 @@ impl<'x, 'a, R: DeserializableRow> serde::de::MapAccess<'x> for FieldsMapVisitor
 {
     type Error = DeserError;
 
-    // This returns `Ok(Some(key))` for the next key in the map, or `Ok(None)`
-    // if there are no more remaining entries.
     fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>, Self::Error>
         where K: serde::de::DeserializeSeed<'x>
     {
         match self.de.row.len() {
             0 => {
-                trace!("FieldsMapVisitor::next_key_seed() called on empty row");
+                trace!("FieldsMapVisitor::next_key_seed() on empty row");
                 Ok(None)
             }
             len => {
@@ -417,7 +343,6 @@ impl<'x, 'a, R: DeserializableRow> serde::de::MapAccess<'x> for FieldsMapVisitor
         }
     }
 
-    // This returns a `Ok(value)` for the next value in the map.
     fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value, Self::Error>
         where V: serde::de::DeserializeSeed<'x>
     {

@@ -2,7 +2,7 @@ use chrono::{NaiveDateTime, Datelike, Timelike};
 use std::fmt;
 use serde;
 use serde_db::de::{ConversionError, DbValue, DbValueInto};
-use super::mock_error::MockError;
+use super::MockResult;
 
 #[derive(Clone,Debug)]
 pub struct MockTimestamp(pub NaiveDateTime);
@@ -23,11 +23,10 @@ impl fmt::Display for MockTimestamp {
 }
 
 
-
-
 #[derive(Clone, Debug)]
 pub enum MockValue {
     SHORT(i16),
+    NULLABLESHORT(Option<i16>),
     STRING(String),
     TIMESTAMP(MockTimestamp),
 }
@@ -36,6 +35,9 @@ impl MockValue {
     pub fn new_short(i: i16) -> MockValue {
         MockValue::SHORT(i)
     }
+    pub fn new_nullable_short(o_i: Option<i16>) -> MockValue {
+        MockValue::NULLABLESHORT(o_i)
+    }
     pub fn new_string(s: String) -> MockValue {
         MockValue::STRING(s)
     }
@@ -43,19 +45,20 @@ impl MockValue {
         MockValue::TIMESTAMP(MockTimestamp(ts))
     }
 
-    /// Converts the DbValue into a plain rust value.
-    pub fn into_typed<'de, T>(self) -> Result<T, MockError>
+    pub fn into_typed<'de, T>(self) -> MockResult<T>
         where T: serde::de::Deserialize<'de>
     {
         trace!("MockValue::into_typed()");
         Ok(DbValue::into_typed(self)?)
-        // Ok(serde::de::Deserialize::deserialize(FieldDeserializer::new(self))?)
     }
 }
 
 impl DbValue for MockValue {
     fn is_null(&self) -> bool {
-        false
+        match *self {
+            MockValue::NULLABLESHORT(None) => true,
+            _ => false,
+        }
     }
 }
 
@@ -98,6 +101,7 @@ impl DbValueInto<i32> for MockValue {
     fn try_into(self) -> Result<i32, ConversionError> {
         match self {
             MockValue::SHORT(i) => Ok(i as i32),
+            MockValue::NULLABLESHORT(Some(i)) => Ok(i as i32),
             mv => panic!("DbValueInto<i32> not implemented for {:?}", mv),
         }
     }

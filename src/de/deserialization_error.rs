@@ -1,15 +1,17 @@
-use std::error::Error;
 use serde;
+use std::error;
+use std::error::Error;
 use std::fmt;
-use de::conversion_error::ConversionError;
 
-/// The errors that can arise while deserializing a ResultSet into a standard rust type/struct/Vec
+use de::ConversionError;
+
+/// The errors that can arise while deserializing witrh serde_db::de.
 pub enum DeserError {
     /// Deserialization failed due to a conversion error.
     ConversionError(ConversionError),
-    /// Raised when there is a general error in the serde framework when deserializing a type.
+    /// Raised when there is a general error in the serde framework when deserializing.
     SerdeError(String),
-    /// Structure of target object does not fit to the structure of the resultset or row being deserialized
+    /// Structure of target object does not fit to the structure of the object being deserialized
     Implementation(String),
     ///
     NotImplemented(&'static str),
@@ -22,7 +24,8 @@ pub enum DeserError {
     ///
     TrailingCols,
 }
-impl Error for DeserError {
+
+impl error::Error for DeserError {
     fn description(&self) -> &str {
         match *self {
             DeserError::ConversionError(_) => "Conversion of database type to rust type failed",
@@ -37,6 +40,13 @@ impl Error for DeserError {
             }
             DeserError::TrailingRows => "trailing rows",
             DeserError::TrailingCols => "trailing columns",
+        }
+    }
+
+    fn cause(&self) -> Option<&error::Error> {
+        match *self {
+            DeserError::ConversionError(ref e) => Some(e),
+            _ => None,
         }
     }
 }

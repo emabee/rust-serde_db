@@ -63,77 +63,77 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
     fn deserialize_bool<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_bool() called");
+        trace!("RsDeserializer::deserialize_bool()");
         visitor.visit_bool(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
     fn deserialize_u8<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_u8() called");
+        trace!("RsDeserializer::deserialize_u8()");
         visitor.visit_u8(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
     fn deserialize_u16<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_u16() called");
+        trace!("RsDeserializer::deserialize_u16()");
         visitor.visit_u16(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
     fn deserialize_u32<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_u32() called");
+        trace!("RsDeserializer::deserialize_u32()");
         visitor.visit_u32(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
     fn deserialize_u64<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_u64() called");
+        trace!("RsDeserializer::deserialize_u64()");
         visitor.visit_u64(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
     fn deserialize_i8<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_i8() called");
+        trace!("RsDeserializer::deserialize_i8()");
         visitor.visit_i8(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
     fn deserialize_i16<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_i16() called");
+        trace!("RsDeserializer::deserialize_i16()");
         visitor.visit_i16(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
     fn deserialize_i32<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_i32() called");
+        trace!("RsDeserializer::deserialize_i32()");
         visitor.visit_i32(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
     fn deserialize_i64<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_i64() called");
+        trace!("RsDeserializer::deserialize_i64()");
         visitor.visit_i64(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
     fn deserialize_f32<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_f32() called");
+        trace!("RsDeserializer::deserialize_f32()");
         visitor.visit_f32(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
     fn deserialize_f64<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_f64() called");
+        trace!("RsDeserializer::deserialize_f64()");
         visitor.visit_f64(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
@@ -146,14 +146,14 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
     fn deserialize_str<V>(self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_str() called, delegates to deserialize_string()");
+        trace!("RsDeserializer::deserialize_str(), delegates to deserialize_string()");
         self.deserialize_string(visitor)
     }
 
     fn deserialize_string<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_string() called");
+        trace!("RsDeserializer::deserialize_string()");
         visitor.visit_string(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
     }
 
@@ -166,7 +166,7 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
     fn deserialize_option<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_option() called");
+        trace!("RsDeserializer::deserialize_option()");
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_option(visitor)
     }
@@ -174,7 +174,7 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
     fn deserialize_seq<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_seq() called");
+        trace!("RsDeserializer::deserialize_seq()");
         match self.rows_treat {
             MCD::Done => {
                 Err(DeserError::Implementation("deserialize_seq() when rows_treat = MCD::Done"
@@ -182,7 +182,7 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
             }
             _ => {
                 self.rows_treat = MCD::Done;
- // consuming from the end is easier and faster
+// consuming from the end is easier and faster
                 Ok(visitor.visit_seq(RowsVisitor::new(&mut self))?)
             }
         }
@@ -204,7 +204,7 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
     -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_newtype_struct() called with _name = {}", _name);
+        trace!("RsDeserializer::deserialize_newtype_struct() with _name = {}", _name);
         visitor.visit_newtype_struct(self)
     }
 
@@ -215,7 +215,7 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
                                    -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_tuple_struct() called with name = {}", name);
+        trace!("RsDeserializer::deserialize_tuple_struct() with name = {}", name);
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_tuple_struct(name, len, visitor)
     }
@@ -227,7 +227,7 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
                              -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_struct() called with name = {}", name);
+        trace!("RsDeserializer::deserialize_struct() with name = {}", name);
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_struct(name, fields, visitor)
     }
@@ -235,7 +235,7 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
     fn deserialize_bytes<V>(mut self, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_bytes() called");
+        trace!("RsDeserializer::deserialize_bytes()");
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_bytes(visitor)
     }
@@ -243,7 +243,7 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
     fn deserialize_byte_buf<V>(mut self, visitor: V) -> Result<V::Value, Self::Error>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_byte_buf() called");
+        trace!("RsDeserializer::deserialize_byte_buf()");
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_byte_buf(visitor)
     }
@@ -251,7 +251,7 @@ where <<RS as De_Resultset>::ROW as DeserializableRow>::V: DbValue {
     fn deserialize_tuple<V>(self, len: usize, visitor: V) -> DeserResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
-        trace!("RsDeserializer::deserialize_tuple() called");
+        trace!("RsDeserializer::deserialize_tuple()");
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_tuple(len, visitor)
     }

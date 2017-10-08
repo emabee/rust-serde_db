@@ -19,14 +19,11 @@ pub trait DeserializableRow: Sized {
     /// Removes and returns the last value.
     fn pop(&mut self) -> Option<Self::V>;
 
-    /// Returns a reference to the last value.
-    fn last(&self) -> Option<&Self::V>;
-
     /// Returns the name of the column at the specified index
     fn get_fieldname(&self, field_idx: usize) -> Option<&String>;
 
     /// Reverses the order of the values. This method
-    /// will be called before deserialization of the row into a tuple starts,
+    /// will be before deserialization of the row into a tuple starts,
     /// which uses pop() to access individual values.
     fn reverse_values(&mut self);
 

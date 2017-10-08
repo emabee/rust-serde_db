@@ -35,10 +35,10 @@ pub trait DeserializableResultset: Sized {
     /// the resultset is expected to be loaded completely.
     fn fetch_all(&mut self) -> Result<(), Self::E>;
 
-    /// a _provided method_ that translates a generic resultset into a given rust type
+    /// A _provided method_ that translates a resultset into a given rust type
     /// that implements serde::de::Deserialize.
     ///
-    /// Note that you need to specify the type of your target variable explicitly, so that
+    /// The type of the target variable needs to be specified explicitly, so that
     /// <code>into_typed()</code> can derive the type it needs to serialize into:
     ///
     /// ```ignore
