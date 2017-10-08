@@ -1,7 +1,11 @@
 [package]
 name = "serde_db"
-version = "0.1.6"
+version = "0.1.8"
 authors = ["emabee <meinolf.block@sap.com>"]
+description = "Deserialization for database resultsets"
+documentation = "https://docs.rs/serde_db/"
+keywords = ["relational", "database", "driver", "serde"]
+license = "Apache-2.0"
 
 [dependencies]
 log = "0.3"
