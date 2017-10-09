@@ -2,13 +2,13 @@ use serde;
 use std::convert::From;
 use std::marker::Sized;
 
-use de::{DeserError, DbValue};
+use de::{DeserializationError, DbValue};
 use de::row_deserializer::RowDeserializer;
 
 /// A minimal interface for the Row type to support the deserialization.
 pub trait DeserializableRow: Sized {
     /// The error type used by the database driver.
-    type E: From<DeserError> + Sized;
+    type E: From<DeserializationError> + Sized;
     /// The value type used by the database driver.
     type V: DbValue;
 

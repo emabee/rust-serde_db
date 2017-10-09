@@ -1,5 +1,5 @@
 use serde;
-use serde_db::de::{DeserError, DeserializableResultset};
+use serde_db::de::{DeserializationError, DeserializableResultset};
 use std::rc::Rc;
 
 use super::*;
@@ -32,7 +32,7 @@ impl MockResultset {
 impl DeserializableResultset for MockResultset {
     type E = MockError;
     type ROW = MockRow;
-    fn has_multiple_rows(&mut self) -> Result<bool, DeserError> {
+    fn has_multiple_rows(&mut self) -> Result<bool, DeserializationError> {
         Ok(self.rows.len() > 1_usize)
     }
 
@@ -40,7 +40,7 @@ impl DeserializableResultset for MockResultset {
         self.rows.reverse()
     }
 
-    fn pop_row(&mut self) -> Result<Option<<Self as DeserializableResultset>::ROW>, DeserError> {
+    fn pop_row(&mut self) -> Result<Option<<Self as DeserializableResultset>::ROW>, DeserializationError> {
         Ok(self.rows.pop())
     }
 

@@ -2,7 +2,7 @@ use serde;
 use std::{u8, u16, u32, i8, i16, i32};
 use std::marker::Sized;
 
-use de::{ConversionError, DeserError};
+use de::{ConversionError, DeserializationError};
 use de::field_deserializer::FieldDeserializer;
 
 /// Defines into which rust types we support deserialization of fields.
@@ -26,7 +26,7 @@ pub trait DbValue: Clone
     fn is_null(&self) -> bool;
 
 /// Converts the DbValue into a plain rust value.
-    fn into_typed<'de, T>(self) -> Result<T, DeserError>
+    fn into_typed<'de, T>(self) -> Result<T, DeserializationError>
         where T: serde::de::Deserialize<'de>
     {
         Ok(serde::de::Deserialize::deserialize(FieldDeserializer::new(self))?)
@@ -44,7 +44,7 @@ pub trait DbValue: Clone
 /// Example:
 ///
 /// ```ignore
-/// impl DbValueInto<u32> for TypedValue {
+/// impl DbValueInto<u32> for MyDbValue {
 ///     fn try_into(self) -> Result<u32, ConversionError> {
 ///         match self {
 ///             MyDbValue::TINYINT(u) |

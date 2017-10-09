@@ -2,24 +2,24 @@ use serde;
 use std::marker::Sized;
 
 use de::rs_deserializer::RsDeserializer;
-use de::{DeserError, DeserResult, DeserializableRow};
+use de::{DeserializationError, DeserializationResult, DeserializableRow};
 
 /// Interface for a database resultset to support deserialization.
 pub trait DeserializableResultset: Sized {
     /// Error type of the database driver.
-    type E: From<DeserError> + Sized;
+    type E: From<DeserializationError> + Sized;
     /// Concrete type for the DB row, which must implement DeserializabeRow.
     type ROW: DeserializableRow;
 
     /// Returns true if more than one row is contained (implementors should consider
     /// eventually not yet fetched rows)
-    fn has_multiple_rows(&mut self) -> DeserResult<bool>;
+    fn has_multiple_rows(&mut self) -> DeserializationResult<bool>;
 
     /// Reverses the order of the rows
     fn reverse_rows(&mut self);
 
     /// Removes the last row and returns it, or None if it is empty, or an error.
-    fn pop_row(&mut self) -> DeserResult<Option<Self::ROW>>;
+    fn pop_row(&mut self) -> DeserializationResult<Option<Self::ROW>>;
 
     /// Returns the number of fields in each row
     fn number_of_fields(&self) -> usize;

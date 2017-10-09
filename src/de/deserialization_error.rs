@@ -6,101 +6,95 @@ use std::fmt;
 use de::ConversionError;
 
 /// The errors that can arise while deserializing witrh serde_db::de.
-pub enum DeserError {
+pub enum DeserializationError {
     /// Deserialization failed due to a conversion error.
     ConversionError(ConversionError),
     /// Raised when there is a general error in the serde framework when deserializing.
     SerdeError(String),
-    /// Structure of target object does not fit to the structure of the object being deserialized
+    /// Structure of target object does not fit to the structure of the object being deserialized.
     Implementation(String),
-    ///
+    /// Thrown by functions in the Deserializer interface that are not implemented.
+    /// This exception should never be seen in practice.
     NotImplemented(&'static str),
-    ///
+    /// The target structure misses a field for which data are provided.
     UnknownField(String),
-    ///
-    MissingField(String),
-    ///
+    /// The conversion cannot consume all existing rows.
     TrailingRows,
-    ///
+    /// The conversion cannot consume all existing columns.
     TrailingCols,
 }
 
-impl error::Error for DeserError {
+impl error::Error for DeserializationError {
     fn description(&self) -> &str {
         match *self {
-            DeserError::ConversionError(_) => "Conversion of database type to rust type failed",
-            DeserError::SerdeError(_) => "general error from the deserialization framework",
-            DeserError::Implementation(_) => "error in the implementation of the serde_db",
-            DeserError::NotImplemented(_) => "function not implemented",
-            DeserError::UnknownField(_) => {
+            DeserializationError::ConversionError(_) => {
+                "Conversion of database type to rust type failed"
+            }
+            DeserializationError::SerdeError(_) => {
+                "general error from the deserialization framework"
+            }
+            DeserializationError::Implementation(_) => {
+                "error in the implementation of the serde_db"
+            }
+            DeserializationError::NotImplemented(_) => "function not implemented",
+            DeserializationError::UnknownField(_) => {
                 "the target structure misses a field for which data are provided"
             }
-            DeserError::MissingField(_) => {
-                "the target structure contains a field for which no data are provided"
-            }
-            DeserError::TrailingRows => "trailing rows",
-            DeserError::TrailingCols => "trailing columns",
+            DeserializationError::TrailingRows => "trailing rows",
+            DeserializationError::TrailingCols => "trailing columns",
         }
     }
 
     fn cause(&self) -> Option<&error::Error> {
         match *self {
-            DeserError::ConversionError(ref e) => Some(e),
+            DeserializationError::ConversionError(ref e) => Some(e),
             _ => None,
         }
     }
 }
 
-impl From<ConversionError> for DeserError {
-    fn from(error: ConversionError) -> DeserError {
-        DeserError::ConversionError(error)
+impl From<ConversionError> for DeserializationError {
+    fn from(error: ConversionError) -> DeserializationError {
+        DeserializationError::ConversionError(error)
     }
 }
 
-impl serde::de::Error for DeserError {
+impl serde::de::Error for DeserializationError {
     fn custom<T: fmt::Display>(msg: T) -> Self {
-        DeserError::SerdeError(msg.to_string())
+        DeserializationError::SerdeError(msg.to_string())
     }
 }
 
-impl fmt::Debug for DeserError {
+impl fmt::Debug for DeserializationError {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            DeserError::ConversionError(ref e) => write!(formatter, "{:?}", e),
-            DeserError::SerdeError(ref s) |
-            DeserError::Implementation(ref s) |
-            DeserError::UnknownField(ref s) => {
+            DeserializationError::ConversionError(ref e) => write!(formatter, "{:?}", e),
+            DeserializationError::SerdeError(ref s) |
+            DeserializationError::Implementation(ref s) |
+            DeserializationError::UnknownField(ref s) => {
                 write!(formatter, "{} (\"{}\")", self.description(), s)
             }
-            DeserError::NotImplemented(s) => {
+            DeserializationError::NotImplemented(s) => {
                 write!(formatter, "{} (\"{}\")", self.description(), s)
             }
-            DeserError::MissingField(ref s) => {
-                write!(formatter,
-                       "{} (\"{}\"); note that the field mapping is case-sensitive, and partial \
-                        deserialization is not supported",
-                       self.description(),
-                       s)
-            }
-            DeserError::TrailingRows | DeserError::TrailingCols => {
-                write!(formatter, "{}", self.description())
-            }
+            DeserializationError::TrailingRows |
+            DeserializationError::TrailingCols => write!(formatter, "{}", self.description()),
         }
     }
 }
-impl fmt::Display for DeserError {
+impl fmt::Display for DeserializationError {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            DeserError::ConversionError(ref e) => write!(fmt, "{}", e),
-            DeserError::SerdeError(ref s) |
-            DeserError::Implementation(ref s) |
-            DeserError::UnknownField(ref s) |
-            DeserError::MissingField(ref s) => write!(fmt, "{} ", s),
-            DeserError::NotImplemented(ref s) => write!(fmt, "{} ", s),
-            DeserError::TrailingRows => write!(fmt, "{} ", "TrailingRows"),
-            DeserError::TrailingCols => write!(fmt, "{} ", "TrailingCols"),
+            DeserializationError::ConversionError(ref e) => write!(fmt, "{}", e),
+            DeserializationError::SerdeError(ref s) |
+            DeserializationError::Implementation(ref s) |
+            DeserializationError::UnknownField(ref s) => write!(fmt, "{} ", s),
+            DeserializationError::NotImplemented(ref s) => write!(fmt, "{} ", s),
+            DeserializationError::TrailingRows => write!(fmt, "{} ", "TrailingRows"),
+            DeserializationError::TrailingCols => write!(fmt, "{} ", "TrailingCols"),
         }
     }
 }
-/// Shortcut
-pub type DeserResult<T> = Result<T, DeserError>;
+
+/// A specialized Result type for deserialization.
+pub type DeserializationResult<T> = Result<T, DeserializationError>;

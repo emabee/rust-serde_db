@@ -1,5 +1,5 @@
 use serde;
-use serde_db::de::{DbValue, DeserializableRow, DeserError};
+use serde_db::de::{DbValue, DeserializableRow, DeserializationError};
 use std::vec;
 use std::rc::Rc;
 
@@ -22,12 +22,12 @@ impl MockRow {
     }
 
     /// Returns a clone of the ith value.
-    pub fn cloned_value(&self, i: usize) -> Result<MockValue, DeserError> {
+    pub fn cloned_value(&self, i: usize) -> Result<MockValue, DeserializationError> {
         trace!("<MockRow as DeserializableRow>::get()");
         self.values
             .get(i)
             .map(|tv| tv.clone())
-            .ok_or(DeserError::Implementation("element with index {} does not exist".to_owned()))
+            .ok_or(DeserializationError::Implementation("element with index {} does not exist".to_owned()))
     }
 
     /// Converts the field into a plain rust value.

@@ -1,4 +1,4 @@
-use serde_db::de::DeserError;
+use serde_db::de::DeserializationError;
 use std::error;
 use std::fmt;
 
@@ -6,7 +6,7 @@ pub type MockResult<T> = Result<T, MockError>;
 
 #[derive(Debug)]
 pub enum MockError {
-    DESERIALIZATION(DeserError),
+    DESERIALIZATION(DeserializationError),
 }
 
 impl error::Error for MockError {
@@ -30,8 +30,8 @@ impl fmt::Display for MockError {
     }
 }
 
-impl From<DeserError> for MockError {
-    fn from(e: DeserError) -> MockError {
+impl From<DeserializationError> for MockError {
+    fn from(e: DeserializationError) -> MockError {
         MockError::DESERIALIZATION(e)
     }
 }

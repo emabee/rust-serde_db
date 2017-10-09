@@ -1,17 +1,9 @@
 //! Support for deserializing database resultsets, or individual database rows,
 //! or individual database values, into rust types.
 //!
-//! Implementing DB drivers just need to implement DeserializableResultset,
-//! DeserializableRow, and -- a bit more effort -- DbValue.
-//!
-//! We further recommend implementing the method <code>into_typed()</code> directly on the
-//! driver's classes for Resultset and Row with a plain delegation to the provided methods
-//! <code>DeserializableResultset::into_typed()</code> and
-//! <code>DeserializableRow::into_typed()</code>.
-//!
-//! By this extension of the driver's API, the deserialization functionality of
-//! serde_db can be provided to the users of the DB driver without the need to
-//! import additional traits.
+//! The target types for deserialization need to implement <code>serde::de::Deserialize</code>,
+//! what is automatically given for all elementary rust types and easily achieved for
+//! custom structs (using <code>#[derive(Deserialize)]</code>).
 //!
 //! It depends on the dimension of the resultset what target data structure you can
 //! choose for deserialization:
@@ -76,6 +68,24 @@
 //!     let t: (String, NaiveDateTime, i32, Option<i32>) = row.into_typed().unwrap();
 //! }
 //! ```
+//!
+//! # Note for implementors
+//!
+//! Implementing DB drivers just need
+//! to implement [<code>DeserializableResultset</code>](trait.DeserializableResultset.html),
+//! [<code>DeserializableRow</code>](trait.DeserializableRow.html),
+//! and -- a bit more effort --
+//! [<code>DbValue</code>](trait.DbValue.html).
+//!
+//! We further recommend implementing a method like <code>into_typed()</code> directly on the
+//! driver's class for resultsets with a plain delegation to the provided method
+//! [<code>DeserializableResultset::into_typed()</code>](trait.DeserializableResultset.html#method.into_typed).
+//! The same should be done for rows.
+//!
+//! By this extension of the driver's API, the deserialization functionality of
+//! <code>serde_db</code> can be provided to the users of the DB driver without the need of
+//! importing additional traits.
+//!
 
 mod db_value;
 mod conversion_error;
@@ -88,6 +98,6 @@ mod rs_deserializer;
 
 pub use self::conversion_error::ConversionError;
 pub use self::db_value::{DbValue, DbValueInto};
-pub use self::deserialization_error::{DeserError, DeserResult};
+pub use self::deserialization_error::{DeserializationError, DeserializationResult};
 pub use self::deserializable_resultset::DeserializableResultset;
 pub use self::deserializable_row::DeserializableRow;
