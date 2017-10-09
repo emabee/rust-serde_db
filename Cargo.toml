@@ -6,6 +6,7 @@ description = "Deserialization for database resultsets"
 documentation = "https://docs.rs/serde_db/"
 keywords = ["relational", "database", "driver", "serde"]
 license = "Apache-2.0"
+repository = "https://github.com/emabee/rust-serde_db"
 
 [dependencies]
 log = "0.3"
