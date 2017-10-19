@@ -148,13 +148,15 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
         Err(DeserializationError::NotImplemented("FieldDeserializer::deserialize_map()"))
     }
 
-    fn deserialize_unit_struct<V>(self, _name: &'static str, _visitor: V) -> DeserializationResult<V::Value>
+    fn deserialize_unit_struct<V>(self, _name: &'static str, _visitor: V)
+                                  -> DeserializationResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         Err(DeserializationError::NotImplemented("FieldDeserializer::deserialize_unit_struct()"))
     }
 
-    fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V) -> DeserializationResult<V::Value>
+    fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V)
+                                     -> DeserializationResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         trace!("FieldDeserializer::deserialize_newtype_struct()");
