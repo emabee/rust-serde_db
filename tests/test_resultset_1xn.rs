@@ -3,15 +3,16 @@ extern crate flexi_logger;
 #[macro_use]
 extern crate log;
 extern crate serde;
+extern crate serde_db;
 #[macro_use]
 extern crate serde_derive;
-extern crate serde_db;
 
+mod mock_db;
 mod util;
 
 use chrono::NaiveDateTime;
-use flexi_logger::{ReconfigurationHandle, LogSpecification};
-use util::{MockResult, MockResultset, MockValue as MV, MockTimestamp};
+use flexi_logger::{LogSpecification, ReconfigurationHandle};
+use mock_db::{MValue, Resultset, Timestamp};
 
 const SIZE: usize = 20;
 
@@ -28,7 +29,7 @@ pub fn test_resultset_1xn() {
     }
 }
 
-fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> MockResult<()> {
+fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     #[derive(Deserialize)]
     struct TestData {
         f1: String,
@@ -56,7 +57,8 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> MockResult<()> {
     {
         let s = "Negative test: no conversion of 1xn resultset into Vec<field>";
         info!("{}", s);
-        let test: MockResult<Vec<String>> = get_resultset_string_ts_short_short(SIZE).into_typed();
+        let test: mock_db::Result<Vec<String>> =
+            get_resultset_string_ts_short_short(SIZE).into_typed();
         match test {
             Ok(_) => assert!(false, "Failed \"{}\"", s),
             Err(e) => info!("--> Exception: {:?}", e),
@@ -65,11 +67,11 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> MockResult<()> {
     {
         let s = "Negative test: no conversion of 1xn resultset into field";
         info!("{}", s);
-        let test: MockResult<String> = get_resultset_string_ts_short_short(SIZE).into_typed();
-        if let Ok(_) = test {
+        let test: mock_db::Result<String> = get_resultset_string_ts_short_short(SIZE).into_typed();
+        if test.is_ok() {
             assert!(false, "Failed \"{}\" (1)", s);
         }
-        let test: MockResult<i32> = get_resultset_string_ts_short_short(SIZE).into_typed();
+        let test: mock_db::Result<i32> = get_resultset_string_ts_short_short(SIZE).into_typed();
         match test {
             Ok(_) => assert!(false, "Failed \"{}\"", s),
             Err(e) => info!("--> Exception: {:?}", e),
@@ -95,16 +97,18 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> MockResult<()> {
 }
 
 ////////////////////////////////////////////////////////
-fn get_resultset_string_ts_short_short(len: usize) -> MockResultset {
+fn get_resultset_string_ts_short_short(len: usize) -> Resultset {
     assert!(len < 60);
-    let mut rs = MockResultset::new(vec!["f1", "f2", "f3", "f4"]);
+    let mut rs = Resultset::new(vec!["f1", "f2", "f3", "f4"]);
     for i in 1..len + 1 {
         let s = format!("2017-09-{:02} 10:00:{:02}", i, i);
         let ts = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S").unwrap();
-        rs.push(vec![MV::STRING(String::from_utf8(vec!['a' as u8 + i as u8]).unwrap()),
-                     MV::TIMESTAMP(MockTimestamp(ts)),
-                     MV::SHORT(i as i16),
-                     MV::SHORT(10 * i as i16 + 7)]);
+        rs.push(vec![
+            MValue::String(String::from_utf8(vec![b'a' + i as u8]).unwrap()),
+            MValue::Timestamp(Timestamp(ts)),
+            MValue::Short(i as i16),
+            MValue::Short(10 * i as i16 + 7),
+        ]);
     }
     rs
 }

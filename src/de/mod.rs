@@ -1,10 +1,8 @@
 //! Support for deserializing database resultsets, or individual database rows,
 //! or individual database values, into rust types.
 //!
-//! Concretely, we propose and enable using serde to simplify the data exchange
-//! between applications and the db driver, for the
-//! results that are returned from the database: there is no need to iterate over
-//! a complex resultset by rows and columns!
+//! Rather than iterating over rows and columns of a resultset, applications
+//! can convert it directly into the data structure of choice.
 //!
 //! This approach allows, in contrast to many ORM mapping variants, using the
 //! full flexibility of SQL (projection lists, all kinds of joins, unions, etc, etc).
@@ -12,35 +10,41 @@
 //! they just use a corresponding rust structure or tuple into which they deserialize the data
 //! in a single method call.
 //!
-//! The target types for deserialization need to implement [<code>serde::de::Deserialize</code>]
-//! (https://docs.serde.rs/serde/de/trait.Deserialize.html),
-//! what is automatically given for all elementary rust types and easily achieved for
-//! custom structs (using <code>#[derive(Deserialize)]</code>).
+//! The target types for deserialization need to implement
+//! [`serde::de::Deserialize`](https://docs.serde.rs/serde/de/trait.Deserialize.html),
+//! what is automatically given for all elementary rust types and tuples, and easily achieved for
+//! custom structs (using `#[derive(Deserialize)]`).
 //!
-//! Depending on the dimension of the resultset, different target types can be
+//! Resultsets can _always_ be deserialized into a `Vec<line_struct>`, where
+//! `line_struct` matches the field list of the resultset and
+//! implements `serde::de::Deserialize`.
+//!
+//! Similarly, a `Vec<(...)>`, works as well, as long as the tuple
+//! members match the field list of the resultset.
+//!
+//! In addition, `serde_db` also supports structural simplification:
+//! depending on the dimension of the resultset, simplified target types can be
 //! chosen for deserialization:
-//!
-//! * Resultsets can _always_ be deserialized into a <code>Vec&lt;line_struct&gt;</code>, where
-//!   <code>line_struct</code> matches the field list of the resultset and
-//!   implements <code>serde::de::Deserialize</code>.
-//!
-//! * Similarly, a <code>Vec&lt;(...)&gt;</code>, works as well, as long as the tuple
-//!   members match the field list of the resultset.
 //!
 //! * If the resultset contains only a single line (e.g. because you specified
 //!   TOP 1 in your select),
-//!   then you can optionally choose to deserialize directly into a plain <code>line_struct</code>.
+//!   then you can optionally choose to deserialize directly into a plain `line_struct`.
 //!
 //! * If the resultset contains only a single column, then you can optionally choose to
-//!   deserialize into a <code>Vec&lt;plain_field&gt;</code>.
+//!   deserialize into a `Vec<plain_field>`.
 //!
 //! * If the resultset contains only a single value (one row with one column),
-//!   then you can optionally choose to deserialize into a plain <code>line_struct</code>,
-//!   or a <code>Vec&lt;plain_field&gt;</code>, or a plain variable.
+//!   then you can optionally choose to deserialize into a plain `line_struct`,
+//!   or a `Vec<plain_field>`, or a plain variable.
 //!
 //! # Examples
 //!
-//! Convert a n&#215;m resultset into a Vec of structs which implement serde::de::Deserialize:
+//! The below examples assume the DB driver exposes on its
+//! resultset type a function
+//! `fn into_typed<'de, T: serde::de::Deserialize<'de>>(self) -> mock_db::Result<T>`,
+//! which is implemented using `serde_db`.
+//!
+//! ## Convert a n&#215;m resultset into a Vec of structs:
 //!
 //! ```ignore
 //! #[macro_use]
@@ -53,7 +57,23 @@
 //! let data: Vec<MyStruct> = resultset.into_typed()?;
 //! ```
 //!
-//! Or convert the rows into tuples (no need to implement serde::de::Deserialize):
+//! Note that `MyStruct` has to implement `serde::de::Deserialize`.
+//!
+//! ## Convert a n&#215;1 resultset into a Vec of fields:
+//!
+//! ```ignore
+//! let vec_s: Vec<String> = resultset.into_typed()?;
+//! ```
+//!
+//! ## Convert a 1&#215;1 resultset into a single field:
+//!
+//! ```ignore
+//! let s: String = resultset.into_typed()?;
+//! ```
+//!
+//! ## Convert rows into tuples or structs
+//!
+//! For better streaming of large resultsets, you might want to iterate over the rows, like in
 //!
 //! ```ignore
 //! for row in resultset {
@@ -61,20 +81,7 @@
 //! }
 //! ```
 //!
-//! Convert a n&#215;1 resultset into a Vec of fields:
-//!
-//! ```ignore
-//! let vec_s: Vec<String> = resultset.into_typed()?;
-//! ```
-//!
-//! Convert a 1&#215;1 resultset into a single field:
-//!
-//! ```ignore
-//! let s: String = resultset.into_typed()?;
-//! ```
-//!
-//! Loop over rows, convert each row individually into a struct
-//! (for better streaming support with large result sets):
+//! or
 //!
 //! ```ignore
 //! for row in resultset {
@@ -85,18 +92,18 @@
 //! # Note for implementors
 //!
 //! Implementing DB drivers need
-//! to implement [<code>DeserializableResultset</code>](trait.DeserializableResultset.html),
-//! [<code>DeserializableRow</code>](trait.DeserializableRow.html),
-//! and -- a bit more effort --
-//! [<code>DbValue</code>](trait.DbValue.html).
+//! to implement [`DeserializableResultset`](trait.DeserializableResultset.html) and
+//! [`DeserializableRow`](trait.DeserializableRow.html), which are trivial,
+//! and [`DbValue`](trait.DbValue.html), which is a bit more effort
+//! (an example can be found in the tests of this create).
 //!
-//! We further recommend adding a method like <code>into_typed()</code> directly on the
+//! We further recommend adding a method like `into_typed()` directly on the
 //! driver's class for resultsets with a plain delegation to the _provided_ method
-//! [<code>DeserializableResultset::into_typed()</code>](trait.DeserializableResultset.html#method.into_typed).
+//! [`DeserializableResultset::into_typed()`](trait.DeserializableResultset.html#method.into_typed).
 //! The same should be done for rows.
 //!
-//! By this, the deserialization functionality of <code>serde_db</code> can be provided
-//! to the users of the DB driver without the necessity to import additional traits.
+//! By this, the deserialization functionality of `serde_db` can be provided
+//! to the users of the DB driver without forcing them to import additional traits.
 //!
 
 mod db_value;

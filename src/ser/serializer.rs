@@ -22,7 +22,7 @@ impl<DF: DbvFactory> Serializer<DF> {
     fn get_current_field(&self) -> SerializationResult<&DF> {
         match self.metadata.get(self.output.borrow().len()) {
             Some(df) => Ok(df),
-            None => return Err(SerializationError::StructuralMismatch("too many values specified")),
+            None => Err(SerializationError::StructuralMismatch("too many values specified")),
         }
     }
 
@@ -144,8 +144,10 @@ impl<'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<DF> {
                               _variant: &'static str)
                               -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_unit_variant()");
-        Err(SerializationError::TypeMismatch("unit_variant",
-                                             self.get_current_field()?.descriptor()))
+        Err(SerializationError::TypeMismatch(
+            "unit_variant",
+            self.get_current_field()?.descriptor(),
+        ))
     }
 
     fn serialize_newtype_struct<T: ?Sized + serde::ser::Serialize>
@@ -179,32 +181,33 @@ impl<'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<DF> {
         Ok(Compound { ser: self })
     }
 
-    fn serialize_tuple(self, len: usize) -> SerializationResult<Self::SerializeTuple> {
+    fn serialize_tuple(self, _len: usize) -> SerializationResult<Self::SerializeTuple> {
         trace!("Serializer::serialize_tuple()");
-        self.serialize_seq(Some(len))
+        Ok(Compound { ser: self })
     }
 
-    fn serialize_tuple_struct(self, _name: &'static str, len: usize)
+    fn serialize_tuple_struct(self, _name: &'static str, _len: usize)
                               -> SerializationResult<Self::SerializeTupleStruct> {
         trace!("Serializer::serialize_tuple_struct()");
-        self.serialize_seq(Some(len))
+        Ok(Compound { ser: self })
     }
 
     fn serialize_tuple_variant(self, _name: &'static str, _variant_index: u32,
-                               _variant: &'static str, len: usize)
+                               _variant: &'static str, _len: usize)
                                -> SerializationResult<Self::SerializeTupleVariant> {
         trace!("Serializer::serialize_tuple_variant()");
-        self.serialize_seq(Some(len))
+        Ok(Compound { ser: self })
     }
 
     fn serialize_map(self, _len: Option<usize>) -> SerializationResult<Self::SerializeMap> {
-        Err(SerializationError::StructuralMismatch("serialize_map() not implemented"))
+        trace!("Serializer::serialize_map()");
+        Ok(Compound { ser: self })
     }
 
-    fn serialize_struct(self, _name: &'static str, len: usize)
+    fn serialize_struct(self, _name: &'static str, _len: usize)
                         -> SerializationResult<Self::SerializeStruct> {
         trace!("Serializer::serialize_struct()");
-        self.serialize_map(Some(len))
+        Ok(Compound { ser: self })
     }
 
     fn serialize_struct_variant(self, _name: &'static str, _variant_index: u32,
@@ -224,7 +227,8 @@ impl<'a, DF: DbvFactory> serde::ser::SerializeSeq for Compound<'a, DF> {
     type Error = SerializationError;
 
     fn serialize_element<T: ?Sized>(&mut self, value: &T) -> SerializationResult<()>
-        where T: serde::ser::Serialize
+    where
+        T: serde::ser::Serialize,
     {
         trace!("Compound: SerializeSeq::serialize_element()");
         let t: &mut Serializer<DF> = self.ser;
@@ -242,7 +246,8 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeTuple for Compound<'a, DF> {
     type Error = SerializationError;
 
     fn serialize_element<T: ?Sized>(&mut self, value: &T) -> SerializationResult<()>
-        where T: serde::ser::Serialize
+    where
+        T: serde::ser::Serialize,
     {
         trace!("Compound: SerializeTuple::serialize_element()");
         serde::ser::SerializeSeq::serialize_element(self, value)
@@ -259,7 +264,8 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeTupleStruct for Compound<'a, 
     type Error = SerializationError;
 
     fn serialize_field<T: ?Sized>(&mut self, value: &T) -> SerializationResult<()>
-        where T: serde::ser::Serialize
+    where
+        T: serde::ser::Serialize,
     {
         trace!("Compound: SerializeTupleStruct::serialize_field()");
         serde::ser::SerializeSeq::serialize_element(self, value)
@@ -276,7 +282,8 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeTupleVariant for Compound<'a,
     type Error = SerializationError;
 
     fn serialize_field<T: ?Sized>(&mut self, value: &T) -> SerializationResult<()>
-        where T: serde::ser::Serialize
+    where
+        T: serde::ser::Serialize,
     {
         trace!("Compound: SerializeTupleVariant::serialize_field()");
         serde::ser::SerializeSeq::serialize_element(self, value)
@@ -294,14 +301,16 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeMap for Compound<'a, DF> {
     type Error = SerializationError;
 
     fn serialize_key<T: ?Sized>(&mut self, _key: &T) -> SerializationResult<()>
-        where T: serde::ser::Serialize
+    where
+        T: serde::ser::Serialize,
     {
         trace!("Compound: SerializeMap::serialize_key()");
         Ok(())
     }
 
     fn serialize_value<T: ?Sized>(&mut self, value: &T) -> SerializationResult<()>
-        where T: serde::ser::Serialize
+    where
+        T: serde::ser::Serialize,
     {
         trace!("Compound: SerializeMap::serialize_value()");
         let t: &mut Serializer<DF> = self.ser;
@@ -321,7 +330,8 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeStruct for Compound<'a, DF> {
 
     fn serialize_field<T: ?Sized>(&mut self, key: &'static str, value: &T)
                                   -> SerializationResult<()>
-        where T: serde::ser::Serialize
+    where
+        T: serde::ser::Serialize,
     {
         trace!("Compound: SerializeStruct::serialize_field()");
         try!(serde::ser::SerializeMap::serialize_key(self, key));
@@ -340,7 +350,8 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeStructVariant for Compound<'a
 
     fn serialize_field<T: ?Sized>(&mut self, key: &'static str, value: &T)
                                   -> SerializationResult<()>
-        where T: serde::ser::Serialize
+    where
+        T: serde::ser::Serialize,
     {
         trace!("Compound: SerializeStructVariant::serialize_field()");
         serde::ser::SerializeStruct::serialize_field(self, key, value)

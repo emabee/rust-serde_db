@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fmt;
 
-/// An error type for implementors of DbValue.
+/// An error type for implementors of `DbValue`.
 pub enum ConversionError {
     /// The DbValue cannot be converted into the desired rust type.
     ValueType(String),

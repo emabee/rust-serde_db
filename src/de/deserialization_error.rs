@@ -5,7 +5,7 @@ use std::fmt;
 
 use de::ConversionError;
 
-/// The errors that can arise while deserializing witrh serde_db::de.
+/// The errors that can arise while deserializing with `serde_db::de`.
 pub enum DeserializationError {
     /// Deserialization failed due to a conversion error.
     ConversionError(ConversionError),
@@ -77,8 +77,9 @@ impl fmt::Debug for DeserializationError {
             DeserializationError::NotImplemented(s) => {
                 write!(formatter, "{} (\"{}\")", self.description(), s)
             }
-            DeserializationError::TrailingRows |
-            DeserializationError::TrailingCols => write!(formatter, "{}", self.description()),
+            DeserializationError::TrailingRows | DeserializationError::TrailingCols => {
+                write!(formatter, "{}", self.description())
+            }
         }
     }
 }
@@ -89,7 +90,7 @@ impl fmt::Display for DeserializationError {
             DeserializationError::SerdeError(ref s) |
             DeserializationError::Implementation(ref s) |
             DeserializationError::UnknownField(ref s) => write!(fmt, "{} ", s),
-            DeserializationError::NotImplemented(ref s) => write!(fmt, "{} ", s),
+            DeserializationError::NotImplemented(s) => write!(fmt, "{} ", s),
             DeserializationError::TrailingRows => write!(fmt, "{} ", "TrailingRows"),
             DeserializationError::TrailingCols => write!(fmt, "{} ", "TrailingCols"),
         }

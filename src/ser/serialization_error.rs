@@ -3,25 +3,23 @@ use std::convert::From;
 use std::error::Error;
 use std::fmt;
 
-/// Error that can occur while serializing a standard rust type or struct into a SQL parameter
+/// Error that can occur while serializing a standard rust type or struct into a SQL parameter.
 pub enum SerializationError {
-    /// GeneralError
+    /// GeneralError, used by the serde framework.
     GeneralError(String),
-    /// The provided value is not valid for the required database value.
-    InvalidValue(String),
     /// The structure of the provided type does not fit to the required list of parameters
     StructuralMismatch(&'static str),
     /// The input type does not fit to the required database type.
     TypeMismatch(&'static str, String),
     /// The input value is too big or too small for the required database type.
-    RangeErr(&'static str, u8),
+    /// This type is supposed to be used by the implementors of DbvFactory.
+    RangeErr(&'static str, String),
 }
 
 impl Error for SerializationError {
     fn description(&self) -> &str {
         match *self {
             SerializationError::GeneralError(_) => "error from framework",
-            SerializationError::InvalidValue(_) => "incorrect value",
             SerializationError::StructuralMismatch(_) => "structural mismatch",
             SerializationError::TypeMismatch(_, _) => "type mismatch",
             SerializationError::RangeErr(_, _) => "range exceeded",
@@ -45,26 +43,23 @@ impl fmt::Debug for SerializationError {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             SerializationError::GeneralError(ref s) => write!(fmt, "{}: {}", self.description(), s),
-            SerializationError::InvalidValue(ref s) => write!(fmt, "{}: {}", self.description(), s),
-            SerializationError::StructuralMismatch(ref s) => {
+            SerializationError::StructuralMismatch(s) => {
                 write!(fmt, "{}: {}", self.description(), s)
             }
-            SerializationError::TypeMismatch(ref s, ref tc) => {
-                write!(fmt,
-                       "{}: given value of type \"{}\" cannot be converted into value of type \
-                        code {}",
-                       self.description(),
-                       s,
-                       tc)
-            }
-            SerializationError::RangeErr(ref s, tc) => {
-                write!(fmt,
-                       "{}: given value of type \"{}\" does not fit into supported range of SQL \
-                        type (type code {})",
-                       self.description(),
-                       s,
-                       tc)
-            }
+            SerializationError::TypeMismatch(s, ref tc) => write!(
+                fmt,
+                "{}: given value of type \"{}\" cannot be converted into value of type code {}",
+                self.description(),
+                s,
+                tc
+            ),
+            SerializationError::RangeErr(s1, ref s2) => write!(
+                fmt,
+                "{}: given value of type \"{}\" does not fit into supported range of SQL type {}",
+                self.description(),
+                s1,
+                s2
+            ),
         }
     }
 }

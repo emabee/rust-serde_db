@@ -1,6 +1,14 @@
 use super::SerializationError;
 
 /// A factory for database objects.
+///
+/// This trait is ot be implemented by descriptors of parameters for database commands.
+///
+/// # Example
+///
+/// A parameter descriptor for a String-valued database type might implement all
+/// methods with adequate conversions, while a parameter descriptor for an integer type might
+/// only support conversions from the rust integer types.
 pub trait DbvFactory: Sized {
     /// The type of the database objects.
     type DBV;

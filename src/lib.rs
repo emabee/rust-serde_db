@@ -1,7 +1,11 @@
 //! Support for deserializing database resultsets and rows into rust types,
-//! and Support for serializing rust types into database parameter values.
+//! and for serializing rust types into database parameter values.
 //!
-//! This crate uses serde, so it is fast and cheap and easy to use.
+//! Being based on serde, this crate can facilitate the data exchange
+//! between applications and a database driver.
+//! It is meant to be consumed by the implementors of database drivers,
+//! who then can expose a more comfortable  driver API.
+//!
 
 #![warn(missing_docs)]
 
@@ -11,5 +15,3 @@ extern crate serde;
 
 pub mod de;
 pub mod ser;
-
-pub use ser::to_params;

@@ -1,33 +1,34 @@
 use serde;
-use std::{u8, u16, u32, i8, i16, i32};
+use std::{i16, i32, i8, u16, u32, u8};
 use std::marker::Sized;
 
 use de::{ConversionError, DeserializationError};
 use de::field_deserializer::FieldDeserializer;
 
 /// Defines into which rust types we support deserialization of fields.
-pub trait DbValue: Clone
-                    + Sized
-                    + DbValueInto<bool>
-                    + DbValueInto<u8>
-                    + DbValueInto<u16>
-                    + DbValueInto<u32>
-                    + DbValueInto<u64>
-                    + DbValueInto<i8>
-                    + DbValueInto<i16>
-                    + DbValueInto<i32>
-                    + DbValueInto<i64>
-                    + DbValueInto<f32>
-                    + DbValueInto<f64>
-                    + DbValueInto<String>
-                    + DbValueInto<Vec<u8>>
-{
-/// Returns true if this is a NULL value.
+pub trait DbValue
+    : Clone
+    + Sized
+    + DbValueInto<bool>
+    + DbValueInto<u8>
+    + DbValueInto<u16>
+    + DbValueInto<u32>
+    + DbValueInto<u64>
+    + DbValueInto<i8>
+    + DbValueInto<i16>
+    + DbValueInto<i32>
+    + DbValueInto<i64>
+    + DbValueInto<f32>
+    + DbValueInto<f64>
+    + DbValueInto<String>
+    + DbValueInto<Vec<u8>> {
+    /// Returns true if this is a NULL value.
     fn is_null(&self) -> bool;
 
-/// Converts the DbValue into a plain rust value.
+    /// Converts the DbValue into a plain rust value.
     fn into_typed<'de, T>(self) -> Result<T, DeserializationError>
-        where T: serde::de::Deserialize<'de>
+    where
+        T: serde::de::Deserialize<'de>,
     {
         Ok(serde::de::Deserialize::deserialize(FieldDeserializer::new(self))?)
     }
@@ -39,7 +40,7 @@ pub trait DbValue: Clone
 /// We recommend to implement this function in an as-graceful-as-possible mode, i.e.,
 /// supporting every call as long as the concrete value can be converted. For the numeric
 /// types this requires quite some lines of code, but the effort pays off: it makes the usage of
-/// serde_db much more user-friendly.
+/// `serde_db` much more user-friendly.
 ///
 /// Example:
 ///

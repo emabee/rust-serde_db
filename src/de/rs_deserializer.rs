@@ -1,8 +1,8 @@
 use serde;
 use serde::de::Deserialize as SD;
 
-use de::{DbValue, DeserializationError, DeserializationResult, DeserializableResultset,
-         DeserializableRow};
+use de::{DbValue, DeserializableResultset, DeserializableRow, DeserializationError,
+         DeserializationResult};
 use de::row_deserializer::RowDeserializer;
 
 enum MCD {
@@ -17,16 +17,12 @@ pub struct RsDeserializer<RS> {
     rows_treat: MCD,
 }
 
-impl<RS> RsDeserializer<RS>
-    where RS: DeserializableResultset,
-          <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue
+impl<RS> RsDeserializer<RS> where RS: DeserializableResultset,
+                     <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue
 {
     pub fn new(mut rs: RS) -> Result<RsDeserializer<RS>, DeserializationError> {
         trace!("RsDeserializer::new()");
-        let rows_treat = match rs.has_multiple_rows()? {
-            true => MCD::Must,
-            false => MCD::Can,
-        };
+        let rows_treat =  if rs.has_multiple_rows()? { MCD::Must } else { MCD::Can };
         Ok(RsDeserializer {
             rows_treat: rows_treat,
             rs: rs,
@@ -36,7 +32,8 @@ impl<RS> RsDeserializer<RS>
     fn pop_single_row(&mut self) -> DeserializationResult<<RS as DeserializableResultset>::ROW> {
         self.single_row_deserialization_allowed()?;
         match self.rs.pop_row()? {
-            None => Err(DeserializationError::Implementation(String::from("no row found in resultset"))),
+            None => Err(DeserializationError::Implementation(
+                String::from("no row found in resultset"))),
             Some(row) => Ok(row),
         }
     }
@@ -176,7 +173,8 @@ where <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue {
         trace!("RsDeserializer::deserialize_seq()");
         match self.rows_treat {
             MCD::Done => {
-                Err(DeserializationError::Implementation("deserialize_seq() when rows_treat = MCD::Done"
+                Err(DeserializationError::Implementation(
+                    "deserialize_seq() when rows_treat = MCD::Done"
                     .to_string()))
             }
             _ => {
@@ -194,7 +192,8 @@ where <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue {
         Err(DeserializationError::NotImplemented("RsDeserializer::deserialize_map()"))
     }
 
-    fn deserialize_unit_struct<V>(self, _name: &'static str, _visitor: V) -> DeserializationResult<V::Value>
+    fn deserialize_unit_struct<V>(self, _name: &'static str, _visitor: V)
+    -> DeserializationResult<V::Value>
         where V: serde::de::Visitor<'x>
     {
         Err(DeserializationError::NotImplemented("RsDeserializer::deserialize_unit_struct()"))
@@ -295,12 +294,13 @@ impl<'x, 'a, R: DeserializableResultset> serde::de::SeqAccess<'x> for RowsVisito
     type Error = DeserializationError;
 
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
-        where T: serde::de::DeserializeSeed<'x>
+    where
+        T: serde::de::DeserializeSeed<'x>,
     {
         trace!("RowsVisitor.next_element_seed()");
         match self.de.rs.pop_row()? {
             None => Ok(None),
-            Some(row) => seed.deserialize(&mut RowDeserializer::new(row)).map(|v| Some(v)),
+            Some(row) => seed.deserialize(&mut RowDeserializer::new(row)).map(Some),
         }
     }
 }

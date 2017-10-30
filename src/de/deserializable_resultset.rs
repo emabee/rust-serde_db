@@ -2,7 +2,7 @@ use serde;
 use std::marker::Sized;
 
 use de::rs_deserializer::RsDeserializer;
-use de::{DeserializationError, DeserializationResult, DeserializableRow};
+use de::{DeserializableRow, DeserializationError, DeserializationResult};
 
 /// Interface for a database resultset to support deserialization.
 pub trait DeserializableResultset: Sized {
@@ -48,8 +48,9 @@ pub trait DeserializableResultset: Sized {
     /// let typed_result: Vec<MyStruct> = resultset.into_typed()?;
     /// ```
     fn into_typed<'de, T>(mut self) -> Result<T, Self::E>
-        where T: serde::de::Deserialize<'de>,
-              Self: Sized
+    where
+        T: serde::de::Deserialize<'de>,
+        Self: Sized,
     {
         self.fetch_all()?;
         Ok(serde::de::Deserialize::deserialize(&mut RsDeserializer::new(self)?)?)

@@ -2,10 +2,12 @@ use serde;
 use std::convert::From;
 use std::marker::Sized;
 
-use de::{DeserializationError, DbValue};
+use de::{DbValue, DeserializationError};
 use de::row_deserializer::RowDeserializer;
 
 /// A minimal interface for the Row type to support the deserialization.
+#[allow(unknown_lints)]
+#[allow(len_without_is_empty)]
 pub trait DeserializableRow: Sized {
     /// The error type used by the database driver.
     type E: From<DeserializationError> + Sized;
@@ -28,7 +30,8 @@ pub trait DeserializableRow: Sized {
 
     /// Converts the row into a struct, a tuple, or (if applicable) into a plain rust value.
     fn into_typed<'de, T>(self) -> Result<T, Self::E>
-        where T: serde::de::Deserialize<'de>
+    where
+        T: serde::de::Deserialize<'de>,
     {
         Ok(serde::de::Deserialize::deserialize(&mut RowDeserializer::new(self))?)
     }
