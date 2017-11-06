@@ -38,7 +38,7 @@ pub trait DeserializableResultset: Sized {
     /// that implements serde::de::Deserialize.
     ///
     /// The type of the target variable needs to be specified explicitly, so that
-    /// <code>into_typed()</code> can derive the type it needs to serialize into:
+    /// `into_typed()` can derive the type it needs to serialize into:
     ///
     /// ```ignore
     /// #[derive(Deserialize)]

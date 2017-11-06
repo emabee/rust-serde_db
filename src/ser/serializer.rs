@@ -1,6 +1,7 @@
 use super::SerializationError;
 use super::dbv_factory::DbvFactory;
 
+use log;
 use serde;
 use std::cell::RefCell;
 
@@ -119,7 +120,14 @@ impl<'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<DF> {
     }
 
     fn serialize_str(self, value: &str) -> SerializationResult<Self::Ok> {
-        trace!("Serializer::serialize_str() with {}", value);
+        if log_enabled!(log::LogLevel::Debug) {
+            let l = value.len();
+            if l < 100 {
+                trace!("Serializer::serialize_str() with {}", value);
+            } else {
+                trace!("Serializer::serialize_str() with {}..{}", &value[0..20], &value[l - 20..]);
+            }
+        }
         self.push(self.get_current_field()?.from_str(value)?);
         Ok(())
     }

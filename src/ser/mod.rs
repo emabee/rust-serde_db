@@ -5,7 +5,7 @@
 //!
 //! Prepared statements for example might have a function
 //!
-//! ```
+//! ```rust,ignore
 //! fn add_batch<T>(&mut self, input: &T) -> HdbResult<()>
 //! where T: serde::ser::Serialize
 //! ```
@@ -26,7 +26,7 @@
 //! The implementation of `add_batch()` converts `input` into
 //! a Vec of the driver's database values that can subsequently be sent to the DB server:
 //!
-//! ```
+//! ```rust,ignore
 //!     let db_values: Vec<DBValue> = serde_db::ser::to_params(&input, input_metadata)?;
 //! ```
 //!
