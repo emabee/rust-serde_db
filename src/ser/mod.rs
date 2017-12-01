@@ -48,7 +48,7 @@ use self::serializer::Serializer;
 ///
 /// Database drivers use this method in their implementation (e.g. behind a
 /// `PreparedStatement::add_batch()`).
-pub fn to_params<T: ?Sized, DF: DbvFactory>(value: &T, metadata: Vec<DF>)
+pub fn to_params<T: ?Sized, DF: DbvFactory>(value: &T, metadata: &[DF])
                                             -> Result<Vec<DF::DBV>, SerializationError>
 where
     T: serde::ser::Serialize,

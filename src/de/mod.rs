@@ -44,7 +44,7 @@
 //! `fn into_typed<'de, T: serde::de::Deserialize<'de>>(self) -> mock_db::Result<T>`,
 //! which is implemented using `serde_db`.
 //!
-//! ## Convert a n&#215;m resultset into a Vec of structs:
+//! ## Convert a n×m resultset into a Vec of structs:
 //!
 //! ```ignore
 //! #[macro_use]
@@ -59,13 +59,13 @@
 //!
 //! Note that `MyStruct` has to implement `serde::de::Deserialize`.
 //!
-//! ## Convert a n&#215;1 resultset into a Vec of fields:
+//! ## Convert a n×1 resultset into a Vec of fields:
 //!
 //! ```ignore
 //! let vec_s: Vec<String> = resultset.into_typed()?;
 //! ```
 //!
-//! ## Convert a 1&#215;1 resultset into a single field:
+//! ## Convert a 1×1 resultset into a single field:
 //!
 //! ```ignore
 //! let s: String = resultset.into_typed()?;
@@ -95,7 +95,7 @@
 //! to implement [`DeserializableResultset`](trait.DeserializableResultset.html) and
 //! [`DeserializableRow`](trait.DeserializableRow.html), which are trivial,
 //! and [`DbValue`](trait.DbValue.html), which is a bit more effort
-//! (an example can be found in the tests of this create).
+//! (an example can be found in the tests of this crate).
 //!
 //! We further recommend adding a method like `into_typed()` directly on the
 //! driver's class for resultsets with a plain delegation to the _provided_ method

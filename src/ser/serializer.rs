@@ -8,13 +8,13 @@ use std::cell::RefCell;
 type SerializationResult<T> = Result<T, SerializationError>;
 
 /// A structure for serializing Rust values into a parameter row for a prepared statement.
-pub struct Serializer<DF: DbvFactory> {
+pub struct Serializer<'m, DF: 'm + DbvFactory> {
     output: RefCell<Vec<DF::DBV>>,
-    metadata: Vec<DF>,
+    metadata: &'m [DF],
 }
 
-impl<DF: DbvFactory> Serializer<DF> {
-    pub fn new(metadata: Vec<DF>) -> Self {
+impl<'m, DF: DbvFactory> Serializer<'m, DF> {
+    pub fn new(metadata: &'m [DF]) -> Self {
         Serializer {
             output: RefCell::new(Vec::<DF::DBV>::new()),
             metadata: metadata,
@@ -36,16 +36,16 @@ impl<DF: DbvFactory> Serializer<DF> {
     }
 }
 
-impl<'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<DF> {
+impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'m, DF> {
     type Ok = ();
     type Error = SerializationError;
-    type SerializeSeq = Compound<'a, DF>;
-    type SerializeTuple = Compound<'a, DF>;
-    type SerializeTupleStruct = Compound<'a, DF>;
-    type SerializeTupleVariant = Compound<'a, DF>;
-    type SerializeMap = Compound<'a, DF>;
-    type SerializeStruct = Compound<'a, DF>;
-    type SerializeStructVariant = Compound<'a, DF>;
+    type SerializeSeq = Compound<'a, 'm, DF>;
+    type SerializeTuple = Compound<'a, 'm, DF>;
+    type SerializeTupleStruct = Compound<'a, 'm, DF>;
+    type SerializeTupleVariant = Compound<'a, 'm, DF>;
+    type SerializeMap = Compound<'a, 'm, DF>;
+    type SerializeStruct = Compound<'a, 'm, DF>;
+    type SerializeStructVariant = Compound<'a, 'm, DF>;
 
     fn serialize_bool(self, value: bool) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_bool()");
@@ -125,7 +125,7 @@ impl<'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<DF> {
             if l < 100 {
                 trace!("Serializer::serialize_str() with {}", value);
             } else {
-                trace!("Serializer::serialize_str() with {}..{}", &value[0..20], &value[l - 20..]);
+                trace!("Serializer::serialize_str() with {}..{}", head(20, value), tail(20, value));
             }
         }
         self.push(self.get_current_field()?.from_str(value)?);
@@ -225,12 +225,23 @@ impl<'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<DF> {
     }
 }
 
-#[doc(hidden)]
-pub struct Compound<'a, DF: 'a + DbvFactory> {
-    ser: &'a mut Serializer<DF>,
+fn head(count: usize, s: &str) -> String {
+    let head: String = s.chars().take(count).collect();
+    head
+}
+fn tail(count: usize, s: &str) -> String {
+    let rev_tail: String = s.chars().rev().take(count).collect();
+    let tail: String = rev_tail.chars().rev().collect();
+    tail
 }
 
-impl<'a, DF: DbvFactory> serde::ser::SerializeSeq for Compound<'a, DF> {
+
+#[doc(hidden)]
+pub struct Compound<'a, 'm: 'a, DF: 'm + DbvFactory> {
+    ser: &'a mut Serializer<'m, DF>,
+}
+
+impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeSeq for Compound<'a, 'm, DF> {
     type Ok = ();
     type Error = SerializationError;
 
@@ -249,7 +260,7 @@ impl<'a, DF: DbvFactory> serde::ser::SerializeSeq for Compound<'a, DF> {
     }
 }
 
-impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeTuple for Compound<'a, DF> {
+impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeTuple for Compound<'a, 'm, DF> {
     type Ok = ();
     type Error = SerializationError;
 
@@ -267,7 +278,7 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeTuple for Compound<'a, DF> {
     }
 }
 
-impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeTupleStruct for Compound<'a, DF> {
+impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeTupleStruct for Compound<'a, 'm, DF> {
     type Ok = ();
     type Error = SerializationError;
 
@@ -285,7 +296,7 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeTupleStruct for Compound<'a, 
     }
 }
 
-impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeTupleVariant for Compound<'a, DF> {
+impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeTupleVariant for Compound<'a, 'm, DF> {
     type Ok = ();
     type Error = SerializationError;
 
@@ -304,7 +315,7 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeTupleVariant for Compound<'a,
 }
 
 
-impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeMap for Compound<'a, DF> {
+impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeMap for Compound<'a, 'm, DF> {
     type Ok = ();
     type Error = SerializationError;
 
@@ -332,7 +343,7 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeMap for Compound<'a, DF> {
 }
 
 
-impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeStruct for Compound<'a, DF> {
+impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeStruct for Compound<'a, 'm, DF> {
     type Ok = ();
     type Error = SerializationError;
 
@@ -352,7 +363,7 @@ impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeStruct for Compound<'a, DF> {
     }
 }
 
-impl<'a, DF: 'a + DbvFactory> serde::ser::SerializeStructVariant for Compound<'a, DF> {
+impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeStructVariant for Compound<'a, 'm, DF> {
     type Ok = ();
     type Error = SerializationError;
 
