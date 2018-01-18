@@ -28,14 +28,12 @@ impl error::Error for DeserializationError {
     fn description(&self) -> &str {
         match *self {
             DeserializationError::ConversionError(_) => {
-                "Conversion of database type to rust type failed"
+                "conversion of database type to rust type failed"
             }
             DeserializationError::SerdeError(_) => {
                 "general error from the deserialization framework"
             }
-            DeserializationError::Implementation(_) => {
-                "error in the implementation of the serde_db"
-            }
+            DeserializationError::Implementation(_) => "implementation error in serde_db",
             DeserializationError::NotImplemented(_) => "function not implemented",
             DeserializationError::UnknownField(_) => {
                 "the target structure misses a field for which data are provided"

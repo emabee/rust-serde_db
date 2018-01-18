@@ -9,7 +9,7 @@ pub struct Resultset {
     pub md: Rc<mock_db::Fieldnames>,
 }
 impl Resultset {
-    pub fn new(fields: Vec<&'static str>) -> Resultset {
+    pub fn new(fields: &[&'static str]) -> Resultset {
         Resultset {
             rows: Vec::<mock_db::Row>::new(),
             md: Rc::new(mock_db::Fieldnames::new(fields)),
@@ -17,7 +17,8 @@ impl Resultset {
     }
     pub fn push(&mut self, values: Vec<mock_db::MValue>) {
         assert_eq!(self.md.number_of_fields(), values.len());
-        self.rows.push(mock_db::Row::new(Rc::clone(&self.md), values))
+        self.rows
+            .push(mock_db::Row::new(Rc::clone(&self.md), values))
     }
 
     // Expose the capability from serde_db: see module serde_db_impl for more...

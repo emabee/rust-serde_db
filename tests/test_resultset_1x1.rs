@@ -61,7 +61,7 @@ fn evaluate_field_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<(
 ////////////////////////////////////////////////////////
 fn get_resultset_string(len: usize) -> Resultset {
     assert!(len < 60);
-    let mut rs = Resultset::new(vec!["f1"]);
+    let mut rs = Resultset::new(&["f1"]);
     for i in 0..len {
         rs.push(vec![MV::String(String::from_utf8(vec![b'a' + i as u8]).unwrap())]);
     }

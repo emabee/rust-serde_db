@@ -112,18 +112,19 @@ fn row_into_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
 }
 fn row_map_fold(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     info!("Iterate over rows, map, fold");
-    let s = get_resultset_string(7).into_iter()
-                                   .map(|r| {
-        let s: String = r.into_typed().unwrap();
-        s
-    })
-                                   .fold(String::new(), |mut acc, s| {
-        if !acc.is_empty() {
-            acc.push_str(", ")
-        };
-        acc.push_str(&s);
-        acc
-    });
+    let s = get_resultset_string(7)
+        .into_iter()
+        .map(|r| {
+            let s: String = r.into_typed().unwrap();
+            s
+        })
+        .fold(String::new(), |mut acc, s| {
+            if !acc.is_empty() {
+                acc.push_str(", ")
+            };
+            acc.push_str(&s);
+            acc
+        });
     assert_eq!(s, "a, b, c, d, e, f, g");
     Ok(())
 }
@@ -131,7 +132,7 @@ fn row_map_fold(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
 ////////////////////////////////////////////////////////
 fn get_resultset_string(len: usize) -> Resultset {
     assert!(len < 60);
-    let mut rs = Resultset::new(vec!["f1"]);
+    let mut rs = Resultset::new(&["f1"]);
     for i in 0..len {
         rs.push(vec![
             MValue::String(String::from_utf8(vec![b'a' + i as u8]).unwrap()),

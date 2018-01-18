@@ -65,7 +65,8 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RowDeserializer::deserialize()"))
+        trace!("RowDeserializer::deserialize_any()");
+        Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_any()"))
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -209,16 +210,18 @@ where
         Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_map()"))
     }
 
-    fn deserialize_unit_struct<V>(self, _name: &'static str, _visitor: V)
-                                  -> DeserializationResult<V::Value>
+    fn deserialize_unit_struct<V>(
+        self, _name: &'static str, _visitor: V
+    ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
         Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_unit_struct()"))
     }
 
-    fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V)
-                                     -> DeserializationResult<V::Value>
+    fn deserialize_newtype_struct<V>(
+        self, _name: &'static str, visitor: V
+    ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
@@ -226,17 +229,18 @@ where
         visitor.visit_newtype_struct(self)
     }
 
-    fn deserialize_tuple_struct<V>(self, _name: &'static str, _len: usize, _visitor: V)
-                                   -> DeserializationResult<V::Value>
+    fn deserialize_tuple_struct<V>(
+        self, _name: &'static str, _len: usize, _visitor: V
+    ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
         Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_tuple_struct()"))
     }
 
-    fn deserialize_struct<V>(mut self, _name: &'static str, _fields: &'static [&'static str],
-                             visitor: V)
-                             -> DeserializationResult<V::Value>
+    fn deserialize_struct<V>(
+        mut self, _name: &'static str, _fields: &'static [&'static str], visitor: V
+    ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
@@ -282,9 +286,9 @@ where
         }
     }
 
-    fn deserialize_enum<V>(self, _name: &'static str, _variants: &'static [&'static str],
-                           _visitor: V)
-                           -> Result<V::Value, Self::Error>
+    fn deserialize_enum<V>(
+        self, _name: &'static str, _variants: &'static [&'static str], _visitor: V
+    ) -> Result<V::Value, Self::Error>
     where
         V: serde::de::Visitor<'x>,
     {
@@ -317,8 +321,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_ignored_any()");
-        let fieldname = self.get_fieldname(self.row.len() - 1).cloned()
-                            .unwrap_or_else(|| "unknown".to_string());
+        let fieldname = self.get_fieldname(self.row.len() - 1)
+            .cloned()
+            .unwrap_or_else(|| "unknown".to_string());
         Err(DeserializationError::UnknownField(fieldname))
     }
 }

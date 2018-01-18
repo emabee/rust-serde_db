@@ -18,11 +18,12 @@ where
 impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     type Error = DeserializationError;
 
-    fn deserialize_any<V>(self, _visitor: V) -> DeserializationResult<V::Value>
+    fn deserialize_any<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("FieldDeserializer::deserialize_any()"))
+        trace!("FieldDeserializer::deserialize_any()");
+        visitor.visit_string(self.0.try_into()?)
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -169,16 +170,18 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
         Err(DeserializationError::NotImplemented("FieldDeserializer::deserialize_map()"))
     }
 
-    fn deserialize_unit_struct<V>(self, _name: &'static str, _visitor: V)
-                                  -> DeserializationResult<V::Value>
+    fn deserialize_unit_struct<V>(
+        self, _name: &'static str, _visitor: V
+    ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
         Err(DeserializationError::NotImplemented("FieldDeserializer::deserialize_unit_struct()"))
     }
 
-    fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V)
-                                     -> DeserializationResult<V::Value>
+    fn deserialize_newtype_struct<V>(
+        self, _name: &'static str, visitor: V
+    ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
@@ -186,17 +189,18 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
         visitor.visit_newtype_struct(self)
     }
 
-    fn deserialize_tuple_struct<V>(self, _name: &'static str, _len: usize, _visitor: V)
-                                   -> DeserializationResult<V::Value>
+    fn deserialize_tuple_struct<V>(
+        self, _name: &'static str, _len: usize, _visitor: V
+    ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
         Err(DeserializationError::NotImplemented("FieldDeserializer::deserialize_tuple_struct()"))
     }
 
-    fn deserialize_struct<V>(self, _name: &'static str, _fields: &'static [&'static str],
-                             _visitor: V)
-                             -> DeserializationResult<V::Value>
+    fn deserialize_struct<V>(
+        self, _name: &'static str, _fields: &'static [&'static str], _visitor: V
+    ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
@@ -226,9 +230,9 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
         Err(DeserializationError::NotImplemented("FieldDeserializer::deserialize_tuple()"))
     }
 
-    fn deserialize_enum<V>(self, _name: &'static str, _variants: &'static [&'static str],
-                           _visitor: V)
-                           -> Result<V::Value, Self::Error>
+    fn deserialize_enum<V>(
+        self, _name: &'static str, _variants: &'static [&'static str], _visitor: V
+    ) -> Result<V::Value, Self::Error>
     where
         V: serde::de::Visitor<'x>,
     {

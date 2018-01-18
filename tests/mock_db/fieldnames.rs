@@ -3,7 +3,7 @@ pub struct Fieldnames {
     fields: Vec<String>,
 }
 impl Fieldnames {
-    pub fn new(fields: Vec<&'static str>) -> Fieldnames {
+    pub fn new(fields: &[&'static str]) -> Fieldnames {
         Fieldnames {
             fields: fields.iter().map(|s| String::from(*s)).collect(),
         }

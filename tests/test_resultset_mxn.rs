@@ -184,12 +184,13 @@ fn rows_into_short_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Res
 }
 fn rows_map_fold(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     info!("Iterate over rows, map, fold");
-    let sum = get_resultset_string_ts_short_short(SIZE).into_iter()
-                                                       .map(|r| {
-        let i: i32 = r.cloned_value(2).unwrap().into_typed().unwrap();
-        i
-    })
-                                                       .fold(0, |acc, i| acc + i);
+    let sum = get_resultset_string_ts_short_short(SIZE)
+        .into_iter()
+        .map(|r| {
+            let i: i32 = r.cloned_value(2).unwrap().into_typed().unwrap();
+            i
+        })
+        .fold(0, |acc, i| acc + i);
     assert_eq!(sum as usize, SIZE * (SIZE + 1) / 2);
     Ok(())
 }
@@ -235,7 +236,7 @@ fn not_rows_into_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resul
 ////////////////////////////////////////////////////////
 fn get_resultset_string_ts_short_short(len: usize) -> Resultset {
     assert!(len < 60);
-    let mut rs = Resultset::new(vec!["f1", "f2", "f3", "f4"]);
+    let mut rs = Resultset::new(&["f1", "f2", "f3", "f4"]);
     for i in 1..len + 1 {
         let s = format!("2017-09-{:02} 10:00:{:02}", i, i);
         let ts = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S").unwrap();
@@ -250,7 +251,7 @@ fn get_resultset_string_ts_short_short(len: usize) -> Resultset {
 }
 
 fn get_resultset_option_option_short_short(len: usize) -> Resultset {
-    let mut rs = Resultset::new(vec!["f1", "f2", "f3", "f4"]);
+    let mut rs = Resultset::new(&["f1", "f2", "f3", "f4"]);
     for i in 0..len {
         rs.push(vec![
             MValue::NullableShort(if i % 2 == 0 { None } else { Some(i as i16) }),

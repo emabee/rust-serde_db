@@ -99,7 +99,7 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
 ////////////////////////////////////////////////////////
 fn get_resultset_string_ts_short_short(len: usize) -> Resultset {
     assert!(len < 60);
-    let mut rs = Resultset::new(vec!["f1", "f2", "f3", "f4"]);
+    let mut rs = Resultset::new(&["f1", "f2", "f3", "f4"]);
     for i in 1..len + 1 {
         let s = format!("2017-09-{:02} 10:00:{:02}", i, i);
         let ts = NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S").unwrap();
