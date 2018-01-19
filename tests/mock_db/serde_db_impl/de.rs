@@ -10,8 +10,9 @@ fn not_implemented(s: &'static str) -> ConversionError {
 
 impl DbValue for MValue {
     fn is_null(&self) -> bool {
+        trace!("is_null() for {:?}", self);
         match *self {
-            MValue::NullableShort(None) => true,
+            MValue::NullableDouble(None) | MValue::NullableShort(None) => true,
             _ => false,
         }
     }
@@ -49,7 +50,12 @@ impl DbValueInto<i8> for MValue {
 }
 impl DbValueInto<i16> for MValue {
     fn try_into(self) -> Result<i16, ConversionError> {
-        Err(not_implemented("DbValueInto<i16>"))
+        match self {
+            MValue::Short(i) | MValue::NullableShort(Some(i)) => Ok(i),
+            mv => Err(ConversionError::ValueType(
+                format!("DbValueInto<i16> not implemented for {:?}", mv),
+            )),
+        }
     }
 }
 impl DbValueInto<i32> for MValue {
@@ -74,7 +80,12 @@ impl DbValueInto<f32> for MValue {
 }
 impl DbValueInto<f64> for MValue {
     fn try_into(self) -> Result<f64, ConversionError> {
-        Err(not_implemented("DbValueInto<f64>"))
+        match self {
+            MValue::Double(f) | MValue::NullableDouble(Some(f)) => Ok(f),
+            mv => Err(ConversionError::ValueType(
+                format!("DbValueInto<f64> not implemented for {:?}", mv),
+            )),
+        }
     }
 }
 impl DbValueInto<String> for MValue {
@@ -83,6 +94,7 @@ impl DbValueInto<String> for MValue {
         match self {
             MValue::String(s) => Ok(s),
             MValue::Timestamp(ts) => Ok(ts.to_string()),
+            MValue::Double(f) | MValue::NullableDouble(Some(f)) => Ok(f.to_string()),
             mv => Err(ConversionError::ValueType(
                 format!("DbValueInto<String> not implemented for {:?}", mv),
             )),
@@ -107,8 +119,9 @@ impl DeserializableResultset for Resultset {
         self.rows.reverse()
     }
 
-    fn pop_row(&mut self)
-               -> Result<Option<<Self as DeserializableResultset>::ROW>, DeserializationError> {
+    fn pop_row(
+        &mut self
+    ) -> Result<Option<<Self as DeserializableResultset>::ROW>, DeserializationError> {
         Ok(self.rows.pop())
     }
 
