@@ -197,17 +197,10 @@ fn rows_map_fold(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> 
 fn pick_values_individually(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     info!("Loop over rows, pick out single values individually, in arbitrary order");
     for row in get_resultset_string_ts_short_short(5) {
-<<<<<<< HEAD
         let f2: NaiveDateTime = row.field_into(1)?;
         let f1: String = row.field_into(0)?;
         let f4: Option<i32> = row.field_into(3)?;
         let f3: i32 = row.field_into(2)?;
-=======
-        let f2: NaiveDateTime = row.field_into_plain_type(1)?;
-        let f1: String = row.field_into_plain_type(0)?;
-        let f4: Option<i32> = row.field_into_option(3)?;
-        let f3: i32 = row.field_into_plain_type(2)?;
->>>>>>> 145c8e08c0d38382d2e87b68dab203a778d6601d
         debug!("Got {}, {}, {}, {:?}", f1, f2, f3, f4);
     }
     Ok(())
