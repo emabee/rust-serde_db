@@ -61,12 +61,12 @@ where
 {
     type Error = DeserializationError;
 
-    fn deserialize_any<V>(self, _visitor: V) -> DeserializationResult<V::Value>
+    fn deserialize_any<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_any()");
-        Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_any()"))
+        visitor.visit_string(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> DeserializationResult<V::Value>

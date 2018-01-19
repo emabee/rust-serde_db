@@ -36,21 +36,22 @@ pub fn test_special_types() {
 struct TestData {
     f1: Option<Decimal>,
     f2: Option<Decimal>,
-    f3: Option<Decimal>,
-    f4: Option<Decimal>,
+    f3: Decimal,
+    f4: Decimal,
 }
 
 
 fn impl_test_special_types(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     info!("=== Special Types ===");
-    single_fields(loghandle)?;
-    row(loghandle)?;
-    resultset(loghandle)?;
+    rs_single_fields(loghandle)?;
+    rs_rows(loghandle)?;
+    rs_resultset(loghandle)?;
+    rs_single_value(loghandle)?;
     Ok(())
 }
 // loghandle.set_new_spec(LogSpecification::parse("info"));
 
-fn single_fields(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rs_single_fields(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     info!("Deserialization of single fields");
     let resultset = get_resultset_ooff(SIZE);
     assert_eq!(SIZE, resultset.len());
@@ -64,7 +65,7 @@ fn single_fields(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> 
     Ok(())
 }
 
-fn row(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rs_rows(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     info!("Deserialization of individual rows");
     let resultset = get_resultset_ooff(SIZE);
     assert_eq!(SIZE, resultset.len());
@@ -75,13 +76,25 @@ fn row(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     Ok(())
 }
 
-fn resultset(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rs_resultset(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     info!("Deserialization of complete resultset");
     let vtd: Vec<TestData> = get_resultset_ooff(SIZE).try_into()?;
     assert_eq!(SIZE, vtd.len());
     for td in vtd {
         debug!("Got {:?}, {:?}, {:?}, {:?}", td.f1, td.f2, td.f3, td.f4);
     }
+    Ok(())
+}
+
+fn rs_single_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+    info!("Deserialization of complete resultset into a single special value");
+    let value: Option<Decimal> = get_resultset_o1(false).try_into()?;
+    assert_eq!(value, None);
+
+    let value: Option<Decimal> = get_resultset_o1(true).try_into()?;
+    assert_ne!(value, None);
+
+    let _value: Decimal = get_resultset_o1(true).try_into()?;
     Ok(())
 }
 
@@ -100,6 +113,16 @@ fn get_resultset_ooff(len: usize) -> Resultset {
             MValue::Double(i as f64),
             MValue::Double(10.0 * i as f64 + 3.456789),
         ]);
+    }
+    rs
+}
+
+fn get_resultset_o1(val: bool) -> Resultset {
+    let mut rs = Resultset::new(&["f1"]);
+    if val {
+        rs.push(vec![MValue::NullableDouble(Some(3.456_789_f64))]);
+    } else {
+        rs.push(vec![MValue::NullableDouble(None)]);
     }
     rs
 }
