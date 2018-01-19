@@ -38,31 +38,12 @@ impl Row {
     }
 
     /// Converts the field into a plain rust value.
-    pub fn field_into_plain_type<'de, T>(&self, i: usize) -> mock_db::Result<T>
+    pub fn field_into<'de, T>(&self, i: usize) -> mock_db::Result<T>
     where
         T: serde::de::Deserialize<'de>,
     {
-        trace!("Row::field_into_plain_type() for {:?}", self.values[i]);
-        if self.values[i].is_null() {
-            Err(mock_db::Error::DESERIALIZATION(DeserializationError::SerdeError(
-                "Row::field_into_plain_type() called on Null value".to_owned(),
-            )))
-        } else {
-            Ok(DbValue::into_typed(self.cloned_value(i)?)?)
-        }
-    }
-
-    /// Converts the field into a plain rust value.
-    pub fn field_into_option<'de, T>(&self, i: usize) -> mock_db::Result<Option<T>>
-    where
-        T: serde::de::Deserialize<'de>,
-    {
-        trace!("Row::field_into_option() for {:?}", self.values[i]);
-        if self.values[i].is_null() {
-            Ok(None)
-        } else {
-            Ok(Some(DbValue::into_typed(self.cloned_value(i)?)?))
-        }
+        trace!("Row::field_into() for {:?}", self.values[i]);
+        Ok(DbValue::into_typed(self.cloned_value(i)?)?)
     }
 
     /// Converts the mock_db::Row into a rust value.

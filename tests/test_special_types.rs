@@ -55,10 +55,10 @@ fn single_fields(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> 
     let resultset = get_resultset_ooff(SIZE);
     assert_eq!(SIZE, resultset.len());
     for row in resultset {
-        let f1: Option<Decimal> = row.field_into_option(0)?;
-        let f2: Option<Decimal> = row.field_into_option(1)?;
-        let f3: Decimal = row.field_into_plain_type(2)?;
-        let f4: Decimal = row.field_into_plain_type(3)?;
+        let f1: Option<Decimal> = row.field_into(0)?;
+        let f2: Option<Decimal> = row.field_into(1)?;
+        let f3: Decimal = row.field_into(2)?;
+        let f4: Decimal = row.field_into(3)?;
         debug!("Got {:?}, {:?}, {:?}, {:?}", f1, f2, f3, f4);
     }
     Ok(())
