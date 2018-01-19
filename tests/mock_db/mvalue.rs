@@ -30,6 +30,8 @@ impl fmt::Display for Timestamp {
 pub enum MValue {
     Short(i16),
     NullableShort(Option<i16>),
+    Double(f64),
+    NullableDouble(Option<f64>),
     String(String),
     NullableString(Option<String>),
     Timestamp(Timestamp),
@@ -42,6 +44,12 @@ impl MValue {
     }
     pub fn new_nullable_short(o_i: Option<i16>) -> MValue {
         MValue::NullableShort(o_i)
+    }
+    pub fn new_double(f: f64) -> MValue {
+        MValue::Double(f)
+    }
+    pub fn new_nullable_double(o_f: Option<f64>) -> MValue {
+        MValue::NullableDouble(o_f)
     }
     pub fn new_string(s: String) -> MValue {
         MValue::String(s)
@@ -56,11 +64,11 @@ impl MValue {
         MValue::NullableTimestamp(Some(Timestamp(ts)))
     }
 
-    pub fn into_typed<'de, T>(self) -> mock_db::Result<T>
+    pub fn try_into<'de, T>(self) -> mock_db::Result<T>
     where
         T: serde::de::Deserialize<'de>,
     {
-        trace!("MValue::into_typed()");
+        trace!("MValue::try_into()");
         Ok(DbValue::into_typed(self)?)
     }
 }

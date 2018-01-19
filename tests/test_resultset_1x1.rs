@@ -37,22 +37,22 @@ fn evaluate_field_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<(
     info!("=== Single value (1x1) ===");
     {
         info!("Convert a 1x1 resultset into a Vec<struct>");
-        let vd: Vec<TestDataMin> = get_resultset_string(1).into_typed()?;
+        let vd: Vec<TestDataMin> = get_resultset_string(1).try_into()?;
         assert_eq!(&vd[0].f1, "a");
     }
     {
         info!("Convert a 1x1 resultset into a Vec<field>");
-        let vs: Vec<String> = get_resultset_string(1).into_typed()?;
+        let vs: Vec<String> = get_resultset_string(1).try_into()?;
         assert_eq!(&vs[0], "a");
     }
     {
         info!("Convert a 1x1 resultset into a struct");
-        let d: TestDataMin = get_resultset_string(1).into_typed()?;
+        let d: TestDataMin = get_resultset_string(1).try_into()?;
         assert_eq!(&d.f1, "a");
     }
     {
         info!("Convert a 1x1 resultset into a field");
-        let s: String = get_resultset_string(1).into_typed()?;
+        let s: String = get_resultset_string(1).try_into()?;
         assert_eq!(&s, "a");
     }
     Ok(())

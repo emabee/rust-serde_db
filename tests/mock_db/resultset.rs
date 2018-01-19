@@ -15,6 +15,9 @@ impl Resultset {
             md: Rc::new(mock_db::Fieldnames::new(fields)),
         }
     }
+    pub fn len(&self) -> usize {
+        self.rows.len()
+    }
     pub fn push(&mut self, values: Vec<mock_db::MValue>) {
         assert_eq!(self.md.number_of_fields(), values.len());
         self.rows
@@ -22,11 +25,11 @@ impl Resultset {
     }
 
     // Expose the capability from serde_db: see module serde_db_impl for more...
-    pub fn into_typed<'de, T>(self) -> mock_db::Result<T>
+    pub fn try_into<'de, T>(self) -> mock_db::Result<T>
     where
         T: serde::de::Deserialize<'de>,
     {
-        trace!("Resultset::into_typed()");
+        trace!("Resultset::try_into()");
         Ok(DeserializableResultset::into_typed(self)?)
     }
 }

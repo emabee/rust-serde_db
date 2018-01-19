@@ -43,7 +43,7 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
     info!("=== Single row (1xn) ===");
     {
         info!("Convert a 1xn resultset into a Vec<struct>");
-        let vtd: Vec<TestData> = get_resultset_string_ts_short_short(1).into_typed()?;
+        let vtd: Vec<TestData> = get_resultset_string_ts_short_short(1).try_into()?;
         assert_eq!(1, vtd.len());
         for td in vtd {
             debug!("Got {}, {}, {}, {:?}", td.f1, td.f2, td.f3, td.f4);
@@ -51,14 +51,14 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
     }
     {
         info!("Convert a 1xn resultset into a struct");
-        let td: TestData = get_resultset_string_ts_short_short(1).into_typed()?;
+        let td: TestData = get_resultset_string_ts_short_short(1).try_into()?;
         debug!("Got {}, {}, {}, {:?}", td.f1, td.f2, td.f3, td.f4);
     }
     {
         let s = "Negative test: no conversion of 1xn resultset into Vec<field>";
         info!("{}", s);
         let test: mock_db::Result<Vec<String>> =
-            get_resultset_string_ts_short_short(SIZE).into_typed();
+            get_resultset_string_ts_short_short(SIZE).try_into();
         match test {
             Ok(_) => assert!(false, "Failed \"{}\"", s),
             Err(e) => info!("--> Exception: {:?}", e),
@@ -67,11 +67,11 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
     {
         let s = "Negative test: no conversion of 1xn resultset into field";
         info!("{}", s);
-        let test: mock_db::Result<String> = get_resultset_string_ts_short_short(SIZE).into_typed();
+        let test: mock_db::Result<String> = get_resultset_string_ts_short_short(SIZE).try_into();
         if test.is_ok() {
             assert!(false, "Failed \"{}\" (1)", s);
         }
-        let test: mock_db::Result<i32> = get_resultset_string_ts_short_short(SIZE).into_typed();
+        let test: mock_db::Result<i32> = get_resultset_string_ts_short_short(SIZE).try_into();
         match test {
             Ok(_) => assert!(false, "Failed \"{}\"", s),
             Err(e) => info!("--> Exception: {:?}", e),
@@ -80,7 +80,7 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
     {
         info!("Convert a 1xn resultset into a Vec<(tuple)>");
         let vt: Vec<(String, NaiveDateTime, i32, Option<i32>)> =
-            get_resultset_string_ts_short_short(1).into_typed()?;
+            get_resultset_string_ts_short_short(1).try_into()?;
         assert_eq!(1, vt.len());
         for t in vt {
             debug!("Got {}, {}, {}, {:?}", t.0, t.1, t.2, t.3);
@@ -89,7 +89,7 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
     {
         info!("Convert a 1xn resultset into a tuple");
         let t: (String, NaiveDateTime, i32, Option<i32>) =
-            get_resultset_string_ts_short_short(1).into_typed()?;
+            get_resultset_string_ts_short_short(1).try_into()?;
         debug!("Got {}, {}, {}, {:?}", t.0, t.1, t.2, t.3);
     }
 
