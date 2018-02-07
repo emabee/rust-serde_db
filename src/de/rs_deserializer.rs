@@ -38,9 +38,7 @@ where
     fn pop_single_row(&mut self) -> DeserializationResult<<RS as DeserializableResultset>::ROW> {
         self.single_row_deserialization_allowed()?;
         match self.rs.pop_row()? {
-            None => {
-                Err(DeserializationError::Implementation(String::from("no row found in resultset")))
-            }
+            None => Err(DeserializationError::Usage(String::from("no row found in resultset"))),
             Some(row) => Ok(row),
         }
     }
@@ -199,7 +197,7 @@ where
     {
         trace!("RsDeserializer::deserialize_seq()");
         match self.rows_treat {
-            MCD::Done => Err(DeserializationError::Implementation(
+            MCD::Done => Err(DeserializationError::Usage(
                 "deserialize_seq() when rows_treat = MCD::Done".to_string(),
             )),
             _ => {

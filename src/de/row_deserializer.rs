@@ -393,7 +393,7 @@ where
 }
 
 fn impl_err(s: &'static str) -> DeserializationError {
-    DeserializationError::Implementation(s.to_string())
+    DeserializationError::Usage(s.to_string())
 }
 
 

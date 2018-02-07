@@ -23,9 +23,9 @@ impl Row {
     /// Returns a clone of the ith value.
     pub fn cloned_value(&self, i: usize) -> Result<mock_db::MValue, DeserializationError> {
         trace!("<mock_db::Row as DeserializableRow>::get()");
-        self.values.get(i).cloned().ok_or_else(|| {
-            DeserializationError::Implementation("element with index {} does not exist".to_owned())
-        })
+        self.values.get(i).cloned().ok_or_else(
+            || DeserializationError::Usage("element with index {} does not exist".to_owned()),
+        )
     }
 
     /// Converts the field into a plain rust value.

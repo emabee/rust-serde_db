@@ -12,7 +12,7 @@ pub enum DeserializationError {
     /// Raised when there is a general error in the serde framework when deserializing.
     SerdeError(String),
     /// Structure of target object does not fit to the structure of the object being deserialized.
-    Implementation(String),
+    Usage(String),
     /// Thrown by functions in the Deserializer interface that are not implemented.
     /// This exception should never be seen in practice.
     NotImplemented(&'static str),
@@ -33,7 +33,10 @@ impl error::Error for DeserializationError {
             DeserializationError::SerdeError(_) => {
                 "general error from the deserialization framework"
             }
-            DeserializationError::Implementation(_) => "implementation error in serde_db",
+            DeserializationError::Usage(_) => {
+                "Structure of target object does not fit to the structure of the object being \
+                 deserialized"
+            }
             DeserializationError::NotImplemented(_) => "function not implemented",
             DeserializationError::UnknownField(_) => {
                 "the target structure misses a field for which data are provided"
@@ -67,9 +70,9 @@ impl fmt::Debug for DeserializationError {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             DeserializationError::ConversionError(ref e) => write!(formatter, "{:?}", e),
-            DeserializationError::SerdeError(ref s) |
-            DeserializationError::Implementation(ref s) |
-            DeserializationError::UnknownField(ref s) => {
+            DeserializationError::SerdeError(ref s)
+            | DeserializationError::Usage(ref s)
+            | DeserializationError::UnknownField(ref s) => {
                 write!(formatter, "{} (\"{}\")", self.description(), s)
             }
             DeserializationError::NotImplemented(s) => {
@@ -85,9 +88,9 @@ impl fmt::Display for DeserializationError {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             DeserializationError::ConversionError(ref e) => write!(fmt, "{}", e),
-            DeserializationError::SerdeError(ref s) |
-            DeserializationError::Implementation(ref s) |
-            DeserializationError::UnknownField(ref s) => write!(fmt, "{} ", s),
+            DeserializationError::SerdeError(ref s)
+            | DeserializationError::Usage(ref s)
+            | DeserializationError::UnknownField(ref s) => write!(fmt, "{} ", s),
             DeserializationError::NotImplemented(s) => write!(fmt, "{} ", s),
             DeserializationError::TrailingRows => write!(fmt, "{} ", "TrailingRows"),
             DeserializationError::TrailingCols => write!(fmt, "{} ", "TrailingCols"),
