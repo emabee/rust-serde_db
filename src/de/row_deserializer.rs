@@ -1,8 +1,8 @@
 use serde;
 use serde::de::Deserialize as SD;
 
-use de::{DbValue, DbValueInto, DeserializableRow, DeserializationError, DeserializationResult};
 use de::field_deserializer::FieldDeserializer;
+use de::{DbValue, DbValueInto, DeserializableRow, DeserializationError, DeserializationResult};
 
 enum MCD {
     Must,
@@ -27,10 +27,7 @@ where
             1 => MCD::Can,
             _ => MCD::Must,
         };
-        RowDeserializer {
-            cols_treat: cols_treat,
-            row: row,
-        }
+        RowDeserializer { cols_treat, row }
     }
 
     fn value_deserialization_allowed(&self) -> DeserializationResult<()> {
@@ -43,7 +40,6 @@ where
     fn get_fieldname(&self, idx: usize) -> Option<&String> {
         self.row.get_fieldname(idx)
     }
-
 
     fn value_pop(&mut self) -> DeserializationResult<ROW::V> {
         trace!("RowDeserializer::value_pop()");
@@ -161,7 +157,9 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_char()!"))
+        Err(DeserializationError::NotImplemented(
+            "RowDeserializer::deserialize_char()!",
+        ))
     }
 
     fn deserialize_str<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -184,7 +182,9 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_unit()"))
+        Err(DeserializationError::NotImplemented(
+            "RowDeserializer::deserialize_unit()",
+        ))
     }
 
     fn deserialize_option<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -200,46 +200,67 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_seq()"))
+        Err(DeserializationError::NotImplemented(
+            "RowDeserializer::deserialize_seq()",
+        ))
     }
 
     fn deserialize_map<V>(self, _visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_map()"))
+        Err(DeserializationError::NotImplemented(
+            "RowDeserializer::deserialize_map()",
+        ))
     }
 
     fn deserialize_unit_struct<V>(
-        self, _name: &'static str, _visitor: V
+        self,
+        _name: &'static str,
+        _visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_unit_struct()"))
+        Err(DeserializationError::NotImplemented(
+            "RowDeserializer::deserialize_unit_struct()",
+        ))
     }
 
     fn deserialize_newtype_struct<V>(
-        self, _name: &'static str, visitor: V
+        self,
+        _name: &'static str,
+        visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        trace!("RowDeserializer::deserialize_newtype_struct() with _name = {}", _name);
+        trace!(
+            "RowDeserializer::deserialize_newtype_struct() with _name = {}",
+            _name
+        );
         visitor.visit_newtype_struct(self)
     }
 
     fn deserialize_tuple_struct<V>(
-        self, _name: &'static str, _len: usize, _visitor: V
+        self,
+        _name: &'static str,
+        _len: usize,
+        _visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_tuple_struct()"))
+        Err(DeserializationError::NotImplemented(
+            "RowDeserializer::deserialize_tuple_struct()",
+        ))
     }
 
     fn deserialize_struct<V>(
-        mut self, _name: &'static str, _fields: &'static [&'static str], visitor: V
+        mut self,
+        _name: &'static str,
+        _fields: &'static [&'static str],
+        visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
@@ -276,9 +297,9 @@ where
     {
         trace!("RowDeserializer::deserialize_tuple()");
         match self.cols_treat {
-            MCD::Done => {
-                Err(impl_err("double-nesting (struct/tuple in struct/tuple) not possible"))
-            }
+            MCD::Done => Err(impl_err(
+                "double-nesting (struct/tuple in struct/tuple) not possible",
+            )),
             _ => {
                 self.cols_treat = MCD::Done;
                 visitor.visit_seq(FieldsSeqVisitor::new(&mut self))
@@ -287,12 +308,17 @@ where
     }
 
     fn deserialize_enum<V>(
-        self, _name: &'static str, _variants: &'static [&'static str], _visitor: V
+        self,
+        _name: &'static str,
+        _variants: &'static [&'static str],
+        _visitor: V,
     ) -> Result<V::Value, Self::Error>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RowDeserializer::deserialize_enum()"))
+        Err(DeserializationError::NotImplemented(
+            "RowDeserializer::deserialize_enum()",
+        ))
     }
 
     fn deserialize_identifier<V>(self, visitor: V) -> Result<V::Value, Self::Error>
@@ -301,7 +327,9 @@ where
     {
         let i: usize = self.row.len();
         if i == 0 {
-            return Err(impl_err("empty row in RowDeserializer::deserialize_identifier()"));
+            return Err(impl_err(
+                "empty row in RowDeserializer::deserialize_identifier()",
+            ));
         }
         match self.get_fieldname(i - 1) {
             Some(fieldname) => {
@@ -312,7 +340,9 @@ where
                 );
                 visitor.visit_str(fieldname)
             }
-            None => Err(impl_err("no fieldname in RowDeserializer::deserialize_identifier()")),
+            None => Err(impl_err(
+                "no fieldname in RowDeserializer::deserialize_identifier()",
+            )),
         }
     }
 
@@ -321,14 +351,13 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_ignored_any()");
-        let fieldname = self.get_fieldname(self.row.len() - 1)
+        let fieldname = self
+            .get_fieldname(self.row.len() - 1)
             .cloned()
             .unwrap_or_else(|| "unknown".to_string());
         Err(DeserializationError::UnknownField(fieldname))
     }
 }
-
-
 
 struct FieldsMapVisitor<'a, R: 'a + DeserializableRow>
 where
@@ -343,7 +372,7 @@ where
 {
     pub fn new(de: &'a mut RowDeserializer<R>) -> Self {
         trace!("FieldsMapVisitor::new()");
-        FieldsMapVisitor { de: de }
+        FieldsMapVisitor { de }
     }
 }
 
@@ -383,7 +412,9 @@ where
         V: serde::de::DeserializeSeed<'x>,
     {
         match self.de.row.len() {
-            0 => Err(impl_err("FieldsMapVisitor::next_value_seed(): no more value")),
+            0 => Err(impl_err(
+                "FieldsMapVisitor::next_value_seed(): no more value",
+            )),
             len => {
                 trace!("FieldsMapVisitor::next_value_seed() for col {}", len - 1);
                 seed.deserialize(&mut *self.de)
@@ -395,7 +426,6 @@ where
 fn impl_err(s: &'static str) -> DeserializationError {
     DeserializationError::Usage(s.to_string())
 }
-
 
 struct FieldsSeqVisitor<'a, R: 'a + DeserializableRow>
 where
@@ -410,7 +440,7 @@ where
     pub fn new(de: &'a mut RowDeserializer<R>) -> Self {
         trace!("FieldsSeqVisitor::new()");
         de.row.reverse_values();
-        FieldsSeqVisitor { de: de }
+        FieldsSeqVisitor { de }
     }
 }
 

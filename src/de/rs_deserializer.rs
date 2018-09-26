@@ -1,9 +1,11 @@
 use serde;
 use serde::de::Deserialize as SD;
 
-use de::{DbValue, DeserializableResultset, DeserializableRow, DeserializationError,
-         DeserializationResult};
 use de::row_deserializer::RowDeserializer;
+use de::{
+    DbValue, DeserializableResultset, DeserializableRow, DeserializationError,
+    DeserializationResult,
+};
 
 enum MCD {
     Must,
@@ -29,16 +31,15 @@ where
         } else {
             MCD::Can
         };
-        Ok(RsDeserializer {
-            rows_treat: rows_treat,
-            rs: rs,
-        })
+        Ok(RsDeserializer { rows_treat, rs })
     }
 
     fn pop_single_row(&mut self) -> DeserializationResult<<RS as DeserializableResultset>::ROW> {
         self.single_row_deserialization_allowed()?;
         match self.rs.pop_row()? {
-            None => Err(DeserializationError::Usage(String::from("no row found in resultset"))),
+            None => Err(DeserializationError::Usage(String::from(
+                "no row found in resultset",
+            ))),
             Some(row) => Ok(row),
         }
     }
@@ -61,7 +62,9 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
-        visitor.visit_string(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_string(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -69,7 +72,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_bool()");
-        visitor.visit_bool(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_bool(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_u8<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -77,7 +82,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_u8()");
-        visitor.visit_u8(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_u8(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_u16<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -85,7 +92,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_u16()");
-        visitor.visit_u16(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_u16(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_u32<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -93,7 +102,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_u32()");
-        visitor.visit_u32(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_u32(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_u64<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -101,7 +112,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_u64()");
-        visitor.visit_u64(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_u64(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_i8<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -109,7 +122,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_i8()");
-        visitor.visit_i8(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_i8(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_i16<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -117,7 +132,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_i16()");
-        visitor.visit_i16(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_i16(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_i32<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -125,7 +142,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_i32()");
-        visitor.visit_i32(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_i32(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_i64<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -133,7 +152,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_i64()");
-        visitor.visit_i64(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_i64(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_f32<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -141,7 +162,9 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_f32()");
-        visitor.visit_f32(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_f32(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_f64<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -149,14 +172,18 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_f64()");
-        visitor.visit_f64(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_f64(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_char<V>(self, _visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RsDeserializer::deserialize_char()"))
+        Err(DeserializationError::NotImplemented(
+            "RsDeserializer::deserialize_char()",
+        ))
     }
 
     fn deserialize_str<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -172,14 +199,18 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_string()");
-        visitor.visit_string(SD::deserialize(&mut RowDeserializer::new(self.pop_single_row()?))?)
+        visitor.visit_string(SD::deserialize(&mut RowDeserializer::new(
+            self.pop_single_row()?,
+        ))?)
     }
 
     fn deserialize_unit<V>(self, _visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RsDeserializer::deserialize_unit()"))
+        Err(DeserializationError::NotImplemented(
+            "RsDeserializer::deserialize_unit()",
+        ))
     }
 
     fn deserialize_option<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -213,41 +244,61 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RsDeserializer::deserialize_map()"))
+        Err(DeserializationError::NotImplemented(
+            "RsDeserializer::deserialize_map()",
+        ))
     }
 
     fn deserialize_unit_struct<V>(
-        self, _name: &'static str, _visitor: V
+        self,
+        _name: &'static str,
+        _visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RsDeserializer::deserialize_unit_struct()"))
+        Err(DeserializationError::NotImplemented(
+            "RsDeserializer::deserialize_unit_struct()",
+        ))
     }
 
     fn deserialize_newtype_struct<V>(
-        self, _name: &'static str, visitor: V
+        self,
+        _name: &'static str,
+        visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        trace!("RsDeserializer::deserialize_newtype_struct() with _name = {}", _name);
+        trace!(
+            "RsDeserializer::deserialize_newtype_struct() with _name = {}",
+            _name
+        );
         visitor.visit_newtype_struct(self)
     }
 
     fn deserialize_tuple_struct<V>(
-        self, name: &'static str, len: usize, visitor: V
+        self,
+        name: &'static str,
+        len: usize,
+        visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        trace!("RsDeserializer::deserialize_tuple_struct() with name = {}", name);
+        trace!(
+            "RsDeserializer::deserialize_tuple_struct() with name = {}",
+            name
+        );
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_tuple_struct(name, len, visitor)
     }
 
     fn deserialize_struct<V>(
-        self, name: &'static str, fields: &'static [&'static str], visitor: V
+        self,
+        name: &'static str,
+        fields: &'static [&'static str],
+        visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
@@ -285,26 +336,35 @@ where
     }
 
     fn deserialize_enum<V>(
-        self, _name: &'static str, _variants: &'static [&'static str], _visitor: V
+        self,
+        _name: &'static str,
+        _variants: &'static [&'static str],
+        _visitor: V,
     ) -> Result<V::Value, Self::Error>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RsDeserializer::deserialize_enum()"))
+        Err(DeserializationError::NotImplemented(
+            "RsDeserializer::deserialize_enum()",
+        ))
     }
 
     fn deserialize_identifier<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RsDeserializer::deserialize_identifier()"))
+        Err(DeserializationError::NotImplemented(
+            "RsDeserializer::deserialize_identifier()",
+        ))
     }
 
     fn deserialize_ignored_any<V>(self, _visitor: V) -> Result<V::Value, Self::Error>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented("RsDeserializer::deserialize_ignored_any()"))
+        Err(DeserializationError::NotImplemented(
+            "RsDeserializer::deserialize_ignored_any()",
+        ))
     }
 }
 
@@ -316,7 +376,7 @@ struct RowsVisitor<'a, R: 'a> {
 impl<'a, R> RowsVisitor<'a, R> {
     pub fn new(de: &'a mut RsDeserializer<R>) -> Self {
         trace!("RowsVisitor::new()");
-        RowsVisitor { de: de }
+        RowsVisitor { de }
     }
 }
 

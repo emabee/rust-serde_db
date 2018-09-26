@@ -92,8 +92,8 @@ impl fmt::Display for DeserializationError {
             | DeserializationError::Usage(ref s)
             | DeserializationError::UnknownField(ref s) => write!(fmt, "{} ", s),
             DeserializationError::NotImplemented(s) => write!(fmt, "{} ", s),
-            DeserializationError::TrailingRows => write!(fmt, "{} ", "TrailingRows"),
-            DeserializationError::TrailingCols => write!(fmt, "{} ", "TrailingCols"),
+            DeserializationError::TrailingRows => write!(fmt, "TrailingRows"),
+            DeserializationError::TrailingCols => write!(fmt, "TrailingCols"),
         }
     }
 }

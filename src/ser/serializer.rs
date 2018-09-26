@@ -1,5 +1,5 @@
-use super::SerializationError;
 use super::dbv_factory::DbvFactory;
+use super::SerializationError;
 
 use log;
 use serde;
@@ -17,13 +17,15 @@ impl<'m, DF: DbvFactory> Serializer<'m, DF> {
     pub fn new(metadata: &'m [DF]) -> Self {
         Serializer {
             output: RefCell::new(Vec::<DF::DBV>::new()),
-            metadata: metadata,
+            metadata,
         }
     }
     fn get_current_field(&self) -> SerializationResult<&DF> {
         match self.metadata.get(self.output.borrow().len()) {
             Some(df) => Ok(df),
-            None => Err(SerializationError::StructuralMismatch("too many values specified")),
+            None => Err(SerializationError::StructuralMismatch(
+                "too many values specified",
+            )),
         }
     }
 
@@ -125,7 +127,11 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
             if l < 100 {
                 trace!("Serializer::serialize_str() with {}", value);
             } else {
-                trace!("Serializer::serialize_str() with {}..{}", head(20, value), tail(20, value));
+                trace!(
+                    "Serializer::serialize_str() with {}..{}",
+                    head(20, value),
+                    tail(20, value)
+                );
             }
         }
         self.push(self.get_current_field()?.from_str(value)?);
@@ -140,16 +146,25 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
 
     fn serialize_unit(self) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_unit()");
-        Err(SerializationError::TypeMismatch("unit", self.get_current_field()?.descriptor()))
+        Err(SerializationError::TypeMismatch(
+            "unit",
+            self.get_current_field()?.descriptor(),
+        ))
     }
 
     fn serialize_unit_struct(self, _name: &'static str) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_unit_struct()");
-        Err(SerializationError::TypeMismatch("unit_struct", self.get_current_field()?.descriptor()))
+        Err(SerializationError::TypeMismatch(
+            "unit_struct",
+            self.get_current_field()?.descriptor(),
+        ))
     }
 
     fn serialize_unit_variant(
-        self, _name: &'static str, _variant_index: u32, _variant: &'static str
+        self,
+        _name: &'static str,
+        _variant_index: u32,
+        _variant: &'static str,
     ) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_unit_variant()");
         Err(SerializationError::TypeMismatch(
@@ -158,17 +173,21 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
         ))
     }
 
-    fn serialize_newtype_struct<T: ?Sized + serde::ser::Serialize>
-        (
-        self, _name: &'static str, value: &T
+    fn serialize_newtype_struct<T: ?Sized + serde::ser::Serialize>(
+        self,
+        _name: &'static str,
+        value: &T,
     ) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_newtype_struct()");
         value.serialize(self)
     }
 
-    fn serialize_newtype_variant<T: ?Sized + serde::ser::Serialize>
-        (
-        self, _name: &'static str, _variant_index: u32, _variant: &'static str, value: &T
+    fn serialize_newtype_variant<T: ?Sized + serde::ser::Serialize>(
+        self,
+        _name: &'static str,
+        _variant_index: u32,
+        _variant: &'static str,
+        value: &T,
     ) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_newtype_variant()");
         value.serialize(self)
@@ -181,7 +200,8 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
     }
 
     fn serialize_some<T: ?Sized + serde::ser::Serialize>(
-        self, value: &T
+        self,
+        value: &T,
     ) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_some()");
         value.serialize(self)
@@ -198,14 +218,20 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
     }
 
     fn serialize_tuple_struct(
-        self, _name: &'static str, _len: usize
+        self,
+        _name: &'static str,
+        _len: usize,
     ) -> SerializationResult<Self::SerializeTupleStruct> {
         trace!("Serializer::serialize_tuple_struct()");
         Ok(Compound { ser: self })
     }
 
     fn serialize_tuple_variant(
-        self, _name: &'static str, _variant_index: u32, _variant: &'static str, _len: usize
+        self,
+        _name: &'static str,
+        _variant_index: u32,
+        _variant: &'static str,
+        _len: usize,
     ) -> SerializationResult<Self::SerializeTupleVariant> {
         trace!("Serializer::serialize_tuple_variant()");
         Ok(Compound { ser: self })
@@ -217,16 +243,24 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
     }
 
     fn serialize_struct(
-        self, _name: &'static str, _len: usize
+        self,
+        _name: &'static str,
+        _len: usize,
     ) -> SerializationResult<Self::SerializeStruct> {
         trace!("Serializer::serialize_struct()");
         Ok(Compound { ser: self })
     }
 
     fn serialize_struct_variant(
-        self, _name: &'static str, _variant_index: u32, _variant: &'static str, _len: usize
+        self,
+        _name: &'static str,
+        _variant_index: u32,
+        _variant: &'static str,
+        _len: usize,
     ) -> SerializationResult<Self::SerializeStructVariant> {
-        Err(SerializationError::StructuralMismatch("serialize_struct_variant() not implemented"))
+        Err(SerializationError::StructuralMismatch(
+            "serialize_struct_variant() not implemented",
+        ))
     }
 }
 
@@ -239,7 +273,6 @@ fn tail(count: usize, s: &str) -> String {
     let tail: String = rev_tail.chars().rev().collect();
     tail
 }
-
 
 #[doc(hidden)]
 pub struct Compound<'a, 'm: 'a, DF: 'm + DbvFactory> {
@@ -319,7 +352,6 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeTupleVariant for Compound
     }
 }
 
-
 impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeMap for Compound<'a, 'm, DF> {
     type Ok = ();
     type Error = SerializationError;
@@ -347,13 +379,14 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeMap for Compound<'a, 'm, 
     }
 }
 
-
 impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeStruct for Compound<'a, 'm, DF> {
     type Ok = ();
     type Error = SerializationError;
 
     fn serialize_field<T: ?Sized>(
-        &mut self, key: &'static str, value: &T
+        &mut self,
+        key: &'static str,
+        value: &T,
     ) -> SerializationResult<()>
     where
         T: serde::ser::Serialize,
@@ -374,7 +407,9 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeStructVariant for Compoun
     type Error = SerializationError;
 
     fn serialize_field<T: ?Sized>(
-        &mut self, key: &'static str, value: &T
+        &mut self,
+        key: &'static str,
+        value: &T,
     ) -> SerializationResult<()>
     where
         T: serde::ser::Serialize,
