@@ -38,18 +38,19 @@ mod serialization_error;
 mod serializer;
 
 pub use self::dbv_factory::DbvFactory;
-pub use self::serialization_error::SerializationError;
+pub use self::serialization_error::{parse_error, type_error, SerializationError};
 
-
-use serde;
 use self::serializer::Serializer;
+use serde;
 
 /// Provided method that translates the input into a Vec of database values.
 ///
 /// Database drivers use this method in their implementation (e.g. behind a
 /// `PreparedStatement::add_batch()`).
-pub fn to_params<T: ?Sized, DF: DbvFactory>(value: &T, metadata: &[DF])
-                                            -> Result<Vec<DF::DBV>, SerializationError>
+pub fn to_params<T: ?Sized, DF: DbvFactory>(
+    value: &T,
+    metadata: &[DF],
+) -> Result<Vec<DF::DBV>, SerializationError>
 where
     T: serde::ser::Serialize,
 {

@@ -1,4 +1,5 @@
 use super::dbv_factory::DbvFactory;
+use super::type_error;
 use super::SerializationError;
 
 use log;
@@ -146,15 +147,12 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
 
     fn serialize_unit(self) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_unit()");
-        Err(SerializationError::TypeMismatch(
-            "unit",
-            self.get_current_field()?.descriptor(),
-        ))
+        Err(type_error("unit", self.get_current_field()?.descriptor()))
     }
 
     fn serialize_unit_struct(self, _name: &'static str) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_unit_struct()");
-        Err(SerializationError::TypeMismatch(
+        Err(type_error(
             "unit_struct",
             self.get_current_field()?.descriptor(),
         ))
@@ -167,7 +165,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
         _variant: &'static str,
     ) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_unit_variant()");
-        Err(SerializationError::TypeMismatch(
+        Err(type_error(
             "unit_variant",
             self.get_current_field()?.descriptor(),
         ))

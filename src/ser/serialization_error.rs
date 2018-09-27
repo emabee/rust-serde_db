@@ -5,45 +5,78 @@ use std::fmt;
 
 /// Error that can occur while serializing a standard rust type or struct into a SQL parameter.
 pub enum SerializationError {
-    /// GeneralError, used by the serde framework.
-    GeneralError(String),
+    /// General Error, used by the serde framework.
+    Serde(String),
     /// Parsing the target SQL parameter from the given String representation failed
-    ParseError {
+    Parse {
         /// value
         value: String,
         /// Target SQL type
-        typedesc: String,
+        db_type: &'static str,
+        /// Cause
+        cause: Option<Box<dyn Error + Send + Sync + 'static>>,
     },
     /// The structure of the provided type does not fit to the required list of parameters
     StructuralMismatch(&'static str),
     /// The input type does not fit to the required database type.
-    TypeMismatch(&'static str, String),
+    Type {
+        /// Type of the value that is being serialized
+        value_type: &'static str,
+        /// Type of the target db parameter
+        db_type: &'static str,
+    },
     /// The input value is too big or too small for the required database type.
-    /// This type is supposed to be used by the implementors of DbvFactory.
-    RangeErr(&'static str, String),
+    Range(&'static str, &'static str),
 }
 
-impl SerializationError {
-    /// Factory for ParseError.
-    pub fn parse_error<S: AsRef<str>>(value: S, typedesc: S) -> SerializationError {
-        SerializationError::ParseError {
-            value: value.as_ref().to_string(),
-            typedesc: typedesc.as_ref().to_string(),
-        }
+/// Factory for Parse Error.
+pub fn parse_error<S: AsRef<str>>(
+    value: S,
+    db_type: &'static str,
+    cause: Option<Box<dyn Error + Send + Sync + 'static>>,
+) -> SerializationError {
+    SerializationError::Parse {
+        value: value.as_ref().to_string(),
+        db_type,
+        cause,
+    }
+}
+
+/// Factory for Parse Error.
+pub fn type_error(value: &'static str, db_type: &'static str) -> SerializationError {
+    SerializationError::Type {
+        value_type: value,
+        db_type,
     }
 }
 
 impl Error for SerializationError {
     fn description(&self) -> &str {
         match *self {
-            SerializationError::GeneralError(_) => "error from framework",
+            SerializationError::Serde(_) => "error from framework",
             SerializationError::StructuralMismatch(_) => "structural mismatch",
-            SerializationError::ParseError {
+            SerializationError::Parse { cause: ref c, .. } => match c {
+                Some(e) => e.description(),
+                None => "parse error",
+            },
+            SerializationError::Type { .. } => "type mismatch",
+            SerializationError::Range(_, _) => "range exceeded",
+        }
+    }
+    fn cause(&self) -> Option<&Error> {
+        match *self {
+            SerializationError::Serde(_) => None,
+            SerializationError::StructuralMismatch(_) => None,
+            SerializationError::Parse {
                 value: ref _v,
-                typedesc: ref _t,
-            } => "parse error",
-            SerializationError::TypeMismatch(_, _) => "type mismatch",
-            SerializationError::RangeErr(_, _) => "range exceeded",
+                db_type: ref _t,
+                cause: ref c,
+            } => match c {
+                Some(e) => Some(&**e),
+                None => None,
+            },
+            SerializationError::Type { .. } => None,
+            SerializationError::Range(_, _) => None,
         }
     }
 }
@@ -56,40 +89,45 @@ impl From<&'static str> for SerializationError {
 
 impl serde::ser::Error for SerializationError {
     fn custom<T: fmt::Display>(msg: T) -> Self {
-        SerializationError::GeneralError(msg.to_string())
+        SerializationError::Serde(msg.to_string())
     }
 }
 
 impl fmt::Debug for SerializationError {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            SerializationError::GeneralError(ref s) => write!(fmt, "{}: {}", self.description(), s),
+            SerializationError::Serde(ref s) => write!(fmt, "{}: {}", self.description(), s),
             SerializationError::StructuralMismatch(s) => {
                 write!(fmt, "{}: {}", self.description(), s)
             }
-            SerializationError::ParseError {
+            SerializationError::Parse {
                 value: ref v,
-                typedesc: ref t,
+                db_type: ref t,
+                cause: ref c,
+            } => match c {
+                Some(e) => write!(
+                    fmt,
+                    "given String \"{}\" cannot be parsed into SQL type {} due to {}",
+                    v, t, e,
+                ),
+                None => write!(
+                    fmt,
+                    "given String \"{}\" cannot be parsed into SQL type {}",
+                    v, t,
+                ),
+            },
+            SerializationError::Type {
+                value_type: ref v,
+                db_type: ref d,
             } => write!(
                 fmt,
-                "{}: given String \"{}\" cannot be parsed into SQL type {}",
-                self.description(),
-                v,
-                t
+                "given value of type \"{}\" cannot be converted into value of type code {}",
+                v, d
             ),
-            SerializationError::TypeMismatch(s, ref tc) => write!(
+            SerializationError::Range(s1, ref s2) => write!(
                 fmt,
-                "{}: given value of type \"{}\" cannot be converted into value of type code {}",
-                self.description(),
-                s,
-                tc
-            ),
-            SerializationError::RangeErr(s1, ref s2) => write!(
-                fmt,
-                "{}: given value of type \"{}\" does not fit into supported range of SQL type {}",
-                self.description(),
-                s1,
-                s2
+                "given value of type \"{}\" does not fit into supported range of SQL type {}",
+                s1, s2
             ),
         }
     }
