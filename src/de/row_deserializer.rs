@@ -196,13 +196,20 @@ where
     }
 
     #[inline]
-    fn deserialize_seq<V>(self, _visitor: V) -> DeserializationResult<V::Value>
+    fn deserialize_seq<V>(mut self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
-        Err(DeserializationError::NotImplemented(
-            "RowDeserializer::deserialize_seq()",
-        ))
+        trace!("RowDeserializer::deserialize_seq()");
+        match self.cols_treat {
+            MCD::Done => {
+                Err(impl_err("double-nesting (struct/tuple in struct/tuple) not possible"))
+            }
+            _ => {
+                self.cols_treat = MCD::Done;
+                visitor.visit_seq(FieldsSeqVisitor::new(&mut self))
+            }
+        }
     }
 
     fn deserialize_map<V>(self, _visitor: V) -> DeserializationResult<V::Value>
