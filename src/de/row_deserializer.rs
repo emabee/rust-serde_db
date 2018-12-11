@@ -1,8 +1,11 @@
+use log::trace;
 use serde;
 use serde::de::Deserialize as SD;
 
-use de::field_deserializer::FieldDeserializer;
-use de::{DbValue, DbValueInto, DeserializableRow, DeserializationError, DeserializationResult};
+use crate::de::field_deserializer::FieldDeserializer;
+use crate::de::{
+    DbValue, DbValueInto, DeserializableRow, DeserializationError, DeserializationResult,
+};
 
 enum MCD {
     Must,
@@ -202,9 +205,9 @@ where
     {
         trace!("RowDeserializer::deserialize_seq()");
         match self.cols_treat {
-            MCD::Done => {
-                Err(impl_err("double-nesting (struct/tuple in struct/tuple) not possible"))
-            }
+            MCD::Done => Err(impl_err(
+                "double-nesting (struct/tuple in struct/tuple) not possible",
+            )),
             _ => {
                 self.cols_treat = MCD::Done;
                 visitor.visit_seq(FieldsSeqVisitor::new(&mut self))

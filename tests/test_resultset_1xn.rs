@@ -10,9 +10,9 @@ extern crate serde_derive;
 mod mock_db;
 mod util;
 
+use crate::mock_db::{MValue, Resultset, Timestamp};
 use chrono::NaiveDateTime;
 use flexi_logger::ReconfigurationHandle;
-use mock_db::{MValue, Resultset, Timestamp};
 
 const SIZE: usize = 20;
 

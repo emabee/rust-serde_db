@@ -3,7 +3,7 @@ use std::error;
 use std::error::Error;
 use std::fmt;
 
-use de::ConversionError;
+use crate::de::ConversionError;
 
 /// The errors that can arise while deserializing with `serde_db::de`.
 pub enum DeserializationError {

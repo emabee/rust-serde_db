@@ -1,8 +1,9 @@
+use log::trace;
 use serde;
 use serde::de::Deserialize as SD;
 
-use de::row_deserializer::RowDeserializer;
-use de::{
+use crate::de::row_deserializer::RowDeserializer;
+use crate::de::{
     DbValue, DeserializableResultset, DeserializableRow, DeserializationError,
     DeserializationResult,
 };

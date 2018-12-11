@@ -1,5 +1,5 @@
-use mock_db;
-use mock_db::{MValue, Resultset};
+use crate::mock_db;
+use crate::mock_db::{MValue, Resultset};
 use serde_db::de::{ConversionError, DbValue, DbValueInto, DeserializableResultset,
                    DeserializationError};
 use std::{i16, i32, i8, u16, u32, u8};

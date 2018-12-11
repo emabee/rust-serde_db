@@ -2,8 +2,8 @@ use serde;
 use std::{i16, i32, i8, u16, u32, u8};
 use std::marker::Sized;
 
-use de::{ConversionError, DeserializationError};
-use de::field_deserializer::FieldDeserializer;
+use crate::de::{ConversionError, DeserializationError};
+use crate::de::field_deserializer::FieldDeserializer;
 
 /// Defines into which rust types we support deserialization of fields.
 pub trait DbValue

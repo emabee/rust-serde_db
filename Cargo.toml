@@ -2,6 +2,7 @@
 name = "serde_db"
 version = "0.6.0"
 authors = ["emabee <meinolf.block@sap.com>"]
+edition = "2018"
 description = "Deserialization of database resultsets, and serialization of database parameters"
 documentation = "https://docs.rs/serde_db/"
 keywords = ["relational", "database", "driver", "serde"]
@@ -17,5 +18,5 @@ serde = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
 flexi_logger = "0.10"
 serde_derive = "1.0"
-bigdecimal = {version = "0.0.14", features = ["serde"]}
+bigdecimal = {version = "0.0", features = ["serde"]}
 version-sync = "0.6"

@@ -41,6 +41,7 @@ pub use self::dbv_factory::DbvFactory;
 pub use self::serialization_error::{parse_error, type_error, SerializationError};
 
 use self::serializer::Serializer;
+use log::trace;
 use serde;
 
 /// Provided method that translates the input into a Vec of database values.

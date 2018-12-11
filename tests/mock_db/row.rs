@@ -3,7 +3,7 @@ use serde_db::de::{DbValue, DeserializableRow, DeserializationError};
 use std::vec;
 use std::rc::Rc;
 
-use mock_db;
+use crate::mock_db;
 
 /// A generic implementation of a single line of a `ResultSet`.
 #[derive(Clone)]

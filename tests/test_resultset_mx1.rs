@@ -12,7 +12,7 @@ mod util;
 
 #[allow(unused_imports)]
 use flexi_logger::{LogSpecification, ReconfigurationHandle};
-use mock_db::{MValue, Resultset};
+use crate::mock_db::{MValue, Resultset};
 
 const SIZE: usize = 20;
 

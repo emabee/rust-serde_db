@@ -1,10 +1,5 @@
-extern crate chrono;
-extern crate flexi_logger;
 #[macro_use]
 extern crate log;
-extern crate bigdecimal;
-extern crate serde;
-extern crate serde_db;
 #[macro_use]
 extern crate serde_derive;
 
@@ -13,9 +8,9 @@ mod util;
 
 use bigdecimal::BigDecimal;
 
+use crate::mock_db::{MValue, Resultset};
 #[allow(unused_imports)]
 use flexi_logger::{LogSpecification, ReconfigurationHandle};
-use mock_db::{MValue, Resultset};
 
 const SIZE: usize = 20;
 

@@ -10,9 +10,9 @@ extern crate serde_derive;
 mod mock_db;
 mod util;
 
+use crate::mock_db::{MValue, ParameterType as PT};
 use chrono::{NaiveDate, NaiveDateTime};
 use flexi_logger::ReconfigurationHandle;
-use mock_db::{MValue, ParameterType as PT};
 
 #[test] // cargo test --test test_serialization -- --nocapture
 pub fn test_serialization() {

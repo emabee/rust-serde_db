@@ -9,9 +9,5 @@
 
 #![warn(missing_docs)]
 
-#[macro_use]
-extern crate log;
-extern crate serde;
-
 pub mod de;
 pub mod ser;

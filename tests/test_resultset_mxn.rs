@@ -13,7 +13,7 @@ mod util;
 use chrono::NaiveDateTime;
 #[allow(unused_imports)]
 use flexi_logger::{LogSpecification, ReconfigurationHandle};
-use mock_db::{MValue, Resultset, Timestamp};
+use crate::mock_db::{MValue, Resultset, Timestamp};
 
 const SIZE: usize = 20;
 

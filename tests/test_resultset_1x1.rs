@@ -10,8 +10,8 @@ extern crate serde_derive;
 mod mock_db;
 mod util;
 
+use crate::mock_db::{MValue as MV, Resultset};
 use flexi_logger::ReconfigurationHandle;
-use mock_db::{MValue as MV, Resultset};
 
 #[test] // cargo test --test test_resultset_1x1 -- --nocapture
 pub fn test_resultset_1x1() {

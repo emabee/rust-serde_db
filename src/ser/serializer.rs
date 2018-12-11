@@ -2,7 +2,7 @@ use super::dbv_factory::DbvFactory;
 use super::type_error;
 use super::SerializationError;
 
-use log;
+use log::{log_enabled, trace};
 use serde;
 use std::cell::RefCell;
 
@@ -390,7 +390,7 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeStruct for Compound<'a, '
         T: serde::ser::Serialize,
     {
         trace!("Compound: SerializeStruct::serialize_field()");
-        try!(serde::ser::SerializeMap::serialize_key(self, key));
+        r#try!(serde::ser::SerializeMap::serialize_key(self, key));
         serde::ser::SerializeMap::serialize_value(self, value)
     }
 

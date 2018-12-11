@@ -2,7 +2,7 @@ use serde;
 use serde_db::de::DeserializableResultset;
 use std::rc::Rc;
 
-use mock_db;
+use crate::mock_db;
 
 pub struct Resultset {
     pub rows: Vec<mock_db::Row>,

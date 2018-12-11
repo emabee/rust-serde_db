@@ -5,6 +5,7 @@
 Use Strings in error variants, rather than &str  (-> version bump).
 Fix some clippies.
 Migrate tests from rust_decimal to bigdecimal.
+Move to edition 2018.
 
 ## [0.5.1] 2018-10-27
 

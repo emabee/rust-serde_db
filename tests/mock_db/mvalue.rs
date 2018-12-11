@@ -3,7 +3,7 @@ use serde;
 use serde_db::de::DbValue;
 use std::fmt;
 
-use mock_db;
+use crate::mock_db;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Timestamp(pub NaiveDateTime);
