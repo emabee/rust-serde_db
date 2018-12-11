@@ -11,7 +11,7 @@ mod mock_db;
 mod util;
 
 use chrono::NaiveDateTime;
-use flexi_logger::{LogSpecification, ReconfigurationHandle};
+use flexi_logger::ReconfigurationHandle;
 use mock_db::{MValue, Resultset, Timestamp};
 
 const SIZE: usize = 20;
@@ -38,7 +38,7 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
         f2: NaiveDateTime,
     };
 
-    loghandle.set_new_spec(LogSpecification::parse("info"));
+    loghandle.parse_new_spec("info");
 
     info!("=== Single row (1xn) ===");
     {

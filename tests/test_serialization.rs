@@ -11,7 +11,7 @@ mod mock_db;
 mod util;
 
 use chrono::{NaiveDate, NaiveDateTime};
-use flexi_logger::{LogSpecification, ReconfigurationHandle};
+use flexi_logger::ReconfigurationHandle;
 use mock_db::{MValue, ParameterType as PT};
 
 #[test] // cargo test --test test_serialization -- --nocapture
@@ -82,7 +82,7 @@ fn tuple_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resul
         Some(NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000)),
         t_none,
     );
-    _loghandle.set_new_spec(LogSpecification::parse("info"));
+    _loghandle.parse_new_spec("info");
     let result: Vec<MValue> = serde_db::ser::to_params(&input, &input_metadata)?;
 
     let expected = vec![
@@ -99,18 +99,18 @@ fn tuple_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resul
         MValue::NullableString(Some("Eight".to_string())),
         MValue::NullableString(None),
         // timestamp
-        MValue::Timestamp(
-            mock_db::Timestamp(NaiveDate::from_ymd(2011, 1, 1).and_hms_nano(1, 1, 1, 100_000_000)),
-        ),
-        MValue::Timestamp(
-            mock_db::Timestamp(NaiveDate::from_ymd(2012, 2, 2).and_hms_nano(2, 2, 2, 200_000_000)),
-        ),
-        MValue::NullableTimestamp(Some(
-            mock_db::Timestamp(NaiveDate::from_ymd(2013, 3, 3).and_hms_nano(3, 3, 3, 300_000_000)),
+        MValue::Timestamp(mock_db::Timestamp(
+            NaiveDate::from_ymd(2011, 1, 1).and_hms_nano(1, 1, 1, 100_000_000),
         )),
-        MValue::NullableTimestamp(Some(
-            mock_db::Timestamp(NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000)),
+        MValue::Timestamp(mock_db::Timestamp(
+            NaiveDate::from_ymd(2012, 2, 2).and_hms_nano(2, 2, 2, 200_000_000),
         )),
+        MValue::NullableTimestamp(Some(mock_db::Timestamp(
+            NaiveDate::from_ymd(2013, 3, 3).and_hms_nano(3, 3, 3, 300_000_000),
+        ))),
+        MValue::NullableTimestamp(Some(mock_db::Timestamp(
+            NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000),
+        ))),
         MValue::NullableTimestamp(None),
     ];
 
@@ -184,7 +184,7 @@ fn struct_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resu
         fourteen: Some(NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000)),
         fifteen: t_none,
     };
-    _loghandle.set_new_spec(LogSpecification::parse("info"));
+    _loghandle.parse_new_spec("info");
     let result: Vec<MValue> = serde_db::ser::to_params(&input, &input_metadata)?;
 
     let expected = vec![
@@ -198,18 +198,18 @@ fn struct_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resu
         MValue::NullableString(Some("Seven".to_string())),
         MValue::NullableString(Some("Eight".to_string())),
         MValue::NullableString(None),
-        MValue::Timestamp(
-            mock_db::Timestamp(NaiveDate::from_ymd(2011, 1, 1).and_hms_nano(1, 1, 1, 100_000_000)),
-        ),
-        MValue::Timestamp(
-            mock_db::Timestamp(NaiveDate::from_ymd(2012, 2, 2).and_hms_nano(2, 2, 2, 200_000_000)),
-        ),
-        MValue::NullableTimestamp(Some(
-            mock_db::Timestamp(NaiveDate::from_ymd(2013, 3, 3).and_hms_nano(3, 3, 3, 300_000_000)),
+        MValue::Timestamp(mock_db::Timestamp(
+            NaiveDate::from_ymd(2011, 1, 1).and_hms_nano(1, 1, 1, 100_000_000),
         )),
-        MValue::NullableTimestamp(Some(
-            mock_db::Timestamp(NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000)),
+        MValue::Timestamp(mock_db::Timestamp(
+            NaiveDate::from_ymd(2012, 2, 2).and_hms_nano(2, 2, 2, 200_000_000),
         )),
+        MValue::NullableTimestamp(Some(mock_db::Timestamp(
+            NaiveDate::from_ymd(2013, 3, 3).and_hms_nano(3, 3, 3, 300_000_000),
+        ))),
+        MValue::NullableTimestamp(Some(mock_db::Timestamp(
+            NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000),
+        ))),
         MValue::NullableTimestamp(None),
     ];
 
@@ -218,7 +218,6 @@ fn struct_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resu
     // panic!("Test Struct db values");
     Ok(())
 }
-
 
 fn mvalvec_compare(va: &[MValue], vb: &[MValue]) -> bool {
     (va.len() == vb.len()) &&  // zip stops at the shortest

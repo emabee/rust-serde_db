@@ -53,6 +53,8 @@ pub trait DeserializableResultset: Sized {
         Self: Sized,
     {
         self.fetch_all()?;
-        Ok(serde::de::Deserialize::deserialize(&mut RsDeserializer::new(self)?)?)
+        Ok(serde::de::Deserialize::deserialize(
+            &mut RsDeserializer::try_new(self)?,
+        )?)
     }
 }

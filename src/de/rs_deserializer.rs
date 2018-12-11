@@ -24,7 +24,7 @@ where
     RS: DeserializableResultset,
     <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue,
 {
-    pub fn new(mut rs: RS) -> Result<RsDeserializer<RS>, DeserializationError> {
+    pub fn try_new(mut rs: RS) -> Result<RsDeserializer<RS>, DeserializationError> {
         trace!("RsDeserializer::new()");
         let rows_treat = if rs.has_multiple_rows()? {
             MCD::Must

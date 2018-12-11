@@ -13,7 +13,7 @@ Add hdbconnect to the dependencies section in your project's `Cargo.toml`, with
 
 ```toml
 [dependencies]
-serde_db = "0.5"
+serde_db = "0.6"
 ```
 
 and add this to your crate root:
@@ -90,11 +90,11 @@ fn add_batch<T>(&mut self, input: &T) -> HdbResult<()>
 ```
 
 If it  is implemented with `serde_db`, then the application can hand over
-a _tuple_ of rust values that correspond to the parameters of the prepared statement, 
+a _tuple_ of rust values that correspond to the parameters of the prepared statement,
 or they can hand over an appropriate _struct_ that implements `serde::ser::Serialize`.
 
 In both cases they do not need to differentiate between nullable and non-nullable
-database values (except that they cannot convert an `Option::None` into a non-nullable database 
+database values (except that they cannot convert an `Option::None` into a non-nullable database
 value).
 
 In its implementation of [`DbvFactory`](trait.DbvFactory.html),

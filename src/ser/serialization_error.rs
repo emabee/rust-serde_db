@@ -12,7 +12,7 @@ pub enum SerializationError {
         /// value
         value: String,
         /// Target SQL type
-        db_type: &'static str,
+        db_type: String,
         /// Cause
         cause: Option<Box<dyn Error + Send + Sync + 'static>>,
     },
@@ -23,16 +23,16 @@ pub enum SerializationError {
         /// Type of the value that is being serialized
         value_type: &'static str,
         /// Type of the target db parameter
-        db_type: &'static str,
+        db_type: String,
     },
     /// The input value is too big or too small for the required database type.
-    Range(&'static str, &'static str),
+    Range(&'static str, String),
 }
 
 /// Factory for Parse Error.
 pub fn parse_error<S: AsRef<str>>(
     value: S,
-    db_type: &'static str,
+    db_type: String,
     cause: Option<Box<dyn Error + Send + Sync + 'static>>,
 ) -> SerializationError {
     SerializationError::Parse {
@@ -42,8 +42,8 @@ pub fn parse_error<S: AsRef<str>>(
     }
 }
 
-/// Factory for Parse Error.
-pub fn type_error(value: &'static str, db_type: &'static str) -> SerializationError {
+/// Factory for Type Error.
+pub fn type_error(value: &'static str, db_type: String) -> SerializationError {
     SerializationError::Type {
         value_type: value,
         db_type,
@@ -124,7 +124,7 @@ impl fmt::Debug for SerializationError {
                 "given value of type \"{}\" cannot be converted into value of type code {}",
                 v, d
             ),
-            SerializationError::Range(s1, ref s2) => write!(
+            SerializationError::Range(ref s1, ref s2) => write!(
                 fmt,
                 "given value of type \"{}\" does not fit into supported range of SQL type {}",
                 s1, s2

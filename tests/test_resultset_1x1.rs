@@ -10,7 +10,7 @@ extern crate serde_derive;
 mod mock_db;
 mod util;
 
-use flexi_logger::{LogSpecification, ReconfigurationHandle};
+use flexi_logger::ReconfigurationHandle;
 use mock_db::{MValue as MV, Resultset};
 
 #[test] // cargo test --test test_resultset_1x1 -- --nocapture
@@ -33,7 +33,7 @@ fn evaluate_field_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<(
         f1: String,
     };
 
-    loghandle.set_new_spec(LogSpecification::parse("info"));
+    loghandle.parse_new_spec("info");
     info!("=== Single value (1x1) ===");
     {
         info!("Convert a 1x1 resultset into a Vec<struct>");
@@ -63,7 +63,9 @@ fn get_resultset_string(len: usize) -> Resultset {
     assert!(len < 60);
     let mut rs = Resultset::new(&["f1"]);
     for i in 0..len {
-        rs.push(vec![MV::String(String::from_utf8(vec![b'a' + i as u8]).unwrap())]);
+        rs.push(vec![MV::String(
+            String::from_utf8(vec![b'a' + i as u8]).unwrap(),
+        )]);
     }
     rs
 }

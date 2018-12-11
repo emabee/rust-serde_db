@@ -2,7 +2,7 @@ extern crate chrono;
 extern crate flexi_logger;
 #[macro_use]
 extern crate log;
-extern crate rust_decimal;
+extern crate bigdecimal;
 extern crate serde;
 extern crate serde_db;
 #[macro_use]
@@ -11,7 +11,7 @@ extern crate serde_derive;
 mod mock_db;
 mod util;
 
-use rust_decimal::Decimal;
+use bigdecimal::BigDecimal;
 
 #[allow(unused_imports)]
 use flexi_logger::{LogSpecification, ReconfigurationHandle};
@@ -34,12 +34,11 @@ pub fn test_special_types() {
 
 #[derive(Deserialize)]
 struct TestData {
-    f1: Option<Decimal>,
-    f2: Option<Decimal>,
-    f3: Decimal,
-    f4: Decimal,
+    f1: Option<BigDecimal>,
+    f2: Option<BigDecimal>,
+    f3: BigDecimal,
+    f4: BigDecimal,
 }
-
 
 fn impl_test_special_types(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     info!("=== Special Types ===");
@@ -56,10 +55,10 @@ fn rs_single_fields(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<(
     let resultset = get_resultset_ooff(SIZE);
     assert_eq!(SIZE, resultset.len());
     for row in resultset {
-        let f1: Option<Decimal> = row.field_into(0)?;
-        let f2: Option<Decimal> = row.field_into(1)?;
-        let f3: Decimal = row.field_into(2)?;
-        let f4: Decimal = row.field_into(3)?;
+        let f1: Option<BigDecimal> = row.field_into(0)?;
+        let f2: Option<BigDecimal> = row.field_into(1)?;
+        let f3: BigDecimal = row.field_into(2)?;
+        let f4: BigDecimal = row.field_into(3)?;
         debug!("Got {:?}, {:?}, {:?}, {:?}", f1, f2, f3, f4);
     }
     Ok(())
@@ -88,16 +87,15 @@ fn rs_resultset(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
 
 fn rs_single_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     info!("Deserialization of complete resultset into a single special value");
-    let value: Option<Decimal> = get_resultset_o1(false).try_into()?;
+    let value: Option<BigDecimal> = get_resultset_o1(false).try_into()?;
     assert_eq!(value, None);
 
-    let value: Option<Decimal> = get_resultset_o1(true).try_into()?;
+    let value: Option<BigDecimal> = get_resultset_o1(true).try_into()?;
     assert_ne!(value, None);
 
-    let _value: Decimal = get_resultset_o1(true).try_into()?;
+    let _value: BigDecimal = get_resultset_o1(true).try_into()?;
     Ok(())
 }
-
 
 ////////////////////////////////////////////////////////
 fn get_resultset_ooff(len: usize) -> Resultset {

@@ -43,5 +43,5 @@ pub trait DbvFactory: Sized {
     /// Serialize a none.
     fn from_none(&self) -> Result<Self::DBV, SerializationError>;
     /// Provide a descriptive String of the type that is required (for error messages).
-    fn descriptor(&self) -> &'static str;
+    fn descriptor(&self) -> String;
 }

@@ -110,15 +110,15 @@ impl DbvFactory for ParameterType {
             _ => Err(type_error("none", self.descriptor())),
         }
     }
-    fn descriptor(&self) -> &'static str {
-        match *self {
+    fn descriptor(&self) -> String {
+        String::from(match *self {
             ParameterType::Short => "Short",
             ParameterType::NullableShort => "NullableShort",
             ParameterType::String => "String",
             ParameterType::NullableString => "NullableString",
             ParameterType::Timestamp => "Timestamp",
             ParameterType::NullableTimestamp => "NullableTimestamp",
-        }
+        })
     }
 }
 
