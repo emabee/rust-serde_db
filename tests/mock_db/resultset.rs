@@ -4,24 +4,55 @@ use std::rc::Rc;
 
 use crate::mock_db;
 
+// Simple ResultSet for test purposes.
+// Rows are added using push().
+#[derive(Debug)]
 pub struct Resultset {
-    pub rows: Vec<mock_db::Row>,
-    pub md: Rc<mock_db::Fieldnames>,
+    next_rows: Vec<mock_db::Row>,
+    row_iter: <Vec<mock_db::Row> as IntoIterator>::IntoIter,
+    md: Rc<mock_db::Fieldnames>,
 }
 impl Resultset {
     pub fn new(fields: &[&'static str]) -> Resultset {
         Resultset {
-            rows: Vec::<mock_db::Row>::new(),
+            next_rows: Vec::<mock_db::Row>::new(),
+            row_iter: Vec::<mock_db::Row>::new().into_iter(),
             md: Rc::new(mock_db::Fieldnames::new(fields)),
         }
     }
-    pub fn len(&self) -> usize {
-        self.rows.len()
-    }
+
     pub fn push(&mut self, values: Vec<mock_db::MValue>) {
         assert_eq!(self.md.number_of_fields(), values.len());
-        self.rows
+        self.next_rows
             .push(mock_db::Row::new(Rc::clone(&self.md), values))
+    }
+
+    pub fn next(&mut self) -> Option<mock_db::Row> {
+        match self.row_iter.next() {
+            Some(r) => Some(r),
+            None => {
+                let mut tmp_vec = Vec::<mock_db::Row>::new();
+                std::mem::swap(&mut tmp_vec, &mut self.next_rows);
+                self.row_iter = tmp_vec.into_iter();
+                self.row_iter.next()
+            }
+        }
+    }
+
+    pub fn len(&self) -> usize {
+        self.next_rows.len() + self.row_iter.as_slice().len()
+    }
+
+    pub fn has_multiple_rows(&mut self) -> bool {
+        self.len() > 1
+    }
+
+    pub fn number_of_fields(&self) -> usize {
+        self.md.number_of_fields()
+    }
+
+    pub fn fieldname(&self, i: usize) -> Option<&String> {
+        self.md.fieldname(i)
     }
 
     // Expose the capability from serde_db: see module serde_db_impl for more...
@@ -34,11 +65,9 @@ impl Resultset {
     }
 }
 
-impl IntoIterator for Resultset {
+impl Iterator for Resultset {
     type Item = mock_db::Row;
-    type IntoIter = <Vec<mock_db::Row> as IntoIterator>::IntoIter;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.rows.into_iter()
+    fn next(&mut self) -> Option<mock_db::Row> {
+        self.next()
     }
 }

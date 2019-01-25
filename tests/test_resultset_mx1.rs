@@ -10,15 +10,15 @@ extern crate serde_derive;
 mod mock_db;
 mod util;
 
+use crate::mock_db::{MValue, Resultset};
 #[allow(unused_imports)]
 use flexi_logger::{LogSpecification, ReconfigurationHandle};
-use crate::mock_db::{MValue, Resultset};
 
 const SIZE: usize = 20;
 
 #[test] // cargo test --test test_resultset_mx1 -- --nocapture
 pub fn test_resultset_mx1() {
-    let mut loghandle = util::init_logger("info");
+    let mut loghandle = util::init_logger();
 
     match evaluate_column_rs(&mut loghandle) {
         Err(e) => {
@@ -134,9 +134,9 @@ fn get_resultset_string(len: usize) -> Resultset {
     assert!(len < 60);
     let mut rs = Resultset::new(&["f1"]);
     for i in 0..len {
-        rs.push(vec![
-            MValue::String(String::from_utf8(vec![b'a' + i as u8]).unwrap()),
-        ]);
+        rs.push(vec![MValue::String(
+            String::from_utf8(vec![b'a' + i as u8]).unwrap(),
+        )]);
     }
     rs
 }

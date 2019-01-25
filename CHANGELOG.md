@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.0]  2019-01-25
+
+Make the traits more idiomatic (and easier to implement).
+
 ## [0.6.0]  2018-12-11
 
 Use Strings in error variants, rather than &str  (-> version bump).

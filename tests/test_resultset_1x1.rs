@@ -15,7 +15,7 @@ use flexi_logger::ReconfigurationHandle;
 
 #[test] // cargo test --test test_resultset_1x1 -- --nocapture
 pub fn test_resultset_1x1() {
-    let mut loghandle = util::init_logger("info");
+    let mut loghandle = util::init_logger();
 
     match evaluate_field_rs(&mut loghandle) {
         Err(e) => {

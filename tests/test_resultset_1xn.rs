@@ -12,24 +12,13 @@ mod util;
 
 use crate::mock_db::{MValue, Resultset, Timestamp};
 use chrono::NaiveDateTime;
-use flexi_logger::ReconfigurationHandle;
 
 const SIZE: usize = 20;
 
 #[test] // cargo test --test test_resultset_1xn -- --nocapture
-pub fn test_resultset_1xn() {
-    let mut loghandle = util::init_logger("info");
+pub fn test_resultset_1xn() -> mock_db::Result<()> {
+    let _loghandle = util::init_logger();
 
-    match evaluate_row_rs(&mut loghandle) {
-        Err(e) => {
-            error!("test_resultset_1xn() failed with {:?}", e);
-            assert!(false)
-        }
-        Ok(_) => debug!("test_resultset_1xn() ended successful"),
-    }
-}
-
-fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     #[derive(Deserialize)]
     struct TestData {
         f1: String,
@@ -37,8 +26,6 @@ fn evaluate_row_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
         f3: i32,
         f2: NaiveDateTime,
     };
-
-    loghandle.parse_new_spec("info");
 
     info!("=== Single row (1xn) ===");
     {

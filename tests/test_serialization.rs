@@ -16,7 +16,7 @@ use flexi_logger::ReconfigurationHandle;
 
 #[test] // cargo test --test test_serialization -- --nocapture
 pub fn test_serialization() {
-    let mut loghandle = util::init_logger("info");
+    let mut loghandle = util::init_logger();
 
     match impl_test_serialization(&mut loghandle) {
         Err(e) => {

@@ -1,8 +1,10 @@
-//! Support for deserializing database resultsets, or individual database rows,
-//! or individual database values, into rust types.
+//! Support for deserializing database resultsets, and/or individual database rows,
+//! and/or individual database values, into rust types.
+//!
+//! # Result sets
 //!
 //! Rather than iterating over rows and columns of a resultset, applications
-//! can convert it directly into the data structure of choice.
+//! can convert resultsets directly into their data structure of choice.
 //!
 //! This approach allows, in contrast to many ORM mapping variants, using the
 //! full flexibility of SQL (projection lists, all kinds of joins, unions, etc, etc).
@@ -10,12 +12,12 @@
 //! they just use a corresponding rust structure or tuple into which they deserialize the data
 //! in a single method call.
 //!
-//! The target types for deserialization need to implement
+//! The target types for deserialization only need to implement
 //! [`serde::de::Deserialize`](https://docs.serde.rs/serde/de/trait.Deserialize.html),
-//! what is automatically given for all elementary rust types and tuples, and easily achieved for
-//! custom structs (using `#[derive(Deserialize)]`).
+//! which is automatically given for all elementary rust types and tuples,
+//! and easily achieved for custom structs using `#[derive(Deserialize)]`.
 //!
-//! Resultsets can _always_ be deserialized into a `Vec<line_struct>`, where
+//! Result sets can _always_ be deserialized into a `Vec<line_struct>`, where
 //! `line_struct` matches the field list of the resultset and
 //! implements `serde::de::Deserialize`.
 //!
@@ -36,8 +38,6 @@
 //! * If the resultset contains only a single value (one row with one column),
 //!   then you can optionally choose to deserialize into a plain `line_struct`,
 //!   or a `Vec<plain_field>`, or a plain variable.
-//!
-//! # Examples
 //!
 //! The below examples assume the DB driver exposes on its
 //! resultset type a function
@@ -71,6 +71,8 @@
 //! let s: String = resultset.into_typed()?;
 //! ```
 //!
+//! # Rows
+//!
 //! ## Convert rows into tuples or structs
 //!
 //! For better streaming of large resultsets, you might want to iterate over the rows, like in
@@ -89,13 +91,25 @@
 //! }
 //! ```
 //!
+//! # Individual values
+//!
+//! When necessary, you can also convert individual values directly into an adequate rust type:
+//!
+//! ```ignore
+//! for row in resultset {
+//!     let date: NaiveDateTime = row.field_into_typed(2)?;
+//!     ...
+//! }
+//! ```
+//!
 //! # Note for implementors
 //!
 //! Implementing DB drivers need
 //! to implement [`DeserializableResultset`](trait.DeserializableResultset.html) and
 //! [`DeserializableRow`](trait.DeserializableRow.html), which are trivial,
 //! and [`DbValue`](trait.DbValue.html), which is a bit more effort
-//! (an example can be found in the tests of this crate).
+//! (an example can be found in the tests of this crate), depending on the flexibility
+//! you want to offer.
 //!
 //! We further recommend adding a method like `into_typed()` directly on the
 //! driver's class for resultsets with a plain delegation to the _provided_ method
@@ -103,11 +117,10 @@
 //! The same should be done for rows.
 //!
 //! By this, the deserialization functionality of `serde_db` can be provided
-//! to the users of the DB driver without forcing them to import additional traits.
-//!
+//! to the users of the DB driver without forcing them to import `serde_db`.
 
-mod db_value;
 mod conversion_error;
+mod db_value;
 mod deserializable_resultset;
 mod deserializable_row;
 mod deserialization_error;
@@ -117,6 +130,6 @@ mod rs_deserializer;
 
 pub use self::conversion_error::ConversionError;
 pub use self::db_value::{DbValue, DbValueInto};
-pub use self::deserialization_error::{DeserializationError, DeserializationResult};
 pub use self::deserializable_resultset::DeserializableResultset;
 pub use self::deserializable_row::DeserializableRow;
+pub use self::deserialization_error::{DeserializationError, DeserializationResult};

@@ -10,16 +10,16 @@ extern crate serde_derive;
 mod mock_db;
 mod util;
 
+use crate::mock_db::{MValue, Resultset, Timestamp};
 use chrono::NaiveDateTime;
 #[allow(unused_imports)]
 use flexi_logger::{LogSpecification, ReconfigurationHandle};
-use crate::mock_db::{MValue, Resultset, Timestamp};
 
 const SIZE: usize = 20;
 
 #[test] // cargo test --test test_resultset_mxn -- --nocapture
 pub fn test_resultset_mxn() {
-    let mut loghandle = util::init_logger("info");
+    let mut loghandle = util::init_logger();
 
     match evaluate_matrix_rs(&mut loghandle) {
         Err(e) => {
@@ -75,7 +75,7 @@ fn evaluate_matrix_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<
     rows_into_short_tuple(loghandle)?;
     rows_map_fold(loghandle)?;
     pick_values_individually(loghandle)?;
-    pop_values_in_order(loghandle)?;
+    convert_values_one_by_one(loghandle)?;
     not_rows_into_value(loghandle)?;
 
     Ok(())
@@ -205,13 +205,14 @@ fn pick_values_individually(_loghandle: &mut ReconfigurationHandle) -> mock_db::
     }
     Ok(())
 }
-fn pop_values_in_order(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
-    info!("Loop over rows, pop single values, in reverse order");
+
+fn convert_values_one_by_one(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+    info!("Loop over rows, convert single values");
     for mut row in get_resultset_string_ts_short_short(5) {
-        let f4: Option<i32> = Some(row.pop_into_typed()?);
-        let f3: i32 = row.pop_into_typed()?;
-        let f2: NaiveDateTime = row.pop_into_typed()?;
-        let f1: String = row.pop_into_typed()?;
+        let f1: String = row.next_into_typed()?;
+        let f2: NaiveDateTime = row.next_into_typed()?;
+        let f3: i32 = row.next_into_typed()?;
+        let f4: Option<i32> = Some(row.next_into_typed()?);
         debug!("Got {}, {}, {}, {:?}", f1, f2, f3, f4);
     }
     Ok(())
@@ -231,7 +232,6 @@ fn not_rows_into_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resul
     }
     Ok(())
 }
-
 
 ////////////////////////////////////////////////////////
 fn get_resultset_string_ts_short_short(len: usize) -> Resultset {

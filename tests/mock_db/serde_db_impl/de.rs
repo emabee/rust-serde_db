@@ -1,7 +1,8 @@
 use crate::mock_db;
 use crate::mock_db::{MValue, Resultset};
-use serde_db::de::{ConversionError, DbValue, DbValueInto, DeserializableResultset,
-                   DeserializationError};
+use serde_db::de::{
+    ConversionError, DbValue, DbValueInto, DeserializableResultset, DeserializationError,
+};
 use std::{i16, i32, i8, u16, u32, u8};
 
 fn not_implemented(s: &'static str) -> ConversionError {
@@ -52,9 +53,10 @@ impl DbValueInto<i16> for MValue {
     fn try_into(self) -> Result<i16, ConversionError> {
         match self {
             MValue::Short(i) | MValue::NullableShort(Some(i)) => Ok(i),
-            mv => Err(ConversionError::ValueType(
-                format!("DbValueInto<i16> not implemented for {:?}", mv),
-            )),
+            mv => Err(ConversionError::ValueType(format!(
+                "DbValueInto<i16> not implemented for {:?}",
+                mv
+            ))),
         }
     }
 }
@@ -62,9 +64,10 @@ impl DbValueInto<i32> for MValue {
     fn try_into(self) -> Result<i32, ConversionError> {
         match self {
             MValue::Short(i) | MValue::NullableShort(Some(i)) => Ok(i32::from(i)),
-            mv => Err(ConversionError::ValueType(
-                format!("DbValueInto<i32> not implemented for {:?}", mv),
-            )),
+            mv => Err(ConversionError::ValueType(format!(
+                "DbValueInto<i32> not implemented for {:?}",
+                mv
+            ))),
         }
     }
 }
@@ -82,9 +85,10 @@ impl DbValueInto<f64> for MValue {
     fn try_into(self) -> Result<f64, ConversionError> {
         match self {
             MValue::Double(f) | MValue::NullableDouble(Some(f)) => Ok(f),
-            mv => Err(ConversionError::ValueType(
-                format!("DbValueInto<f64> not implemented for {:?}", mv),
-            )),
+            mv => Err(ConversionError::ValueType(format!(
+                "DbValueInto<f64> not implemented for {:?}",
+                mv
+            ))),
         }
     }
 }
@@ -95,9 +99,10 @@ impl DbValueInto<String> for MValue {
             MValue::String(s) => Ok(s),
             MValue::Timestamp(ts) => Ok(ts.to_string()),
             MValue::Double(f) | MValue::NullableDouble(Some(f)) => Ok(f.to_string()),
-            mv => Err(ConversionError::ValueType(
-                format!("DbValueInto<String> not implemented for {:?}", mv),
-            )),
+            mv => Err(ConversionError::ValueType(format!(
+                "DbValueInto<String> not implemented for {:?}",
+                mv
+            ))),
         }
     }
 }
@@ -107,37 +112,26 @@ impl DbValueInto<Vec<u8>> for MValue {
     }
 }
 
-
 impl DeserializableResultset for Resultset {
     type E = mock_db::Error;
     type ROW = mock_db::Row;
+
     fn has_multiple_rows(&mut self) -> Result<bool, DeserializationError> {
-        Ok(self.rows.len() > 1_usize)
+        Ok(self.has_multiple_rows())
     }
 
-    fn reverse_rows(&mut self) {
-        self.rows.reverse()
-    }
-
-    fn pop_row(
-        &mut self
-    ) -> Result<Option<<Self as DeserializableResultset>::ROW>, DeserializationError> {
-        Ok(self.rows.pop())
+    fn next(&mut self) -> Result<Option<mock_db::Row>, DeserializationError> {
+        Ok(self.next())
     }
 
     fn number_of_fields(&self) -> usize {
-        self.md.number_of_fields()
+        self.number_of_fields()
     }
 
-    fn get_fieldname(&self, i: usize) -> Option<&String> {
-        self.md.get_fieldname(i)
-    }
-
-    fn fetch_all(&mut self) -> Result<(), <Self as DeserializableResultset>::E> {
-        Ok(())
+    fn fieldname(&self, i: usize) -> Option<&String> {
+        self.fieldname(i)
     }
 }
-
 
 impl From<DeserializationError> for mock_db::Error {
     fn from(e: DeserializationError) -> mock_db::Error {

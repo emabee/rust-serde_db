@@ -37,7 +37,7 @@ where
 
     fn pop_single_row(&mut self) -> DeserializationResult<<RS as DeserializableResultset>::ROW> {
         self.single_row_deserialization_allowed()?;
-        match self.rs.pop_row()? {
+        match self.rs.next()? {
             None => Err(DeserializationError::Usage(String::from(
                 "no row found in resultset",
             ))),
@@ -234,8 +234,6 @@ where
             )),
             _ => {
                 self.rows_treat = MCD::Done;
-                // consuming from the end is easier and faster:
-                self.rs.reverse_rows();
                 Ok(visitor.visit_seq(RowsVisitor::new(&mut self))?)
             }
         }
@@ -389,7 +387,7 @@ impl<'x, 'a, R: DeserializableResultset> serde::de::SeqAccess<'x> for RowsVisito
         T: serde::de::DeserializeSeed<'x>,
     {
         trace!("RowsVisitor.next_element_seed()");
-        match self.de.rs.pop_row()? {
+        match self.de.rs.next()? {
             None => Ok(None),
             Some(row) => seed.deserialize(&mut RowDeserializer::new(row)).map(Some),
         }

@@ -13,19 +13,17 @@ pub trait DeserializableRow: Sized {
     /// The value type used by the database driver.
     type V: DbValue;
 
-    /// Returns the length of the row.
+    /// Returns the current length of the row (which is decremented with each call to next()).
     fn len(&self) -> usize;
 
-    /// Removes and returns the last value.
-    fn pop(&mut self) -> Option<Self::V>;
+    /// Removes and returns the next value.
+    fn next(&mut self) -> Option<Self::V>;
 
-    /// Returns the name of the column at the specified index
-    fn get_fieldname(&self, field_idx: usize) -> Option<&String>;
+    /// Returns the number of fields in a complete row.
+    fn number_of_fields(&self) -> usize;
 
-    /// Reverses the order of the values. This method
-    /// will be before deserialization of the row into a tuple starts,
-    /// which uses pop() to access individual values.
-    fn reverse_values(&mut self);
+    /// Returns the name of the column at the specified index.
+    fn fieldname(&self, field_idx: usize) -> Option<&String>;
 
     /// Converts the row into a struct, a tuple, or (if applicable) into a plain rust value.
     fn into_typed<'de, T>(self) -> Result<T, Self::E>

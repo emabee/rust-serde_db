@@ -1,4 +1,5 @@
 // Metadata for the fields in a result row
+#[derive(Debug)]
 pub struct Fieldnames {
     fields: Vec<String>,
 }
@@ -13,7 +14,7 @@ impl Fieldnames {
         self.fields.len()
     }
 
-    pub fn get_fieldname(&self, i: usize) -> Option<&String> {
+    pub fn fieldname(&self, i: usize) -> Option<&String> {
         self.fields.get(i)
     }
 }

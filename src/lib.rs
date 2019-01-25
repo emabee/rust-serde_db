@@ -3,7 +3,7 @@
 //!
 //! Being based on serde, this crate can facilitate the data exchange
 //! between applications and a database driver.
-//! It is meant to be consumed by the implementors of database drivers,
+//! It is meant to be used by the implementors of database drivers,
 //! who then can expose a more comfortable  driver API.
 //!
 

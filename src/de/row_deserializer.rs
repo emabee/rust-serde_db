@@ -41,15 +41,15 @@ where
     }
 
     fn get_fieldname(&self, idx: usize) -> Option<&String> {
-        self.row.get_fieldname(idx)
+        self.row.fieldname(idx)
     }
 
-    fn value_pop(&mut self) -> DeserializationResult<ROW::V> {
-        trace!("RowDeserializer::value_pop()");
+    fn next_value(&mut self) -> DeserializationResult<ROW::V> {
+        trace!("RowDeserializer::next_value()");
         self.value_deserialization_allowed()?;
-        match self.row.pop() {
+        match self.row.next() {
             Some(tv) => Ok(tv),
-            None => Err(impl_err("value_pop(): no more value found in row")),
+            None => Err(impl_err("next_value(): no more value found in row")),
         }
     }
 }
@@ -65,7 +65,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_any()");
-        visitor.visit_string(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_string(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -73,7 +73,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_bool()");
-        visitor.visit_bool(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_bool(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_u8<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -81,7 +81,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_u8()");
-        visitor.visit_u8(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_u8(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_u16<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -89,7 +89,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_u16()");
-        visitor.visit_u16(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_u16(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_u32<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -97,7 +97,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_u32()");
-        visitor.visit_u32(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_u32(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_u64<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -105,7 +105,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_u64()");
-        visitor.visit_u64(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_u64(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_i8<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -113,7 +113,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_i8()");
-        visitor.visit_i8(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_i8(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_i16<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -121,7 +121,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_i16()");
-        visitor.visit_i16(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_i16(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_i32<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -129,7 +129,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_i32()");
-        visitor.visit_i32(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_i32(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_i64<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -137,7 +137,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_i64()");
-        visitor.visit_i64(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_i64(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_f32<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -145,7 +145,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_f32()");
-        visitor.visit_f32(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_f32(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_f64<V>(self, visitor: V) -> DeserializationResult<V::Value>
@@ -153,7 +153,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_f64()");
-        visitor.visit_f64(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_f64(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_char<V>(self, _visitor: V) -> DeserializationResult<V::Value>
@@ -178,7 +178,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_string()");
-        visitor.visit_string(SD::deserialize(FieldDeserializer::new(self.value_pop()?))?)
+        visitor.visit_string(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
 
     fn deserialize_unit<V>(self, _visitor: V) -> DeserializationResult<V::Value>
@@ -195,7 +195,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_option()");
-        FieldDeserializer::new(self.value_pop()?).deserialize_option(visitor)
+        FieldDeserializer::new(self.next_value()?).deserialize_option(visitor)
     }
 
     #[inline]
@@ -290,7 +290,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_bytes()");
-        visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.value_pop()?)?)
+        visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.next_value()?)?)
     }
 
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value, Self::Error>
@@ -298,7 +298,7 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_byte_buf()");
-        visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.value_pop()?)?)
+        visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.next_value()?)?)
     }
 
     fn deserialize_tuple<V>(mut self, _len: usize, visitor: V) -> DeserializationResult<V::Value>
@@ -335,24 +335,26 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
-        let i: usize = self.row.len();
-        if i == 0 {
-            return Err(impl_err(
+        match self.row.len() {
+            0 => Err(impl_err(
                 "empty row in RowDeserializer::deserialize_identifier()",
-            ));
-        }
-        match self.get_fieldname(i - 1) {
-            Some(fieldname) => {
-                trace!(
-                    "RowDeserializer::deserialize_identifier(): column {:?} ({})",
-                    i - 1,
-                    fieldname
-                );
-                visitor.visit_str(fieldname)
-            }
-            None => Err(impl_err(
-                "no fieldname in RowDeserializer::deserialize_identifier()",
             )),
+            curr_len => {
+                let idx = self.row.number_of_fields() - curr_len;
+                match self.get_fieldname(idx) {
+                    Some(fieldname) => {
+                        trace!(
+                            "RowDeserializer::deserialize_identifier(): column {:?} ({})",
+                            idx,
+                            fieldname
+                        );
+                        visitor.visit_str(fieldname)
+                    }
+                    None => Err(impl_err(
+                        "no fieldname in RowDeserializer::deserialize_identifier()",
+                    )),
+                }
+            }
         }
     }
 
@@ -362,7 +364,7 @@ where
     {
         trace!("RowDeserializer::deserialize_ignored_any()");
         let fieldname = self
-            .get_fieldname(self.row.len() - 1)
+            .get_fieldname(self.row.number_of_fields() - self.row.len())
             .cloned()
             .unwrap_or_else(|| "unknown".to_string());
         Err(DeserializationError::UnknownField(fieldname))
@@ -402,7 +404,7 @@ where
                 Ok(None)
             }
             len => {
-                let idx = len - 1;
+                let idx = self.de.row.number_of_fields() - len;
                 trace!("FieldsMapVisitor::next_key_seed() for col {}", idx);
                 let value = seed.deserialize(&mut *self.de);
                 match value {
@@ -426,7 +428,10 @@ where
                 "FieldsMapVisitor::next_value_seed(): no more value",
             )),
             len => {
-                trace!("FieldsMapVisitor::next_value_seed() for col {}", len - 1);
+                trace!(
+                    "FieldsMapVisitor::next_value_seed() for col {}",
+                    self.de.row.number_of_fields() - len
+                );
                 seed.deserialize(&mut *self.de)
             }
         }
@@ -449,7 +454,6 @@ where
 {
     pub fn new(de: &'a mut RowDeserializer<R>) -> Self {
         trace!("FieldsSeqVisitor::new()");
-        de.row.reverse_values();
         FieldsSeqVisitor { de }
     }
 }
@@ -466,7 +470,7 @@ where
         T: serde::de::DeserializeSeed<'x>,
     {
         trace!("FieldsSeqVisitor.next_element_seed()");
-        match self.de.row.pop() {
+        match self.de.row.next() {
             None => Ok(None),
             Some(val) => seed.deserialize(FieldDeserializer::new(val)).map(Some),
         }

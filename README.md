@@ -4,7 +4,7 @@ Support for flexibly deserializing database resultsets and rows into rust types,
 and for serializing rust types into database parameter values.
 
 Being based on serde, this crate can facilitate the data exchange between applications
-and a database driver. It is meant to be consumed by the implementors of database drivers,
+and a database driver. It is meant to be used by the implementors of database drivers,
 who then can expose a more comfortable driver API.
 
 ## Usage
@@ -13,7 +13,7 @@ Add hdbconnect to the dependencies section in your project's `Cargo.toml`, with
 
 ```toml
 [dependencies]
-serde_db = "0.6"
+serde_db = "0.7"
 ```
 
 and add this to your crate root:

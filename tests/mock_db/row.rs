@@ -1,52 +1,54 @@
 use serde;
 use serde_db::de::{DbValue, DeserializableRow, DeserializationError};
-use std::vec;
 use std::rc::Rc;
 
 use crate::mock_db;
 
-/// A generic implementation of a single line of a `ResultSet`.
-#[derive(Clone)]
+// A generic implementation of a single line of a `ResultSet`.
+#[derive(Clone, Debug)]
 pub struct Row {
     metadata: Rc<mock_db::Fieldnames>,
-    values: Vec<mock_db::MValue>,
+    value_iter: <Vec<mock_db::MValue> as IntoIterator>::IntoIter,
 }
 
 impl Row {
     pub fn new(metadata: Rc<mock_db::Fieldnames>, values: Vec<mock_db::MValue>) -> mock_db::Row {
         mock_db::Row {
             metadata: metadata,
-            values: values,
+            value_iter: values.into_iter(),
         }
     }
 
-    /// Returns a clone of the ith value.
+    // Returns a clone of the ith value.
     pub fn cloned_value(&self, i: usize) -> Result<mock_db::MValue, DeserializationError> {
         trace!("<mock_db::Row as DeserializableRow>::get()");
-        self.values.get(i).cloned().ok_or_else(
-            || DeserializationError::Usage("element with index {} does not exist".to_owned()),
-        )
+        Ok(self.value_iter.as_slice()[i].clone())
     }
 
-    /// Converts the field into a plain rust value.
-    pub fn pop_into_typed<'de, T>(&mut self) -> Result<T, <mock_db::Row as DeserializableRow>::E>
+    // Removes and converts the next field into a plain rust value.
+    pub fn next_into_typed<'de, T>(&mut self) -> Result<T, <mock_db::Row as DeserializableRow>::E>
     where
         T: serde::de::Deserialize<'de>,
     {
-        trace!("Row::pop_into_typed()");
-        Ok(DbValue::into_typed(DeserializableRow::pop(self).unwrap())?)
+        trace!("Row::next_into_typed()");
+        Ok(DbValue::into_typed(DeserializableRow::next(self).unwrap())?)
     }
 
-    /// Converts the field into a plain rust value.
+    // Clones and converts the specified field into a plain rust value.
     pub fn field_into<'de, T>(&self, i: usize) -> mock_db::Result<T>
     where
         T: serde::de::Deserialize<'de>,
     {
-        trace!("Row::field_into() for {:?}", self.values[i]);
+        trace!("Row::field_into() for {:?}", self.value_iter.as_slice()[i]);
         Ok(DbValue::into_typed(self.cloned_value(i)?)?)
     }
 
-    /// Converts the mock_db::Row into a rust value.
+    fn next(&mut self) -> Option<mock_db::MValue> {
+        trace!("mock_db::Row::next()");
+        self.value_iter.next()
+    }
+
+    // Converts the complete Row into a rust value.
     pub fn try_into<'de, T>(self) -> mock_db::Result<T>
     where
         T: serde::de::Deserialize<'de>,
@@ -60,37 +62,29 @@ impl DeserializableRow for mock_db::Row {
     type V = mock_db::MValue;
     type E = mock_db::Error;
 
-    /// Returns the length of the row.
     fn len(&self) -> usize {
         trace!("<mock_db::Row as DeserializableRow>::len()");
-        self.values.len()
+        self.value_iter.as_slice().len()
     }
 
-    /// Removes and returns the last value.
-    fn pop(&mut self) -> Option<mock_db::MValue> {
-        trace!("<mock_db::Row as DeserializableRow>::pop()");
-        self.values.pop()
+    fn next(&mut self) -> Option<mock_db::MValue> {
+        trace!("<mock_db::Row as DeserializableRow>::next()");
+        self.next()
     }
 
-    /// Returns the name of the column at the specified index
-    fn get_fieldname(&self, field_idx: usize) -> Option<&String> {
-        trace!("<mock_db::Row as DeserializableRow>::get_fieldname()");
-        self.metadata.get_fieldname(field_idx)
+    fn number_of_fields(&self) -> usize {
+        self.metadata.number_of_fields()
     }
 
-    /// Reverses the order of the values
-    fn reverse_values(&mut self) {
-        trace!("<mock_db::Row as DeserializableRow>::reverse()");
-        self.values.reverse()
+    fn fieldname(&self, field_idx: usize) -> Option<&String> {
+        trace!("<mock_db::Row as DeserializableRow>::fieldname()");
+        self.metadata.fieldname(field_idx)
     }
 }
 
-impl IntoIterator for mock_db::Row {
+impl Iterator for mock_db::Row {
     type Item = mock_db::MValue;
-    type IntoIter = vec::IntoIter<mock_db::MValue>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        trace!("<mock_db::Row as IntoIterator>::into_iter()");
-        self.values.into_iter()
+    fn next(&mut self) -> Option<mock_db::MValue> {
+        self.next()
     }
 }

@@ -16,7 +16,7 @@ const SIZE: usize = 20;
 
 #[test] // cargo test --test test_special_types -- --nocapture
 pub fn test_special_types() {
-    let mut loghandle = util::init_logger("info");
+    let mut loghandle = util::init_logger();
 
     match impl_test_special_types(&mut loghandle) {
         Err(e) => {
@@ -43,7 +43,6 @@ fn impl_test_special_types(loghandle: &mut ReconfigurationHandle) -> mock_db::Re
     rs_single_value(loghandle)?;
     Ok(())
 }
-// loghandle.set_new_spec(LogSpecification::parse("info"));
 
 fn rs_single_fields(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     info!("Deserialization of single fields");
