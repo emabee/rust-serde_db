@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.7.1]  2019-01-30
+
+Map serialization of () to from_none().
+
 ## [0.7.0]  2019-01-25
 
 Make the traits more idiomatic (and easier to implement).

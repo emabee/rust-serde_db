@@ -147,7 +147,8 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
 
     fn serialize_unit(self) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_unit()");
-        Err(type_error("unit", self.get_current_field()?.descriptor()))
+        self.push(self.get_current_field()?.from_none()?);
+        Ok(())
     }
 
     fn serialize_unit_struct(self, _name: &'static str) -> SerializationResult<Self::Ok> {
