@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.8.0]  2019-02-07
+
+Let serde_db::ser::to_params() consume an iterator over input-parameter-descriptors,
+rather than a slice of parameter-descriptors.
+
 ## [0.7.1]  2019-01-30
 
 Map serialization of () to from_none().

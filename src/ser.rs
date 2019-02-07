@@ -50,7 +50,7 @@ use serde;
 /// `PreparedStatement::add_batch()`).
 pub fn to_params<T: ?Sized, DF: DbvFactory>(
     value: &T,
-    metadata: &[DF],
+    metadata: &mut std::iter::Iterator<Item = DF>,
 ) -> Result<Vec<DF::DBV>, SerializationError>
 where
     T: serde::ser::Serialize,

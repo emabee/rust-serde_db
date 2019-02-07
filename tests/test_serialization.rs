@@ -83,7 +83,7 @@ fn tuple_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resul
         t_none,
     );
     _loghandle.parse_new_spec("info");
-    let result: Vec<MValue> = serde_db::ser::to_params(&input, &input_metadata)?;
+    let result: Vec<MValue> = serde_db::ser::to_params(&input, &mut input_metadata.iter())?;
 
     let expected = vec![
         // int
@@ -185,7 +185,7 @@ fn struct_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resu
         fifteen: t_none,
     };
     _loghandle.parse_new_spec("info");
-    let result: Vec<MValue> = serde_db::ser::to_params(&input, &input_metadata)?;
+    let result: Vec<MValue> = serde_db::ser::to_params(&input, &mut input_metadata.iter())?;
 
     let expected = vec![
         MValue::Short(0_i16),

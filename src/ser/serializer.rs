@@ -4,25 +4,24 @@ use super::SerializationError;
 
 use log::{log_enabled, trace};
 use serde;
-use std::cell::RefCell;
 
 type SerializationResult<T> = Result<T, SerializationError>;
 
 /// A structure for serializing Rust values into a parameter row for a prepared statement.
 pub struct Serializer<'m, DF: 'm + DbvFactory> {
-    output: RefCell<Vec<DF::DBV>>,
-    metadata: &'m [DF],
+    output: Vec<DF::DBV>,
+    metadata: &'m mut std::iter::Iterator<Item = DF>,
 }
 
 impl<'m, DF: DbvFactory> Serializer<'m, DF> {
-    pub fn new(metadata: &'m [DF]) -> Self {
+    pub fn new(metadata: &'m mut std::iter::Iterator<Item = DF>) -> Self {
         Serializer {
-            output: RefCell::new(Vec::<DF::DBV>::new()),
+            output: Vec::<DF::DBV>::new(),
             metadata,
         }
     }
-    fn get_current_field(&self) -> SerializationResult<&DF> {
-        match self.metadata.get(self.output.borrow().len()) {
+    fn get_current_field(&mut self) -> SerializationResult<DF> {
+        match self.metadata.next() {
             Some(df) => Ok(df),
             None => Err(SerializationError::StructuralMismatch(
                 "too many values specified",
@@ -30,12 +29,12 @@ impl<'m, DF: DbvFactory> Serializer<'m, DF> {
         }
     }
 
-    fn push(&self, value: DF::DBV) {
-        self.output.borrow_mut().push(value);
+    fn push(&mut self, value: DF::DBV) {
+        self.output.push(value);
     }
 
     pub fn into_inner(self) -> Vec<DF::DBV> {
-        self.output.into_inner()
+        self.output
     }
 }
 
@@ -52,73 +51,85 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
 
     fn serialize_bool(self, value: bool) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_bool()");
-        self.push(self.get_current_field()?.from_bool(value)?);
+        let val = self.get_current_field()?.from_bool(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_i8(self, value: i8) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_i8()");
-        self.push(self.get_current_field()?.from_i8(value)?);
+        let val = self.get_current_field()?.from_i8(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_i16(self, value: i16) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_i16()");
-        self.push(self.get_current_field()?.from_i16(value)?);
+        let val = self.get_current_field()?.from_i16(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_i32(self, value: i32) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_i32()");
-        self.push(self.get_current_field()?.from_i32(value)?);
+        let val = self.get_current_field()?.from_i32(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_i64(self, value: i64) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_i64()");
-        self.push(self.get_current_field()?.from_i64(value)?);
+        let val = self.get_current_field()?.from_i64(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_u8(self, value: u8) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_u8()");
-        self.push(self.get_current_field()?.from_u8(value)?);
+        let val = self.get_current_field()?.from_u8(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_u16(self, value: u16) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_u16()");
-        self.push(self.get_current_field()?.from_u16(value)?);
+        let val = self.get_current_field()?.from_u16(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_u32(self, value: u32) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_u32()");
-        self.push(self.get_current_field()?.from_u32(value)?);
+        let val = self.get_current_field()?.from_u32(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_u64(self, value: u64) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_u64()");
-        self.push(self.get_current_field()?.from_u64(value)?);
+        let val = self.get_current_field()?.from_u64(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_f32(self, value: f32) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_f32()");
-        self.push(self.get_current_field()?.from_f32(value)?);
+        let val = self.get_current_field()?.from_f32(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_f64(self, value: f64) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_f64()");
-        self.push(self.get_current_field()?.from_f64(value)?);
+        let val = self.get_current_field()?.from_f64(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_char(self, value: char) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_char()");
-        self.push(self.get_current_field()?.from_char(value)?);
+        let val = self.get_current_field()?.from_char(value)?;
+        self.push(val);
         Ok(())
     }
 
@@ -135,19 +146,22 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
                 );
             }
         }
-        self.push(self.get_current_field()?.from_str(value)?);
+        let val = self.get_current_field()?.from_str(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_bytes(self, value: &[u8]) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_bytes()");
-        self.push(self.get_current_field()?.from_bytes(value)?);
+        let val = self.get_current_field()?.from_bytes(value)?;
+        self.push(val);
         Ok(())
     }
 
     fn serialize_unit(self) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_unit()");
-        self.push(self.get_current_field()?.from_none()?);
+        let val = self.get_current_field()?.from_none()?;
+        self.push(val);
         Ok(())
     }
 
@@ -194,7 +208,8 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
 
     fn serialize_none(self) -> SerializationResult<Self::Ok> {
         trace!("Serializer::serialize_none()");
-        self.push(self.get_current_field()?.from_none()?);
+        let val = self.get_current_field()?.from_none()?;
+        self.push(val);
         Ok(())
     }
 

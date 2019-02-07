@@ -8,7 +8,7 @@ use crate::mock_db::ParameterType;
 use serde_db::ser::{type_error, DbvFactory, SerializationError};
 use std::{i16, i32, i8, u16, u32, u8};
 
-impl DbvFactory for ParameterType {
+impl DbvFactory for &ParameterType {
     type DBV = MValue;
 
     fn from_bool(&self, _value: bool) -> Result<Self::DBV, SerializationError> {

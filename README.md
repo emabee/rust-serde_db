@@ -13,7 +13,7 @@ Add hdbconnect to the dependencies section in your project's `Cargo.toml`, with
 
 ```toml
 [dependencies]
-serde_db = "0.7"
+serde_db = "0.8"
 ```
 
 and add this to your crate root:
