@@ -2,7 +2,7 @@ use super::SerializationError;
 
 /// A factory for database objects.
 ///
-/// This trait is ot be implemented by descriptors of parameters for database commands.
+/// This trait is to be implemented by descriptors of parameters for database commands.
 ///
 /// # Example
 ///

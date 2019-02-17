@@ -197,7 +197,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "serde_db"
-version = "0.8.0"
+version = "0.8.1"
 dependencies = [
  "bigdecimal 0.0.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",

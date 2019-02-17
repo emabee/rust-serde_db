@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.8.1]  2019-02-17
+
+Remove requirement that DbValue implements Clone.
+
 ## [0.8.0]  2019-02-07
 
 Let serde_db::ser::to_params() consume an iterator over input-parameter-descriptors,

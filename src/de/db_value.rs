@@ -7,8 +7,7 @@ use crate::de::field_deserializer::FieldDeserializer;
 
 /// Defines into which rust types we support deserialization of fields.
 pub trait DbValue
-    : Clone
-    + Sized
+    : Sized
     + DbValueInto<bool>
     + DbValueInto<u8>
     + DbValueInto<u16>

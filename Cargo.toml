@@ -1,6 +1,6 @@
 [package]
 name = "serde_db"
-version = "0.8.0"
+version = "0.8.1"
 authors = ["emabee <meinolf.block@sap.com>"]
 edition = "2018"
 description = "Deserialization of database resultsets, and serialization of database parameters"
