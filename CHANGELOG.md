@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.8.2]  2019-03-29
+
+Update versions of dependencies.
+
 ## [0.8.1]  2019-02-17
 
 Remove requirement that DbValue implements Clone.
