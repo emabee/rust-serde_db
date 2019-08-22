@@ -13,13 +13,7 @@ Add hdbconnect to the dependencies section in your project's `Cargo.toml`, with
 
 ```toml
 [dependencies]
-serde_db = "^0.8.2"
-```
-
-and add this to your crate root:
-
-```rust
-extern crate serde_db;
+serde_db = "0.8"
 ```
 
 ## Examples for Deserialization
@@ -27,7 +21,9 @@ extern crate serde_db;
 The below examples assume the DB driver exposes on its
 resultset type a function
 
+```rust
     fn into_typed<'de, T: serde::de::Deserialize<'de>>(self) -> Result<T, E>
+```
 
 which is implemented using `serde_db`.
 

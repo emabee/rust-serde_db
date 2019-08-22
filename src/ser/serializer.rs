@@ -10,11 +10,11 @@ type SerializationResult<T> = Result<T, SerializationError>;
 /// A structure for serializing Rust values into a parameter row for a prepared statement.
 pub struct Serializer<'m, DF: 'm + DbvFactory> {
     output: Vec<DF::DBV>,
-    metadata: &'m mut std::iter::Iterator<Item = DF>,
+    metadata: &'m mut dyn std::iter::Iterator<Item = DF>,
 }
 
 impl<'m, DF: DbvFactory> Serializer<'m, DF> {
-    pub fn new(metadata: &'m mut std::iter::Iterator<Item = DF>) -> Self {
+    pub fn new(metadata: &'m mut dyn std::iter::Iterator<Item = DF>) -> Self {
         Serializer {
             output: Vec::<DF::DBV>::new(),
             metadata,

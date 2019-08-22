@@ -1,10 +1,6 @@
-use serde_db::de::DeserializationError;
-use serde_db::ser::SerializationError;
-use std::error;
-use std::result;
-use std::fmt;
+use serde_db::{de::DeserializationError, ser::SerializationError};
 
-pub type Result<T> = result::Result<T, Error>;
+pub type Result<T> = std::result::Result<T, Error>;
 
 #[derive(Debug)]
 pub enum Error {
@@ -12,14 +8,14 @@ pub enum Error {
     SERIALIZATION(SerializationError),
 }
 
-impl error::Error for Error {
+impl std::error::Error for Error {
     fn description(&self) -> &str {
         match *self {
             Error::DESERIALIZATION(ref e) => e.description(),
             Error::SERIALIZATION(ref e) => e.description(),
         }
     }
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn std::error::Error> {
         match *self {
             Error::DESERIALIZATION(ref e) => Some(e),
             Error::SERIALIZATION(ref e) => Some(e),
@@ -27,8 +23,8 @@ impl error::Error for Error {
     }
 }
 
-impl fmt::Display for Error {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+impl std::fmt::Display for Error {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
             Error::DESERIALIZATION(ref e) => write!(fmt, "{}", e),
             Error::SERIALIZATION(ref e) => write!(fmt, "{}", e),

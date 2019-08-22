@@ -27,7 +27,7 @@
 //! a Vec of the driver's database values that can subsequently be sent to the DB server:
 //!
 //! ```rust,ignore
-//!     let db_values: Vec<DBValue> = serde_db::ser::to_params(&input, input_metadata)?;
+//! let db_values: Vec<DBValue> = serde_db::ser::to_params(&input, input_metadata)?;
 //! ```
 //!
 //! It is assumed that the prepared statement has metadata about the required input parameters,
@@ -50,7 +50,7 @@ use serde;
 /// `PreparedStatement::add_batch()`).
 pub fn to_params<T: ?Sized, DF: DbvFactory>(
     value: &T,
-    metadata: &mut std::iter::Iterator<Item = DF>,
+    metadata: &mut dyn std::iter::Iterator<Item = DF>,
 ) -> Result<Vec<DF::DBV>, SerializationError>
 where
     T: serde::ser::Serialize,

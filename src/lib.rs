@@ -6,6 +6,7 @@
 //! It is meant to be used by the implementors of database drivers,
 //! who then can expose a more comfortable  driver API.
 //!
+//! See the module descriptions for more details and usage examples.
 
 #![warn(missing_docs)]
 

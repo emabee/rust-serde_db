@@ -11,7 +11,7 @@ mod serde_db_impl;
 
 pub use self::error::*;
 pub use self::fieldnames::*;
+pub use self::mvalue::*;
 pub use self::parameter_type::*;
 pub use self::resultset::*;
 pub use self::row::*;
-pub use self::mvalue::*;

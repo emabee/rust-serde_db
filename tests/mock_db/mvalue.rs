@@ -25,7 +25,6 @@ impl fmt::Display for Timestamp {
     }
 }
 
-
 #[derive(Clone, Debug, PartialEq)]
 pub enum MValue {
     Short(i16),

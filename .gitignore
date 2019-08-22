@@ -1,4 +1,5 @@
 Cargo.lock
+.private
 /target/
 **/*.rs.bk
 *.log

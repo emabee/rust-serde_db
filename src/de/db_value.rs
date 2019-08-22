@@ -1,13 +1,13 @@
 use serde;
-use std::{i16, i32, i8, u16, u32, u8};
 use std::marker::Sized;
+use std::{i16, i32, i8, u16, u32, u8};
 
-use crate::de::{ConversionError, DeserializationError};
 use crate::de::field_deserializer::FieldDeserializer;
+use crate::de::{ConversionError, DeserializationError};
 
 /// Defines into which rust types we support deserialization of fields.
-pub trait DbValue
-    : Sized
+pub trait DbValue:
+    Sized
     + DbValueInto<bool>
     + DbValueInto<u8>
     + DbValueInto<u16>
@@ -20,7 +20,8 @@ pub trait DbValue
     + DbValueInto<f32>
     + DbValueInto<f64>
     + DbValueInto<String>
-    + DbValueInto<Vec<u8>> {
+    + DbValueInto<Vec<u8>>
+{
     /// Returns true if this is a NULL value.
     fn is_null(&self) -> bool;
 
@@ -29,10 +30,11 @@ pub trait DbValue
     where
         T: serde::de::Deserialize<'de>,
     {
-        Ok(serde::de::Deserialize::deserialize(FieldDeserializer::new(self))?)
+        Ok(serde::de::Deserialize::deserialize(
+            FieldDeserializer::new(self),
+        )?)
     }
 }
-
 
 /// Conversion into a specific type.
 ///

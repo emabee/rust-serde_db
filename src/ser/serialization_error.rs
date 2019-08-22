@@ -63,7 +63,7 @@ impl Error for SerializationError {
             SerializationError::Range(_, _) => "range exceeded",
         }
     }
-    fn cause(&self) -> Option<&Error> {
+    fn cause(&self) -> Option<&dyn Error> {
         match *self {
             SerializationError::Serde(_) => None,
             SerializationError::StructuralMismatch(_) => None,

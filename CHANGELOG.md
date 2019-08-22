@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.8.3]  2019-08-22
+
+Bring code up-to-date (e.g. for rustc 1.37).
+
 ## [0.8.2]  2019-03-29
 
 Update versions of dependencies.

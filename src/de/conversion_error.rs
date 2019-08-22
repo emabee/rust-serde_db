@@ -26,9 +26,9 @@ impl Error for ConversionError {
 impl fmt::Debug for ConversionError {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            ConversionError::ValueType(ref s) |
-            ConversionError::NumberRange(ref s) |
-            ConversionError::Incomplete(ref s) => {
+            ConversionError::ValueType(ref s)
+            | ConversionError::NumberRange(ref s)
+            | ConversionError::Incomplete(ref s) => {
                 write!(formatter, "{}: (\"{}\")", self.description(), s)
             }
         }
@@ -38,9 +38,9 @@ impl fmt::Debug for ConversionError {
 impl fmt::Display for ConversionError {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            ConversionError::ValueType(ref s) |
-            ConversionError::NumberRange(ref s) |
-            ConversionError::Incomplete(ref s) => write!(fmt, "{} ", s),
+            ConversionError::ValueType(ref s)
+            | ConversionError::NumberRange(ref s)
+            | ConversionError::Incomplete(ref s) => write!(fmt, "{} ", s),
         }
     }
 }

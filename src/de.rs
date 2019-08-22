@@ -46,14 +46,13 @@
 //!
 //! ## Convert a n×m resultset into a Vec of structs:
 //!
-//! ```ignore
-//! #[macro_use]
-//! extern crate serde_derive;
-//! ...
-//! #[derive(Deserialize)]
-//! struct MyStruct {...}
-//! ...
-//! let resultset = ...;
+//! ```rust,ignore
+//! #[derive(serde_derive::Deserialize)]
+//! struct MyStruct {
+//!   // ...
+//! }
+//!
+//! // let resultset = ...;
 //! let data: Vec<MyStruct> = resultset.into_typed()?;
 //! ```
 //!
@@ -61,13 +60,13 @@
 //!
 //! ## Convert a n×1 resultset into a Vec of fields:
 //!
-//! ```ignore
+//! ```rust,ignore
 //! let vec_s: Vec<String> = resultset.into_typed()?;
 //! ```
 //!
 //! ## Convert a 1×1 resultset into a single field:
 //!
-//! ```ignore
+//! ```rust,ignore
 //! let s: String = resultset.into_typed()?;
 //! ```
 //!
@@ -77,7 +76,7 @@
 //!
 //! For better streaming of large resultsets, you might want to iterate over the rows, like in
 //!
-//! ```ignore
+//! ```rust,ignore
 //! for row in resultset {
 //!     let t: (String, NaiveDateTime, i32, Option<i32>) = row.into_typed()?;
 //! }
@@ -85,7 +84,7 @@
 //!
 //! or
 //!
-//! ```ignore
+//! ```rust,ignore
 //! for row in resultset {
 //!     let data: MyStruct = row.into_typed()?;
 //! }
@@ -95,7 +94,7 @@
 //!
 //! When necessary, you can also convert individual values directly into an adequate rust type:
 //!
-//! ```ignore
+//! ```rust,ignore
 //! for row in resultset {
 //!     let date: NaiveDateTime = row.field_into_typed(2)?;
 //!     ...
