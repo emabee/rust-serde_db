@@ -8,7 +8,10 @@
 //!
 //! See the module descriptions for more details and usage examples.
 
-#![warn(missing_docs)]
+#![deny(missing_docs)]
+#![deny(missing_debug_implementations)]
+#![deny(clippy::all)]
+#![deny(clippy::pedantic)]
 
 pub mod de;
 pub mod ser;

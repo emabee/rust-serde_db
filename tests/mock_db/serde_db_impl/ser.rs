@@ -16,31 +16,24 @@ impl DbvFactory for &ParameterType {
     }
     fn from_i8(&self, value: i8) -> Result<Self::DBV, SerializationError> {
         match *self {
-            ParameterType::Short => Ok(MValue::Short(i16::from(value))),
-            ParameterType::NullableShort => Ok(MValue::NullableShort(Some(i16::from(value)))),
+            ParameterType::Short | ParameterType::NullableShort => {
+                Ok(MValue::Short(i16::from(value)))
+            }
             _ => Err(type_error("i8", self.descriptor())),
         }
     }
 
     fn from_i16(&self, value: i16) -> Result<Self::DBV, SerializationError> {
         match *self {
-            ParameterType::Short => Ok(MValue::Short(value)),
-            ParameterType::NullableShort => Ok(MValue::NullableShort(Some(value))),
+            ParameterType::Short | ParameterType::NullableShort => Ok(MValue::Short(value)),
             _ => Err(type_error("i16", self.descriptor())),
         }
     }
     fn from_i32(&self, value: i32) -> Result<Self::DBV, SerializationError> {
         match *self {
-            ParameterType::Short => {
+            ParameterType::Short | ParameterType::NullableShort => {
                 if (value >= i32::from(i16::MIN)) && (value <= i32::from(i16::MAX)) {
                     Ok(MValue::Short(value as i16))
-                } else {
-                    Err(SerializationError::Range("i32", self.descriptor()))
-                }
-            }
-            ParameterType::NullableShort => {
-                if (value >= i32::from(i16::MIN)) && (value <= i32::from(i16::MAX)) {
-                    Ok(MValue::NullableShort(Some(value as i16)))
                 } else {
                     Err(SerializationError::Range("i32", self.descriptor()))
                 }
@@ -50,16 +43,9 @@ impl DbvFactory for &ParameterType {
     }
     fn from_i64(&self, value: i64) -> Result<Self::DBV, SerializationError> {
         match *self {
-            ParameterType::Short => {
+            ParameterType::Short | ParameterType::NullableShort => {
                 if (value >= i64::from(i16::MIN)) && (value <= i64::from(i16::MAX)) {
                     Ok(MValue::Short(value as i16))
-                } else {
-                    Err(SerializationError::Range("i64", self.descriptor()))
-                }
-            }
-            ParameterType::NullableShort => {
-                if (value >= i64::from(i16::MIN)) && (value <= i64::from(i16::MAX)) {
-                    Ok(MValue::NullableShort(Some(value as i16)))
                 } else {
                     Err(SerializationError::Range("i64", self.descriptor()))
                 }
@@ -90,11 +76,11 @@ impl DbvFactory for &ParameterType {
     }
     fn from_str(&self, value: &str) -> Result<Self::DBV, SerializationError> {
         match *self {
-            ParameterType::String => Ok(MValue::String(value.to_owned())),
-            ParameterType::NullableString => Ok(MValue::NullableString(Some(value.to_owned()))),
-            ParameterType::Timestamp => Ok(MValue::Timestamp(mock_db_timestamp(value)?)),
-            ParameterType::NullableTimestamp => {
-                Ok(MValue::NullableTimestamp(Some(mock_db_timestamp(value)?)))
+            ParameterType::String | ParameterType::NullableString => {
+                Ok(MValue::String(value.to_owned()))
+            }
+            ParameterType::Timestamp | ParameterType::NullableTimestamp => {
+                Ok(MValue::Timestamp(mock_db_timestamp(value)?))
             }
             _ => Err(type_error("str", self.descriptor())),
         }
@@ -104,9 +90,9 @@ impl DbvFactory for &ParameterType {
     }
     fn from_none(&self) -> Result<Self::DBV, SerializationError> {
         match *self {
-            ParameterType::NullableShort => Ok(MValue::NullableShort(None)),
-            ParameterType::NullableString => Ok(MValue::NullableString(None)),
-            ParameterType::NullableTimestamp => Ok(MValue::NullableTimestamp(None)),
+            ParameterType::NullableShort => Ok(MValue::Null),
+            ParameterType::NullableString => Ok(MValue::Null),
+            ParameterType::NullableTimestamp => Ok(MValue::Null),
             _ => Err(type_error("none", self.descriptor())),
         }
     }

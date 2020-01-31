@@ -96,12 +96,12 @@ fn get_resultset_ooff(len: usize) -> Resultset {
     let mut rs = Resultset::new(&["f1", "f2", "f3", "f4"]);
     for i in 0..len {
         rs.push(vec![
-            MValue::NullableDouble(if i % 2 == 0 {
-                None
+            if i % 2 == 0 {
+                MValue::Null
             } else {
-                Some(i as f64 * 0.01)
-            }),
-            MValue::NullableDouble(Some(i as f64 * 0.01)),
+                MValue::Double(i as f64 * 0.01)
+            },
+            MValue::Double(i as f64 * 0.01),
             MValue::Double(i as f64),
             MValue::Double(10.0 * i as f64 + 3.456789),
         ]);
@@ -112,9 +112,9 @@ fn get_resultset_ooff(len: usize) -> Resultset {
 fn get_resultset_o1(val: bool) -> Resultset {
     let mut rs = Resultset::new(&["f1"]);
     if val {
-        rs.push(vec![MValue::NullableDouble(Some(3.456_789_f64))]);
+        rs.push(vec![MValue::Double(3.456_789_f64)]);
     } else {
-        rs.push(vec![MValue::NullableDouble(None)]);
+        rs.push(vec![MValue::Null]);
     }
     rs
 }

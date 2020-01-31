@@ -51,7 +51,7 @@ impl Resultset {
         self.md.number_of_fields()
     }
 
-    pub fn fieldname(&self, i: usize) -> Option<&String> {
+    pub fn fieldname(&self, i: usize) -> Option<&str> {
         self.md.fieldname(i)
     }
 

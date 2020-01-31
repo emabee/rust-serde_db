@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.0]  2020-01-31
+
+Change return value types that are based on &String to &str.
+
+Fix some clippies.
+
+Simplify the mock database structs that are used in the tests and as showcase.
+
 ## [0.8.3]  2019-08-22
 
 Bring code up-to-date (e.g. for rustc 1.37).

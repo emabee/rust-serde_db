@@ -1,12 +1,12 @@
 [package]
 name = "serde_db"
-version = "0.8.3"
+version = "0.9.0"
 authors = ["emabee <meinolf.block@sap.com>"]
 edition = "2018"
 description = "Deserialization of database resultsets, and serialization of database parameters"
 documentation = "https://docs.rs/serde_db/"
 keywords = ["relational", "database", "driver", "serde"]
-license = "MIT/Apache-2.0"
+license = "MIT or Apache-2.0"
 repository = "https://github.com/emabee/rust-serde_db"
 readme = "README.md"
 

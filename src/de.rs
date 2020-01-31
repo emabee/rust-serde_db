@@ -120,6 +120,7 @@
 
 mod conversion_error;
 mod db_value;
+mod db_value_into;
 mod deserializable_resultset;
 mod deserializable_row;
 mod deserialization_error;
@@ -128,7 +129,8 @@ mod row_deserializer;
 mod rs_deserializer;
 
 pub use self::conversion_error::ConversionError;
-pub use self::db_value::{DbValue, DbValueInto};
+pub use self::db_value::DbValue;
+pub use self::db_value_into::DbValueInto;
 pub use self::deserializable_resultset::DeserializableResultset;
 pub use self::deserializable_row::DeserializableRow;
 pub use self::deserialization_error::{DeserializationError, DeserializationResult};

@@ -8,6 +8,7 @@ use crate::de::{
     DeserializationResult,
 };
 
+#[derive(Debug)]
 enum MCD {
     Must,
     Can,
@@ -15,6 +16,7 @@ enum MCD {
 }
 
 // Deserialize a ResultSet into a normal rust type.
+#[derive(Debug)]
 pub struct RsDeserializer<RS> {
     rs: RS,
     rows_treat: MCD,
@@ -228,14 +230,13 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RsDeserializer::deserialize_seq()");
-        match self.rows_treat {
-            MCD::Done => Err(DeserializationError::Usage(
+        if let MCD::Done = self.rows_treat {
+            Err(DeserializationError::Usage(
                 "deserialize_seq() when rows_treat = MCD::Done".to_string(),
-            )),
-            _ => {
-                self.rows_treat = MCD::Done;
-                Ok(visitor.visit_seq(RowsVisitor::new(&mut self))?)
-            }
+            ))
+        } else {
+            self.rows_treat = MCD::Done;
+            Ok(visitor.visit_seq(RowsVisitor::new(&mut self))?)
         }
     }
 
@@ -263,15 +264,15 @@ where
 
     fn deserialize_newtype_struct<V>(
         self,
-        _name: &'static str,
+        name: &'static str,
         visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
         trace!(
-            "RsDeserializer::deserialize_newtype_struct() with _name = {}",
-            _name
+            "RsDeserializer::deserialize_newtype_struct() with name = {}",
+            name
         );
         visitor.visit_newtype_struct(self)
     }

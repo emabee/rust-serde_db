@@ -48,6 +48,11 @@ use serde;
 ///
 /// Database drivers use this method in their implementation (e.g. behind a
 /// `PreparedStatement::add_batch()`).
+///
+/// # Errors
+///
+/// `SerializationError` if the value cannot be translated into a database value of
+/// the required type.
 pub fn to_params<T: ?Sized, DF: DbvFactory>(
     value: &T,
     metadata: &mut dyn std::iter::Iterator<Item = DF>,

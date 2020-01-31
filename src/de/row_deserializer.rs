@@ -7,6 +7,7 @@ use crate::de::{
     DbValue, DbValueInto, DeserializableRow, DeserializationError, DeserializationResult,
 };
 
+#[derive(Debug)]
 enum MCD {
     Must,
     Can,
@@ -14,6 +15,7 @@ enum MCD {
 }
 
 // Deserialize a single Row into a normal rust type.
+#[derive(Debug)]
 pub struct RowDeserializer<ROW> {
     row: ROW,
     cols_treat: MCD,
@@ -40,7 +42,7 @@ where
         }
     }
 
-    fn get_fieldname(&self, idx: usize) -> Option<&String> {
+    fn get_fieldname(&self, idx: usize) -> Option<&str> {
         self.row.fieldname(idx)
     }
 
@@ -204,14 +206,13 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_seq()");
-        match self.cols_treat {
-            MCD::Done => Err(impl_err(
+        if let MCD::Done = self.cols_treat {
+            Err(impl_err(
                 "double-nesting (struct/tuple in struct/tuple) not possible",
-            )),
-            _ => {
-                self.cols_treat = MCD::Done;
-                visitor.visit_seq(FieldsSeqVisitor::new(&mut self))
-            }
+            ))
+        } else {
+            self.cols_treat = MCD::Done;
+            visitor.visit_seq(FieldsSeqVisitor::new(&mut self))
         }
     }
 
@@ -239,7 +240,7 @@ where
 
     fn deserialize_newtype_struct<V>(
         self,
-        _name: &'static str,
+        name: &'static str,
         visitor: V,
     ) -> DeserializationResult<V::Value>
     where
@@ -247,7 +248,7 @@ where
     {
         trace!(
             "RowDeserializer::deserialize_newtype_struct() with _name = {}",
-            _name
+            name
         );
         visitor.visit_newtype_struct(self)
     }
@@ -276,12 +277,11 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_struct()");
-        match self.cols_treat {
-            MCD::Done => Err(impl_err("double-nesting (struct in struct) not possible")),
-            _ => {
-                self.cols_treat = MCD::Done;
-                visitor.visit_map(FieldsMapVisitor::new(&mut self))
-            }
+        if let MCD::Done = self.cols_treat {
+            Err(impl_err("double-nesting (struct in struct) not possible"))
+        } else {
+            self.cols_treat = MCD::Done;
+            visitor.visit_map(FieldsMapVisitor::new(&mut self))
         }
     }
 
@@ -306,14 +306,13 @@ where
         V: serde::de::Visitor<'x>,
     {
         trace!("RowDeserializer::deserialize_tuple()");
-        match self.cols_treat {
-            MCD::Done => Err(impl_err(
+        if let MCD::Done = self.cols_treat {
+            Err(impl_err(
                 "double-nesting (struct/tuple in struct/tuple) not possible",
-            )),
-            _ => {
-                self.cols_treat = MCD::Done;
-                visitor.visit_seq(FieldsSeqVisitor::new(&mut self))
-            }
+            ))
+        } else {
+            self.cols_treat = MCD::Done;
+            visitor.visit_seq(FieldsSeqVisitor::new(&mut self))
         }
     }
 
@@ -365,9 +364,8 @@ where
         trace!("RowDeserializer::deserialize_ignored_any()");
         let fieldname = self
             .get_fieldname(self.row.number_of_fields() - self.row.len())
-            .cloned()
-            .unwrap_or_else(|| "unknown".to_string());
-        Err(DeserializationError::UnknownField(fieldname))
+            .unwrap_or_else(|| "unknown");
+        Err(DeserializationError::UnknownField(fieldname.to_string()))
     }
 }
 
@@ -407,13 +405,12 @@ where
                 let idx = self.de.row.number_of_fields() - len;
                 trace!("FieldsMapVisitor::next_key_seed() for col {}", idx);
                 let value = seed.deserialize(&mut *self.de);
-                match value {
-                    Ok(res) => Ok(Some(res)),
-                    Err(_) => {
-                        let fname = self.de.get_fieldname(idx).unwrap();
-                        trace!("FieldsMapVisitor::next_key_seed(): Error at {}", fname);
-                        Err(DeserializationError::UnknownField(fname.clone()))
-                    }
+                if let Ok(res) = value {
+                    Ok(Some(res))
+                } else {
+                    let fname = self.de.get_fieldname(idx).unwrap();
+                    trace!("FieldsMapVisitor::next_key_seed(): Error at {}", fname);
+                    Err(DeserializationError::UnknownField(fname.to_string()))
                 }
             }
         }

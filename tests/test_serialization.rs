@@ -89,15 +89,15 @@ fn tuple_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resul
         // int
         MValue::Short(0_i16),
         MValue::Short(1_i16),
-        MValue::NullableShort(Some(2_i16)),
-        MValue::NullableShort(Some(3_i16)),
-        MValue::NullableShort(None),
+        MValue::Short(2_i16),
+        MValue::Short(3_i16),
+        MValue::Null,
         // string
         MValue::String("Five".to_string()),
         MValue::String("Six".to_string()),
-        MValue::NullableString(Some("Seven".to_string())),
-        MValue::NullableString(Some("Eight".to_string())),
-        MValue::NullableString(None),
+        MValue::String("Seven".to_string()),
+        MValue::String("Eight".to_string()),
+        MValue::Null,
         // timestamp
         MValue::Timestamp(mock_db::Timestamp(
             NaiveDate::from_ymd(2011, 1, 1).and_hms_nano(1, 1, 1, 100_000_000),
@@ -105,13 +105,13 @@ fn tuple_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resul
         MValue::Timestamp(mock_db::Timestamp(
             NaiveDate::from_ymd(2012, 2, 2).and_hms_nano(2, 2, 2, 200_000_000),
         )),
-        MValue::NullableTimestamp(Some(mock_db::Timestamp(
+        MValue::Timestamp(mock_db::Timestamp(
             NaiveDate::from_ymd(2013, 3, 3).and_hms_nano(3, 3, 3, 300_000_000),
-        ))),
-        MValue::NullableTimestamp(Some(mock_db::Timestamp(
+        )),
+        MValue::Timestamp(mock_db::Timestamp(
             NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000),
-        ))),
-        MValue::NullableTimestamp(None),
+        )),
+        MValue::Null,
     ];
 
     assert!(mvalvec_compare(&expected, &result));
@@ -190,27 +190,27 @@ fn struct_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resu
     let expected = vec![
         MValue::Short(0_i16),
         MValue::Short(1_i16),
-        MValue::NullableShort(Some(2_i16)),
-        MValue::NullableShort(Some(3_i16)),
-        MValue::NullableShort(None),
+        MValue::Short(2_i16),
+        MValue::Short(3_i16),
+        MValue::Null,
         MValue::String("Five".to_string()),
         MValue::String("Six".to_string()),
-        MValue::NullableString(Some("Seven".to_string())),
-        MValue::NullableString(Some("Eight".to_string())),
-        MValue::NullableString(None),
+        MValue::String("Seven".to_string()),
+        MValue::String("Eight".to_string()),
+        MValue::Null,
         MValue::Timestamp(mock_db::Timestamp(
             NaiveDate::from_ymd(2011, 1, 1).and_hms_nano(1, 1, 1, 100_000_000),
         )),
         MValue::Timestamp(mock_db::Timestamp(
             NaiveDate::from_ymd(2012, 2, 2).and_hms_nano(2, 2, 2, 200_000_000),
         )),
-        MValue::NullableTimestamp(Some(mock_db::Timestamp(
+        MValue::Timestamp(mock_db::Timestamp(
             NaiveDate::from_ymd(2013, 3, 3).and_hms_nano(3, 3, 3, 300_000_000),
-        ))),
-        MValue::NullableTimestamp(Some(mock_db::Timestamp(
+        )),
+        MValue::Timestamp(mock_db::Timestamp(
             NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000),
-        ))),
-        MValue::NullableTimestamp(None),
+        )),
+        MValue::Null,
     ];
 
     assert!(mvalvec_compare(&expected, &result));

@@ -23,9 +23,13 @@ pub trait DeserializableRow: Sized {
     fn number_of_fields(&self) -> usize;
 
     /// Returns the name of the column at the specified index.
-    fn fieldname(&self, field_idx: usize) -> Option<&String>;
+    fn fieldname(&self, field_idx: usize) -> Option<&str>;
 
     /// Converts the row into a struct, a tuple, or (if applicable) into a plain rust value.
+    ///
+    /// # Errors
+    ///
+    /// An error is produced if deserialization into the target type is not possible.
     fn into_typed<'de, T>(self) -> Result<T, Self::E>
     where
         T: serde::de::Deserialize<'de>,

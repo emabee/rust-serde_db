@@ -43,6 +43,7 @@ pub fn parse_error<S: AsRef<str>>(
 }
 
 /// Factory for Type Error.
+#[must_use]
 pub fn type_error(value: &'static str, db_type: String) -> SerializationError {
     SerializationError::Type {
         value_type: value,
@@ -65,8 +66,10 @@ impl Error for SerializationError {
     }
     fn cause(&self) -> Option<&dyn Error> {
         match *self {
-            SerializationError::Serde(_) => None,
-            SerializationError::StructuralMismatch(_) => None,
+            SerializationError::Serde(_)
+            | SerializationError::StructuralMismatch(_)
+            | SerializationError::Type { .. }
+            | SerializationError::Range(_, _) => None,
             SerializationError::Parse {
                 value: ref _v,
                 db_type: ref _t,
@@ -75,8 +78,6 @@ impl Error for SerializationError {
                 Some(e) => Some(&**e),
                 None => None,
             },
-            SerializationError::Type { .. } => None,
-            SerializationError::Range(_, _) => None,
         }
     }
 }

@@ -76,7 +76,7 @@ impl DeserializableRow for mock_db::Row {
         self.metadata.number_of_fields()
     }
 
-    fn fieldname(&self, field_idx: usize) -> Option<&String> {
+    fn fieldname(&self, field_idx: usize) -> Option<&str> {
         trace!("<mock_db::Row as DeserializableRow>::fieldname()");
         self.metadata.fieldname(field_idx)
     }

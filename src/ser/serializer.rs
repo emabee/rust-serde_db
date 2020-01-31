@@ -8,6 +8,7 @@ use serde;
 type SerializationResult<T> = Result<T, SerializationError>;
 
 /// A structure for serializing Rust values into a parameter row for a prepared statement.
+#[allow(missing_debug_implementations)]
 pub struct Serializer<'m, DF: 'm + DbvFactory> {
     output: Vec<DF::DBV>,
     metadata: &'m mut dyn std::iter::Iterator<Item = DF>,
@@ -289,6 +290,7 @@ fn tail(count: usize, s: &str) -> String {
 }
 
 #[doc(hidden)]
+#[allow(missing_debug_implementations)]
 pub struct Compound<'a, 'm: 'a, DF: 'm + DbvFactory> {
     ser: &'a mut Serializer<'m, DF>,
 }
@@ -406,7 +408,7 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeStruct for Compound<'a, '
         T: serde::ser::Serialize,
     {
         trace!("Compound: SerializeStruct::serialize_field()");
-        r#try!(serde::ser::SerializeMap::serialize_key(self, key));
+        serde::ser::SerializeMap::serialize_key(self, key)?;
         serde::ser::SerializeMap::serialize_value(self, value)
     }
 

@@ -254,8 +254,12 @@ fn get_resultset_option_option_short_short(len: usize) -> Resultset {
     let mut rs = Resultset::new(&["f1", "f2", "f3", "f4"]);
     for i in 0..len {
         rs.push(vec![
-            MValue::NullableShort(if i % 2 == 0 { None } else { Some(i as i16) }),
-            MValue::NullableShort(Some(i as i16)),
+            if i % 2 == 0 {
+                MValue::Null
+            } else {
+                MValue::Short(i as i16)
+            },
+            MValue::Short(i as i16),
             MValue::Short(i as i16),
             MValue::Short(10 * i as i16 + 7),
         ]);
