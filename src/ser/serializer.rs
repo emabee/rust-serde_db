@@ -1,9 +1,7 @@
 use super::dbv_factory::DbvFactory;
 use super::type_error;
 use super::SerializationError;
-
 use log::{log_enabled, trace};
-use serde;
 
 type SerializationResult<T> = Result<T, SerializationError>;
 

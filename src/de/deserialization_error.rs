@@ -1,8 +1,3 @@
-use serde;
-use std::error;
-use std::error::Error;
-use std::fmt;
-
 use crate::de::ConversionError;
 
 /// The errors that can arise while deserializing with `serde_db::de`.
@@ -24,7 +19,7 @@ pub enum DeserializationError {
     TrailingCols,
 }
 
-impl error::Error for DeserializationError {
+impl std::error::Error for DeserializationError {
     fn description(&self) -> &str {
         match *self {
             DeserializationError::ConversionError(_) => {
@@ -46,7 +41,7 @@ impl error::Error for DeserializationError {
         }
     }
 
-    fn cause(&self) -> Option<&dyn error::Error> {
+    fn cause(&self) -> Option<&dyn std::error::Error> {
         match *self {
             DeserializationError::ConversionError(ref e) => Some(e),
             _ => None,
@@ -61,31 +56,29 @@ impl From<ConversionError> for DeserializationError {
 }
 
 impl serde::de::Error for DeserializationError {
-    fn custom<T: fmt::Display>(msg: T) -> Self {
+    fn custom<T: std::fmt::Display>(msg: T) -> Self {
         DeserializationError::SerdeError(msg.to_string())
     }
 }
 
-impl fmt::Debug for DeserializationError {
-    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+impl std::fmt::Debug for DeserializationError {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
             DeserializationError::ConversionError(ref e) => write!(formatter, "{:?}", e),
             DeserializationError::SerdeError(ref s)
             | DeserializationError::Usage(ref s)
             | DeserializationError::UnknownField(ref s) => {
-                write!(formatter, "{} (\"{}\")", self.description(), s)
+                write!(formatter, "{} (\"{}\")", self, s)
             }
-            DeserializationError::NotImplemented(s) => {
-                write!(formatter, "{} (\"{}\")", self.description(), s)
-            }
+            DeserializationError::NotImplemented(s) => write!(formatter, "{} (\"{}\")", self, s),
             DeserializationError::TrailingRows | DeserializationError::TrailingCols => {
-                write!(formatter, "{}", self.description())
+                write!(formatter, "{}", self)
             }
         }
     }
 }
-impl fmt::Display for DeserializationError {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+impl std::fmt::Display for DeserializationError {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
             DeserializationError::ConversionError(ref e) => write!(fmt, "{}", e),
             DeserializationError::SerdeError(ref s)

@@ -1,11 +1,7 @@
+use crate::mock_db::{self, MValue, ParameterType};
 use chrono::NaiveDateTime;
-use std::error::Error;
-use std::str::FromStr;
-
-use crate::mock_db;
-use crate::mock_db::MValue;
-use crate::mock_db::ParameterType;
 use serde_db::ser::{type_error, DbvFactory, SerializationError};
+use std::str::FromStr;
 use std::{i16, i32, i8, u16, u32, u8};
 
 impl DbvFactory for &ParameterType {
@@ -112,7 +108,7 @@ fn mock_db_timestamp(value: &str) -> Result<mock_db::Timestamp, SerializationErr
     use serde::ser::Error;
     match NaiveDateTime::from_str(value) {
         Ok(ts) => Ok(mock_db::Timestamp(ts)),
-        Err(e) => Err(SerializationError::custom(e.description())),
+        Err(e) => Err(SerializationError::custom(e)),
     }
 }
 

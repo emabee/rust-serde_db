@@ -1,46 +1,23 @@
-use std::error::Error;
-use std::fmt;
+use thiserror::Error;
 
 /// An error type for implementors of `DbValue`.
+#[derive(Debug, Error)]
 pub enum ConversionError {
     /// The DbValue cannot be converted into the desired rust type.
+    #[error(
+        "The DbValue cannot be converted into the desired rust type: value types do not match"
+    )]
     ValueType(String),
 
-    /// The DbValue is to big or too small (negative) fo conversion into the desired rust type.
+    /// The DbValue is to big or too small (negative) for conversion into the desired rust type.
+    #[error(
+        "The DbValue is too big or too small for the desired rust type: number range exceeded"
+    )]
     NumberRange(String),
 
     /// The DbValue was not yet completely loaded, and further loading is not possible anymore.
+    #[error(
+        "The DbValue was not yet completely loaded, and further loading is not possible anymore"
+    )]
     Incomplete(String),
-}
-
-impl Error for ConversionError {
-    fn description(&self) -> &str {
-        match *self {
-            ConversionError::ValueType(_) => "value types do not match",
-            ConversionError::NumberRange(_) => "number range exceeded",
-            ConversionError::Incomplete(_) => "incomplete LOB",
-        }
-    }
-}
-
-impl fmt::Debug for ConversionError {
-    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            ConversionError::ValueType(ref s)
-            | ConversionError::NumberRange(ref s)
-            | ConversionError::Incomplete(ref s) => {
-                write!(formatter, "{}: (\"{}\")", self.description(), s)
-            }
-        }
-    }
-}
-
-impl fmt::Display for ConversionError {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            ConversionError::ValueType(ref s)
-            | ConversionError::NumberRange(ref s)
-            | ConversionError::Incomplete(ref s) => write!(fmt, "{} ", s),
-        }
-    }
 }

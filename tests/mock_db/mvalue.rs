@@ -1,16 +1,14 @@
+use crate::mock_db;
 use chrono::{Datelike, NaiveDateTime, Timelike};
 use serde;
 use serde_db::de::DbValue;
-use std::fmt;
-
-use crate::mock_db;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Timestamp(pub NaiveDateTime);
 
-impl fmt::Display for Timestamp {
+impl std::fmt::Display for Timestamp {
     // The format chosen supports the derserialization to chrono types.
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
             fmt,
             "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:07}",

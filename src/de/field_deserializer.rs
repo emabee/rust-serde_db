@@ -1,7 +1,5 @@
-use log::trace;
-use serde;
-
 use crate::de::{DbValue, DbValueInto, DeserializationError, DeserializationResult};
+use log::trace;
 
 /// Deserialize a single `DbValue` into a normal rust type.
 pub struct FieldDeserializer<DBV>(DBV);

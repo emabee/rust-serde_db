@@ -1,9 +1,7 @@
-use serde;
-use std::convert::From;
-use std::marker::Sized;
-
 use crate::de::row_deserializer::RowDeserializer;
 use crate::de::{DbValue, DeserializationError};
+use std::convert::From;
+use std::marker::Sized;
 
 /// A minimal interface for the Row type to support the deserialization.
 #[allow(clippy::len_without_is_empty)]

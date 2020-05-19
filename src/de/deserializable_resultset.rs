@@ -1,8 +1,6 @@
-use serde;
-use std::marker::Sized;
-
 use crate::de::rs_deserializer::RsDeserializer;
 use crate::de::{DeserializableRow, DeserializationError, DeserializationResult};
+use std::marker::Sized;
 
 /// Interface for a database resultset to support deserialization.
 pub trait DeserializableResultset: Sized {

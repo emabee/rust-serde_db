@@ -9,12 +9,6 @@ pub enum Error {
 }
 
 impl std::error::Error for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::DESERIALIZATION(ref e) => e.description(),
-            Error::SERIALIZATION(ref e) => e.description(),
-        }
-    }
     fn cause(&self) -> Option<&dyn std::error::Error> {
         match *self {
             Error::DESERIALIZATION(ref e) => Some(e),

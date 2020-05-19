@@ -1,11 +1,9 @@
-use log::trace;
-use serde;
-use serde::de::Deserialize as SD;
-
 use crate::de::field_deserializer::FieldDeserializer;
 use crate::de::{
     DbValue, DbValueInto, DeserializableRow, DeserializationError, DeserializationResult,
 };
+use log::trace;
+use serde::de::Deserialize as SD;
 
 #[derive(Debug)]
 enum MCD {
