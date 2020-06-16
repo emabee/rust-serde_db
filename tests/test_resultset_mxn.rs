@@ -76,7 +76,10 @@ fn evaluate_matrix_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<
     rows_map_fold(loghandle)?;
     pick_values_individually(loghandle)?;
     convert_values_one_by_one(loghandle)?;
-    not_rows_into_value(loghandle)?;
+    not_row_into_value(loghandle)?;
+    not_rows_into_tuple(loghandle)?;
+    not_rows_into_vec_of_short_struct(loghandle)?;
+    not_rows_into_vec_of_long_tuple(loghandle)?;
 
     Ok(())
 }
@@ -217,7 +220,22 @@ fn convert_values_one_by_one(_loghandle: &mut ReconfigurationHandle) -> mock_db:
     }
     Ok(())
 }
-fn not_rows_into_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+
+fn not_rows_into_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+    let s = "Negative test: no conversion of multiple rows into tuple";
+    info!("{}", s);
+    let resultset = get_resultset_string_ts_short_short(4);
+    let test: Result<(String, chrono::NaiveDateTime, i32, i32), _> = resultset.try_into();
+    match test {
+        Ok(_) => assert!(false, "Deserialization was unexpectedly successful"),
+        Err(e) => {
+            info!("--> Exception: {:?}", e);
+        }
+    }
+    Ok(())
+}
+
+fn not_row_into_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of row into field if two or more colums";
     info!("{}", s);
     for row in get_resultset_string_ts_short_short(1) {
@@ -230,6 +248,44 @@ fn not_rows_into_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resul
             }
         }
     }
+
+    Ok(())
+}
+
+fn not_rows_into_vec_of_short_struct(
+    _loghandle: &mut ReconfigurationHandle,
+) -> mock_db::Result<()> {
+    let s = "Negative test: no conversion of rows into vec of too short struct";
+    info!("{}", s);
+    #[derive(Debug, Deserialize)]
+    struct TestData {
+        f1: String,
+        f2: NaiveDateTime,
+    }
+    let resultset = get_resultset_string_ts_short_short(4);
+    let test: Result<Vec<TestData>, _> = resultset.try_into();
+    match test {
+        Ok(test) => assert!(false, "Could deserialize \"{:?}\"", test),
+        Err(e) => {
+            info!("--> Exception: {:?}", e);
+        }
+    }
+
+    Ok(())
+}
+
+fn not_rows_into_vec_of_long_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+    let s = "Negative test: no conversion of rows into vec of too long tuple";
+    info!("{}", s);
+    let resultset = get_resultset_string_ts_short_short(4);
+    let test: Result<Vec<(String, NaiveDateTime, i32, i32, i32)>, _> = resultset.try_into();
+    match test {
+        Ok(_) => assert!(false, "Failed \"{:?}\"", s),
+        Err(e) => {
+            info!("--> Exception: {:?}", e);
+        }
+    }
+
     Ok(())
 }
 

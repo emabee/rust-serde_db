@@ -47,8 +47,8 @@ fn main() {
     run_command!("cargo", "build");
     run_command!("cargo", "build", "--release");
 
-    // Clippy in important variants
-    run_command!("cargo", "clippy", "--", "-D", "warnings");
+    // Clippy
+    run_command!("cargo", "clippy");
 
     // Run tests in important variants
     run_command!("cargo", "test", "--release");

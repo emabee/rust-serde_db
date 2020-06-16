@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.9.2]  2020-06-16
+
+Improve errors.
+
 ## [0.9.0]  2020-01-31
 
 Change return value types that are based on &String to &str.
