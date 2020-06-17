@@ -6,7 +6,7 @@ use thiserror::Error;
 pub enum DeserializationError {
     /// Deserialization failed due to a conversion error.
     #[error("Deserialization failed due to a conversion error")]
-    ConversionError(ConversionError),
+    ConversionError(#[from] ConversionError),
 
     /// Error reported from serde framework.
     #[error("serde error")]
@@ -33,12 +33,6 @@ pub enum DeserializationError {
     /// The deserialization cannot consume all existing columns.
     #[error("cannot consume all existing columns")]
     TrailingCols,
-}
-
-impl From<ConversionError> for DeserializationError {
-    fn from(error: ConversionError) -> DeserializationError {
-        DeserializationError::ConversionError(error)
-    }
 }
 
 impl serde::de::Error for DeserializationError {
