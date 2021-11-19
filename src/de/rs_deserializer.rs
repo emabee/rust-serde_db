@@ -32,7 +32,7 @@ where
         } else {
             MCD::Can
         };
-        Ok(RsDeserializer { rows_treat, rs })
+        Ok(RsDeserializer { rs, rows_treat })
     }
 
     fn pop_single_row(&mut self) -> DeserializationResult<<RS as DeserializableResultset>::ROW> {

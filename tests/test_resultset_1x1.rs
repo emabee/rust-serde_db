@@ -1,9 +1,5 @@
-extern crate chrono;
-extern crate flexi_logger;
 #[macro_use]
 extern crate log;
-extern crate serde;
-extern crate serde_db;
 #[macro_use]
 extern crate serde_derive;
 
@@ -11,7 +7,7 @@ mod mock_db;
 mod util;
 
 use crate::mock_db::{MValue as MV, Resultset};
-use flexi_logger::ReconfigurationHandle;
+use flexi_logger::LoggerHandle;
 
 #[test] // cargo test --test test_resultset_1x1 -- --nocapture
 pub fn test_resultset_1x1() {
@@ -27,11 +23,11 @@ pub fn test_resultset_1x1() {
 }
 
 // Test the various ways to evaluate a resultset
-fn evaluate_field_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn evaluate_field_rs(loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     #[derive(Deserialize)]
     struct TestDataMin {
         f1: String,
-    };
+    }
 
     loghandle.parse_new_spec("info");
     info!("=== Single value (1x1) ===");

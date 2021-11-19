@@ -34,8 +34,6 @@ pub trait DbValue:
     where
         T: serde::de::Deserialize<'de>,
     {
-        Ok(serde::de::Deserialize::deserialize(
-            FieldDeserializer::new(self),
-        )?)
+        serde::de::Deserialize::deserialize(FieldDeserializer::new(self))
     }
 }

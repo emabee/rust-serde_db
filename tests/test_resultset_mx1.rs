@@ -1,9 +1,5 @@
-extern crate chrono;
-extern crate flexi_logger;
 #[macro_use]
 extern crate log;
-extern crate serde;
-extern crate serde_db;
 #[macro_use]
 extern crate serde_derive;
 
@@ -12,7 +8,7 @@ mod util;
 
 use crate::mock_db::{MValue, Resultset};
 #[allow(unused_imports)]
-use flexi_logger::{LogSpecification, ReconfigurationHandle};
+use flexi_logger::{LogSpecification, LoggerHandle};
 
 const SIZE: usize = 20;
 
@@ -34,7 +30,7 @@ struct TestDataMin {
     f1: String,
 }
 
-fn evaluate_column_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn evaluate_column_rs(loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("=== Single column (mx1) ===");
     into_vec_struct(loghandle)?;
     into_vec_field(loghandle)?;
@@ -48,7 +44,7 @@ fn evaluate_column_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<
 
 // loghandle.set_new_spec(LogSpecification::parse("info"));
 
-fn into_vec_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn into_vec_struct(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Convert a mx1 resultset into a Vec<struct>");
     let vec_d: Vec<TestDataMin> = get_resultset_string(SIZE).try_into()?;
     assert_eq!(SIZE, vec_d.len());
@@ -58,7 +54,7 @@ fn into_vec_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()
     Ok(())
 }
 
-fn into_vec_field(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn into_vec_field(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Convert a mx1 resultset into a Vec<field>");
     let vec_s: Vec<String> = get_resultset_string(SIZE).try_into()?;
     assert_eq!(SIZE, vec_s.len());
@@ -67,7 +63,7 @@ fn into_vec_field(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
     }
     Ok(())
 }
-fn not_into_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn not_into_struct(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of mx1 resultset into a struct";
     info!("{}", s);
     let test: mock_db::Result<TestDataMin> = get_resultset_string(SIZE).try_into();
@@ -77,7 +73,7 @@ fn not_into_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()
     }
     Ok(())
 }
-fn not_into_field(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn not_into_field(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of mx1 resultset into a field";
     info!("{}", s);
     let test: mock_db::Result<String> = get_resultset_string(SIZE).try_into();
@@ -88,7 +84,7 @@ fn not_into_field(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
     Ok(())
 }
 
-fn row_into_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn row_into_struct(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Loop over rows, convert row with single field into struct");
     let mut acc = String::new();
     for row in get_resultset_string(7) {
@@ -102,7 +98,7 @@ fn row_into_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()
     Ok(())
 }
 
-fn row_into_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn row_into_value(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Loop over rows, convert row into single value");
     for row in get_resultset_string(SIZE) {
         let f1: String = row.try_into()?;
@@ -110,7 +106,7 @@ fn row_into_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
     }
     Ok(())
 }
-fn row_map_fold(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn row_map_fold(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Iterate over rows, map, fold");
     let s = get_resultset_string(7)
         .into_iter()

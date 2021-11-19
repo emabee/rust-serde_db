@@ -30,7 +30,7 @@ where
             1 => MCD::Can,
             _ => MCD::Must,
         };
-        RowDeserializer { cols_treat, row }
+        RowDeserializer { row, cols_treat }
     }
 
     fn value_deserialization_allowed(&self) -> DeserializationResult<()> {
@@ -362,7 +362,7 @@ where
         trace!("RowDeserializer::deserialize_ignored_any()");
         let fieldname = self
             .get_fieldname(self.row.number_of_fields() - self.row.len())
-            .unwrap_or_else(|| "unknown");
+            .unwrap_or("unknown");
         Err(DeserializationError::UnknownField(fieldname.to_string()))
     }
 }

@@ -1,9 +1,5 @@
-extern crate chrono;
-extern crate flexi_logger;
 #[macro_use]
 extern crate log;
-extern crate serde;
-extern crate serde_db;
 #[macro_use]
 extern crate serde_derive;
 
@@ -13,7 +9,7 @@ mod util;
 use crate::mock_db::{MValue, Resultset, Timestamp};
 use chrono::NaiveDateTime;
 #[allow(unused_imports)]
-use flexi_logger::{LogSpecification, ReconfigurationHandle};
+use flexi_logger::{LogSpecification, LoggerHandle};
 
 const SIZE: usize = 20;
 
@@ -61,7 +57,7 @@ struct LongData {
     f5: Option<i32>,
 }
 
-fn evaluate_matrix_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn evaluate_matrix_rs(loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("=== Matrix (mxn) ===");
     into_vec_struct(loghandle)?;
     into_vec_struct_options(loghandle)?;
@@ -85,7 +81,7 @@ fn evaluate_matrix_rs(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<
 }
 // loghandle.set_new_spec(LogSpecification::parse("info"));
 
-fn into_vec_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn into_vec_struct(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Convert a mxn resultset into a Vec<struct>");
     let vtd: Vec<TestData> = get_resultset_string_ts_short_short(SIZE).try_into()?;
     assert_eq!(SIZE, vtd.len());
@@ -94,7 +90,7 @@ fn into_vec_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()
     }
     Ok(())
 }
-fn into_vec_struct_options(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn into_vec_struct_options(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Convert a mxn resultset into a Vec<struct>, check Option conversions");
     let vtd: Vec<TestOption> = get_resultset_option_option_short_short(SIZE).try_into()?;
     assert_eq!(SIZE, vtd.len());
@@ -103,7 +99,7 @@ fn into_vec_struct_options(_loghandle: &mut ReconfigurationHandle) -> mock_db::R
     }
     Ok(())
 }
-fn not_into_vec_field(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn not_into_vec_field(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of nxm resultset into Vec<field>";
     info!("{}", s);
     let test: mock_db::Result<Vec<String>> = get_resultset_string_ts_short_short(SIZE).try_into();
@@ -113,7 +109,7 @@ fn not_into_vec_field(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result
     }
     Ok(())
 }
-fn not_into_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn not_into_struct(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of nxm resultset into struct";
     info!("{}", s);
     let test: mock_db::Result<TestData> = get_resultset_string_ts_short_short(SIZE).try_into();
@@ -123,7 +119,7 @@ fn not_into_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()
     }
     Ok(())
 }
-fn not_into_field(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn not_into_field(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of nxm resultset into field";
     info!("{}", s);
     let test: mock_db::Result<String> = get_resultset_string_ts_short_short(SIZE).try_into();
@@ -133,7 +129,7 @@ fn not_into_field(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()>
     }
     Ok(())
 }
-fn rows_into_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rows_into_struct(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Loop over rows (streaming support), convert row into struct");
     let mut sum: usize = 0;
     for row in get_resultset_string_ts_short_short(SIZE) {
@@ -143,7 +139,7 @@ fn rows_into_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<(
     assert_eq!(sum, SIZE * (SIZE + 1) / 2);
     Ok(())
 }
-fn not_into_short_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn not_into_short_struct(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of mxn resultset into Vec<too short struct>";
     info!("{}", s);
     let test: mock_db::Result<Vec<ShortData>> =
@@ -154,7 +150,7 @@ fn not_into_short_struct(_loghandle: &mut ReconfigurationHandle) -> mock_db::Res
     }
     Ok(())
 }
-fn rows_into_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rows_into_tuple(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Loop over rows, convert row into tuple";
     info!("{}", s);
     for row in get_resultset_string_ts_short_short(7) {
@@ -163,7 +159,7 @@ fn rows_into_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()
     }
     Ok(())
 }
-fn not_rows_into_long_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn not_rows_into_long_tuple(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: loop over rows, convert row into too long tuple";
     info!("{}", s);
     for row in get_resultset_string_ts_short_short(1) {
@@ -176,7 +172,7 @@ fn not_rows_into_long_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::
     }
     Ok(())
 }
-fn rows_into_short_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rows_into_short_tuple(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Loop over rows, convert row into too short tuple";
     info!("{}", s);
     for row in get_resultset_string_ts_short_short(6) {
@@ -185,7 +181,7 @@ fn rows_into_short_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Res
     }
     Ok(())
 }
-fn rows_map_fold(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rows_map_fold(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Iterate over rows, map, fold");
     let sum = get_resultset_string_ts_short_short(SIZE)
         .into_iter()
@@ -197,7 +193,7 @@ fn rows_map_fold(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> 
     assert_eq!(sum as usize, SIZE * (SIZE + 1) / 2);
     Ok(())
 }
-fn pick_values_individually(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn pick_values_individually(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Loop over rows, pick out single values individually, in arbitrary order");
     for row in get_resultset_string_ts_short_short(5) {
         let f2: NaiveDateTime = row.field_into(1)?;
@@ -209,7 +205,7 @@ fn pick_values_individually(_loghandle: &mut ReconfigurationHandle) -> mock_db::
     Ok(())
 }
 
-fn convert_values_one_by_one(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn convert_values_one_by_one(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Loop over rows, convert single values");
     for mut row in get_resultset_string_ts_short_short(5) {
         let f1: String = row.next_into_typed()?;
@@ -221,7 +217,7 @@ fn convert_values_one_by_one(_loghandle: &mut ReconfigurationHandle) -> mock_db:
     Ok(())
 }
 
-fn not_rows_into_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn not_rows_into_tuple(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of multiple rows into tuple";
     info!("{}", s);
     let resultset = get_resultset_string_ts_short_short(4);
@@ -235,7 +231,7 @@ fn not_rows_into_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resul
     Ok(())
 }
 
-fn not_row_into_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn not_row_into_value(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of row into field if two or more colums";
     info!("{}", s);
     for row in get_resultset_string_ts_short_short(1) {
@@ -252,9 +248,7 @@ fn not_row_into_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result
     Ok(())
 }
 
-fn not_rows_into_vec_of_short_struct(
-    _loghandle: &mut ReconfigurationHandle,
-) -> mock_db::Result<()> {
+fn not_rows_into_vec_of_short_struct(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of rows into vec of too short struct";
     info!("{}", s);
     #[derive(Debug, Deserialize)]
@@ -274,7 +268,7 @@ fn not_rows_into_vec_of_short_struct(
     Ok(())
 }
 
-fn not_rows_into_vec_of_long_tuple(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn not_rows_into_vec_of_long_tuple(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of rows into vec of too long tuple";
     info!("{}", s);
     let resultset = get_resultset_string_ts_short_short(4);

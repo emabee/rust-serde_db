@@ -93,14 +93,14 @@ impl std::fmt::Debug for SerializationError {
                 ),
             },
             SerializationError::Type {
-                value_type: ref v,
+                value_type: v,
                 db_type: ref d,
             } => write!(
                 fmt,
                 "given value of type \"{}\" cannot be converted into value of type code {}",
                 v, d
             ),
-            SerializationError::Range(ref s1, ref s2) => write!(
+            SerializationError::Range(s1, ref s2) => write!(
                 fmt,
                 "given value of type \"{}\" does not fit into supported range of SQL type {}",
                 s1, s2

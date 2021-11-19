@@ -45,7 +45,7 @@ impl std::fmt::Debug for DeserializationError {
     fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
             Self::ConversionError(ref e) => write!(formatter, "{:?}", e),
-            Self::NotImplemented(ref s) => write!(formatter, "{}: {}", self, s),
+            Self::NotImplemented(s) => write!(formatter, "{}: {}", self, s),
             Self::SerdeError(ref s) | Self::UnknownField(ref s) | Self::Usage(ref s) => {
                 write!(formatter, "{}: {}", self, s)
             }

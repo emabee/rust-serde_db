@@ -1,9 +1,5 @@
-extern crate chrono;
-extern crate flexi_logger;
 #[macro_use]
 extern crate log;
-extern crate serde;
-extern crate serde_db;
 #[macro_use]
 extern crate serde_derive;
 
@@ -12,7 +8,7 @@ mod util;
 
 use crate::mock_db::{MValue, ParameterType as PT};
 use chrono::{NaiveDate, NaiveDateTime};
-use flexi_logger::ReconfigurationHandle;
+use flexi_logger::LoggerHandle;
 
 #[test] // cargo test --test test_serialization -- --nocapture
 pub fn test_serialization() {
@@ -27,13 +23,13 @@ pub fn test_serialization() {
     }
 }
 
-fn impl_test_serialization(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn impl_test_serialization(loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     tuple_serialization(loghandle)?;
     struct_serialization(loghandle)?;
     Ok(())
 }
 
-fn tuple_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn tuple_serialization(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!(
         "Test tuple with all conversions (plain -> plain, Option -> plain, plain -> Option, \
          Option -> Option)"
@@ -120,7 +116,7 @@ fn tuple_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Resul
     Ok(())
 }
 
-fn struct_serialization(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn struct_serialization(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!(
         "Test struct with all conversions (plain -> plain, Option -> plain, plain -> Option, \
          Option -> Option)"

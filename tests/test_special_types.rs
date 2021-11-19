@@ -10,7 +10,7 @@ use bigdecimal::BigDecimal;
 
 use crate::mock_db::{MValue, Resultset};
 #[allow(unused_imports)]
-use flexi_logger::{LogSpecification, ReconfigurationHandle};
+use flexi_logger::{LogSpecification, LoggerHandle};
 
 const SIZE: usize = 20;
 
@@ -35,7 +35,7 @@ struct TestData {
     f4: BigDecimal,
 }
 
-fn impl_test_special_types(loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn impl_test_special_types(loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("=== Special Types ===");
     rs_single_fields(loghandle)?;
     rs_rows(loghandle)?;
@@ -44,7 +44,7 @@ fn impl_test_special_types(loghandle: &mut ReconfigurationHandle) -> mock_db::Re
     Ok(())
 }
 
-fn rs_single_fields(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rs_single_fields(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Deserialization of single fields");
     let resultset = get_resultset_ooff(SIZE);
     assert_eq!(SIZE, resultset.len());
@@ -58,7 +58,7 @@ fn rs_single_fields(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<(
     Ok(())
 }
 
-fn rs_rows(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rs_rows(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Deserialization of individual rows");
     let resultset = get_resultset_ooff(SIZE);
     assert_eq!(SIZE, resultset.len());
@@ -69,7 +69,7 @@ fn rs_rows(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     Ok(())
 }
 
-fn rs_resultset(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rs_resultset(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Deserialization of complete resultset");
     let vtd: Vec<TestData> = get_resultset_ooff(SIZE).try_into()?;
     assert_eq!(SIZE, vtd.len());
@@ -79,7 +79,7 @@ fn rs_resultset(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
     Ok(())
 }
 
-fn rs_single_value(_loghandle: &mut ReconfigurationHandle) -> mock_db::Result<()> {
+fn rs_single_value(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Deserialization of complete resultset into a single special value");
     let value: Option<BigDecimal> = get_resultset_o1(false).try_into()?;
     assert_eq!(value, None);

@@ -1,9 +1,5 @@
-extern crate chrono;
-extern crate flexi_logger;
 #[macro_use]
 extern crate log;
-extern crate serde;
-extern crate serde_db;
 #[macro_use]
 extern crate serde_derive;
 
@@ -25,7 +21,7 @@ pub fn test_resultset_1xn() -> mock_db::Result<()> {
         f4: Option<i32>,
         f3: i32,
         f2: NaiveDateTime,
-    };
+    }
 
     info!("=== Single row (1xn) ===");
     {

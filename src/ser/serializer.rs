@@ -70,7 +70,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::ser::Serializer for &'a mut Serializer<'
     }
 
     fn serialize_i32(self, value: i32) -> SerializationResult<Self::Ok> {
-        trace!("Serializer::serialize_i32()");
+        trace!("Serializer::serialize_i32() for {}", value);
         let val = self.get_current_field()?.from_i32(value)?;
         self.push(val);
         Ok(())
