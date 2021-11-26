@@ -29,7 +29,7 @@ fn evaluate_field_rs(loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
         f1: String,
     }
 
-    loghandle.parse_new_spec("info");
+    loghandle.parse_new_spec("info").unwrap();
     info!("=== Single value (1x1) ===");
     {
         info!("Convert a 1x1 resultset into a Vec<struct>");

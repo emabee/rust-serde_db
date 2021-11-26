@@ -78,7 +78,7 @@ fn tuple_serialization(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
         Some(NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000)),
         t_none,
     );
-    _loghandle.parse_new_spec("info");
+    _loghandle.parse_new_spec("info").unwrap();
     let result: Vec<MValue> = serde_db::ser::to_params(&input, &mut input_metadata.iter())?;
 
     let expected = vec![
@@ -180,7 +180,7 @@ fn struct_serialization(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
         fourteen: Some(NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000)),
         fifteen: t_none,
     };
-    _loghandle.parse_new_spec("info");
+    _loghandle.parse_new_spec("info").unwrap();
     let result: Vec<MValue> = serde_db::ser::to_params(&input, &mut input_metadata.iter())?;
 
     let expected = vec![
