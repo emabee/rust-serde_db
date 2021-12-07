@@ -6,13 +6,13 @@
 //! Prepared statements for example might have a function
 //!
 //! ```rust,ignore
-//! fn add_batch<T>(&mut self, input: &T) -> HdbResult<()>
-//! where T: serde::ser::Serialize
+//! fn add_batch<T>(&mut self, input: &T) -> DbResult<()>
+//! where T: serde::Serialize
 //! ```
 //!
 //! The consumers of the `add_batch()` function can hand over
 //! a _tuple_ of rust values that correspond to the parameters the prepared statement
-//! needs. Or they can hand over an appropriate _struct_ that implements `serde::ser::Serialize`.
+//! needs. Or they can hand over an appropriate _struct_ that implements `serde::Serialize`.
 //!
 //! In both cases they do not need to differentiate between nullable and non-nullable
 //! database values (except that they cannot convert an `Option::None` into
@@ -41,7 +41,6 @@ pub use self::dbv_factory::DbvFactory;
 pub use self::serialization_error::{parse_error, type_error, SerializationError};
 
 use self::serializer::Serializer;
-use log::trace;
 
 /// Provided method that translates the input into a Vec of database values.
 ///
@@ -57,9 +56,10 @@ pub fn to_params<T: ?Sized, DF: DbvFactory>(
     metadata: &mut dyn std::iter::Iterator<Item = DF>,
 ) -> Result<Vec<DF::DBV>, SerializationError>
 where
-    T: serde::ser::Serialize,
+    T: serde::Serialize,
 {
-    trace!("serde_db::to_params()");
+    #[cfg(feature = "trace")]
+    log::trace!("serde_db::to_params()");
     let mut serializer = Serializer::new(metadata);
     value.serialize(&mut serializer)?;
     Ok(serializer.into_inner())

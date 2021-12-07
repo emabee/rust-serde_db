@@ -51,9 +51,9 @@ impl MValue {
 
     pub fn try_into<'de, T>(self) -> mock_db::Result<T>
     where
-        T: serde::de::Deserialize<'de>,
+        T: serde::Deserialize<'de>,
     {
         trace!("MValue::try_into()");
-        Ok(DbValue::into_typed(self)?)
+        Ok(DbValue::try_into(self)?)
     }
 }

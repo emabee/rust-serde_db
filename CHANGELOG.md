@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0]  2021-12-08
+
+Rename `into_typed` into the more idiomatic `try_into`.
+
+Factor out dependency to log into an optional feature.
+
+Make it an edition 2021.
+
 ## [0.9.2]  2020-06-16
 
 Improve errors.

@@ -30,10 +30,12 @@ pub trait DbValue:
     ///
     /// # Errors
     /// `DeserializationError` if the value cannot be converted into the target type.
-    fn into_typed<'de, T>(self) -> Result<T, DeserializationError>
+    fn try_into<'de, T>(self) -> Result<T, DeserializationError>
     where
-        T: serde::de::Deserialize<'de>,
+        T: serde::Deserialize<'de>,
     {
-        serde::de::Deserialize::deserialize(FieldDeserializer::new(self))
+        #[cfg(feature = "trace")]
+        log::trace!("DbValue::try_into");
+        serde::Deserialize::deserialize(FieldDeserializer::new(self))
     }
 }

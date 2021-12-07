@@ -13,13 +13,13 @@
 //! in a single method call.
 //!
 //! The target types for deserialization only need to implement
-//! [`serde::de::Deserialize`](https://docs.serde.rs/serde/de/trait.Deserialize.html),
+//! [`serde::Deserialize`](https://docs.serde.rs/serde/de/trait.Deserialize.html),
 //! which is automatically given for all elementary rust types and tuples,
 //! and easily achieved for custom structs using `#[derive(Deserialize)]`.
 //!
 //! Result sets can _always_ be deserialized into a `Vec<line_struct>`, where
 //! `line_struct` matches the field list of the resultset and
-//! implements `serde::de::Deserialize`.
+//! implements `serde::Deserialize`.
 //!
 //! Similarly, a `Vec<(...)>`, works as well, as long as the tuple
 //! members match the field list of the resultset.
@@ -41,33 +41,36 @@
 //!
 //! The below examples assume the DB driver exposes on its
 //! resultset type a function
-//! `fn into_typed<'de, T: serde::de::Deserialize<'de>>(self) -> mock_db::Result<T>`,
+//! `fn try_into<'de, T: serde::Deserialize<'de>>(self) -> mock_db::Result<T>`,
 //! which is implemented using `serde_db`.
 //!
 //! ## Convert a n×m resultset into a Vec of structs:
 //!
 //! ```rust,ignore
-//! #[derive(serde_derive::Deserialize)]
+//! use serde::Deserialize;
+//!
+//! #[derive(Deserialize)]  // This is all we need
 //! struct MyStruct {
-//!   // ...
+//!   // fields ... should match the columns of the resultset
 //! }
 //!
 //! // let resultset = ...;
-//! let data: Vec<MyStruct> = resultset.into_typed()?;
+//! let data: Vec<MyStruct> = resultset.try_into()?;
 //! ```
 //!
-//! Note that `MyStruct` has to implement `serde::de::Deserialize`.
 //!
 //! ## Convert a n×1 resultset into a Vec of fields:
 //!
 //! ```rust,ignore
-//! let vec_s: Vec<String> = resultset.into_typed()?;
+//! // possible if the rows have a single field only
+//! let vec_s: Vec<String> = resultset.try_into()?;
 //! ```
 //!
 //! ## Convert a 1×1 resultset into a single field:
 //!
 //! ```rust,ignore
-//! let s: String = resultset.into_typed()?;
+//! // possible if there is only one row with one field
+//! let s: String = resultset.try_into()?;
 //! ```
 //!
 //! # Rows
@@ -78,7 +81,7 @@
 //!
 //! ```rust,ignore
 //! for row in resultset {
-//!     let t: (String, NaiveDateTime, i32, Option<i32>) = row.into_typed()?;
+//!     let t: (String, NaiveDateTime, i32, Option<i32>) = row.try_into()?;
 //! }
 //! ```
 //!
@@ -86,7 +89,7 @@
 //!
 //! ```rust,ignore
 //! for row in resultset {
-//!     let data: MyStruct = row.into_typed()?;
+//!     let data: MyStruct = row.try_into()?;
 //! }
 //! ```
 //!
@@ -96,8 +99,9 @@
 //!
 //! ```rust,ignore
 //! for row in resultset {
-//!     let date: NaiveDateTime = row.field_into_typed(2)?;
-//!     ...
+//!     let first_dbvalue = row.next().unwrap();
+//!     let first: NaiveDateTime = first_dbvalue.try_into()?;
+//!     // ...
 //! }
 //! ```
 //!
@@ -110,11 +114,10 @@
 //! (an example can be found in the tests of this crate), depending on the flexibility
 //! you want to offer.
 //!
-//! We further recommend adding a method like `into_typed()` directly on the
+//! We further recommend adding a method like `try_into()` directly on the
 //! driver's class for resultsets with a plain delegation to the _provided_ method
-//! [`DeserializableResultset::into_typed()`](trait.DeserializableResultset.html#method.into_typed).
+//! [`DeserializableResultset::try_into()`](trait.DeserializableResultset.html#method.try_into).
 //! The same should be done for rows.
-//!
 //! By this, the deserialization functionality of `serde_db` can be provided
 //! to the users of the DB driver without forcing them to import `serde_db`.
 

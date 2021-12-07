@@ -3,8 +3,9 @@ use crate::de::{
     DbValue, DeserializableResultset, DeserializableRow, DeserializationError,
     DeserializationResult,
 };
+#[cfg(feature = "trace")]
 use log::trace;
-use serde::de::Deserialize as SD;
+use serde::Deserialize as SD;
 
 #[derive(Debug)]
 enum MCD {
@@ -26,6 +27,7 @@ where
     <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue,
 {
     pub fn try_new(mut rs: RS) -> Result<RsDeserializer<RS>, DeserializationError> {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::new()");
         let rows_treat = if rs.has_multiple_rows()? {
             MCD::Must
@@ -72,6 +74,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_bool()");
         visitor.visit_bool(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -82,6 +85,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_u8()");
         visitor.visit_u8(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -92,6 +96,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_u16()");
         visitor.visit_u16(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -102,6 +107,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_u32()");
         visitor.visit_u32(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -112,6 +118,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_u64()");
         visitor.visit_u64(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -122,6 +129,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_i8()");
         visitor.visit_i8(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -132,6 +140,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_i16()");
         visitor.visit_i16(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -142,6 +151,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_i32()");
         visitor.visit_i32(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -152,6 +162,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_i64()");
         visitor.visit_i64(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -162,6 +173,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_f32()");
         visitor.visit_f32(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -172,6 +184,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_f64()");
         visitor.visit_f64(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -191,6 +204,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_str(), delegates to deserialize_string()");
         self.deserialize_string(visitor)
     }
@@ -199,6 +213,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_string()");
         visitor.visit_string(SD::deserialize(&mut RowDeserializer::new(
             self.pop_single_row()?,
@@ -218,6 +233,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_option()");
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_option(visitor)
@@ -227,6 +243,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_seq()");
         if let MCD::Done = self.rows_treat {
             Err(DeserializationError::Usage(
@@ -234,7 +251,7 @@ where
             ))
         } else {
             self.rows_treat = MCD::Done;
-            Ok(visitor.visit_seq(RowsVisitor::new(&mut self))?)
+            Ok(visitor.visit_seq(RowsVisitor::new(self))?)
         }
     }
 
@@ -262,15 +279,16 @@ where
 
     fn deserialize_newtype_struct<V>(
         self,
-        name: &'static str,
+        _name: &'static str,
         visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!(
             "RsDeserializer::deserialize_newtype_struct() with name = {}",
-            name
+            _name
         );
         visitor.visit_newtype_struct(self)
     }
@@ -284,6 +302,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!(
             "RsDeserializer::deserialize_tuple_struct() with name = {}",
             name
@@ -301,6 +320,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_struct() with name = {}", name);
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_struct(name, fields, visitor)
@@ -310,6 +330,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_bytes()");
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_bytes(visitor)
@@ -319,6 +340,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_byte_buf()");
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_byte_buf(visitor)
@@ -328,6 +350,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_tuple()");
         let mut rd = RowDeserializer::new(self.pop_single_row()?);
         rd.deserialize_tuple(len, visitor)
@@ -373,6 +396,7 @@ struct RowsVisitor<'a, R: 'a> {
 
 impl<'a, R> RowsVisitor<'a, R> {
     pub fn new(de: &'a mut RsDeserializer<R>) -> Self {
+        #[cfg(feature = "trace")]
         trace!("RowsVisitor::new()");
         RowsVisitor { de }
     }
@@ -385,6 +409,7 @@ impl<'x, 'a, R: DeserializableResultset> serde::de::SeqAccess<'x> for RowsVisito
     where
         T: serde::de::DeserializeSeed<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowsVisitor.next_element_seed()");
         match self.de.rs.next()? {
             None => Ok(None),

@@ -1,14 +1,12 @@
 #[macro_use]
 extern crate log;
-#[macro_use]
-extern crate serde_derive;
 
 mod mock_db;
 mod util;
 
 use crate::mock_db::{MValue, Resultset};
-#[allow(unused_imports)]
-use flexi_logger::{LogSpecification, LoggerHandle};
+use flexi_logger::LoggerHandle;
+use serde::Deserialize;
 
 const SIZE: usize = 20;
 
@@ -42,7 +40,7 @@ fn evaluate_column_rs(loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     Ok(())
 }
 
-// loghandle.set_new_spec(LogSpecification::parse("info"));
+// loghandle.parse_new_spec("info");
 
 fn into_vec_struct(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Convert a mx1 resultset into a Vec<struct>");

@@ -26,24 +26,24 @@ impl Row {
     }
 
     // Removes and converts the next field into a plain rust value.
-    pub fn next_into_typed<'de, T>(&mut self) -> Result<T, <mock_db::Row as DeserializableRow>::E>
+    pub fn next_try_into<'de, T>(&mut self) -> Result<T, <mock_db::Row as DeserializableRow>::E>
     where
-        T: serde::de::Deserialize<'de>,
+        T: serde::Deserialize<'de>,
     {
-        trace!("Row::next_into_typed()");
-        Ok(DbValue::into_typed(DeserializableRow::next(self).unwrap())?)
+        trace!("Row::next_try_into()");
+        Ok(DbValue::try_into(DeserializableRow::next(self).unwrap())?)
     }
 
     // Clones and converts the specified field into a plain rust value.
     pub fn field_into<'de, T>(&self, i: usize) -> mock_db::Result<T>
     where
-        T: serde::de::Deserialize<'de>,
+        T: serde::Deserialize<'de>,
     {
         trace!("Row::field_into() for {:?}", self.value_iter.as_slice()[i]);
-        Ok(DbValue::into_typed(self.cloned_value(i)?)?)
+        Ok(DbValue::try_into(self.cloned_value(i)?)?)
     }
 
-    fn next(&mut self) -> Option<mock_db::MValue> {
+    pub fn next(&mut self) -> Option<mock_db::MValue> {
         trace!("mock_db::Row::next()");
         self.value_iter.next()
     }
@@ -51,10 +51,10 @@ impl Row {
     // Converts the complete Row into a rust value.
     pub fn try_into<'de, T>(self) -> mock_db::Result<T>
     where
-        T: serde::de::Deserialize<'de>,
+        T: serde::Deserialize<'de>,
     {
         trace!("Row::try_into()");
-        Ok(DeserializableRow::into_typed(self)?)
+        Ok(DeserializableRow::try_into(self)?)
     }
 }
 

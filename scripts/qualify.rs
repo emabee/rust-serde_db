@@ -45,6 +45,7 @@ fn main() {
 
     // Build in important variants
     run_command!("cargo", "build");
+    run_command!("cargo", "build", "--all-features");
     run_command!("cargo", "build", "--release");
 
     // Clippy
@@ -53,6 +54,7 @@ fn main() {
     // Run tests in important variants
     run_command!("cargo", "test", "--release");
     run_command!("cargo", "test");
+    run_command!("cargo", "test", "--all-features");
 
     // doc
     run_command!("cargo", "doc", "--all-features", "--no-deps", "--open");

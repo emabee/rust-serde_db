@@ -1,7 +1,5 @@
 #[macro_use]
 extern crate log;
-#[macro_use]
-extern crate serde_derive;
 
 mod mock_db;
 mod util;
@@ -9,6 +7,7 @@ mod util;
 use crate::mock_db::{MValue, ParameterType as PT};
 use chrono::{NaiveDate, NaiveDateTime};
 use flexi_logger::LoggerHandle;
+use serde::Serialize;
 
 #[test] // cargo test --test test_serialization -- --nocapture
 pub fn test_serialization() {

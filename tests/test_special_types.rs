@@ -1,16 +1,14 @@
 #[macro_use]
 extern crate log;
-#[macro_use]
-extern crate serde_derive;
 
 mod mock_db;
 mod util;
 
-use bigdecimal::BigDecimal;
-
 use crate::mock_db::{MValue, Resultset};
+use bigdecimal::BigDecimal;
 #[allow(unused_imports)]
 use flexi_logger::{LogSpecification, LoggerHandle};
+use serde::Deserialize;
 
 const SIZE: usize = 20;
 

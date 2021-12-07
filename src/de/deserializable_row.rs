@@ -28,12 +28,12 @@ pub trait DeserializableRow: Sized {
     /// # Errors
     ///
     /// An error is produced if deserialization into the target type is not possible.
-    fn into_typed<'de, T>(self) -> Result<T, Self::E>
+    fn try_into<'de, T>(self) -> Result<T, Self::E>
     where
-        T: serde::de::Deserialize<'de>,
+        T: serde::Deserialize<'de>,
     {
-        Ok(serde::de::Deserialize::deserialize(
-            &mut RowDeserializer::new(self),
-        )?)
+        Ok(serde::Deserialize::deserialize(&mut RowDeserializer::new(
+            self,
+        ))?)
     }
 }

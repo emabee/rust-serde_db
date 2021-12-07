@@ -1,13 +1,12 @@
 #[macro_use]
 extern crate log;
-#[macro_use]
-extern crate serde_derive;
 
 mod mock_db;
 mod util;
 
 use crate::mock_db::{MValue as MV, Resultset};
 use flexi_logger::LoggerHandle;
+use serde::Deserialize;
 
 #[test] // cargo test --test test_resultset_1x1 -- --nocapture
 pub fn test_resultset_1x1() {
@@ -49,6 +48,16 @@ fn evaluate_field_rs(loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     {
         info!("Convert a 1x1 resultset into a field");
         let s: String = get_resultset_string(1).try_into()?;
+        assert_eq!(&s, "a");
+    }
+    {
+        info!("Convert an individual DB value into a rust variable");
+        let s: String = get_resultset_string(1)
+            .next()
+            .unwrap()
+            .next()
+            .unwrap()
+            .try_into()?;
         assert_eq!(&s, "a");
     }
     Ok(())

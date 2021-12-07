@@ -30,29 +30,31 @@ pub trait DeserializableResultset: Sized {
     fn fieldname(&self, field_idx: usize) -> Option<&str>;
 
     /// A _provided method_ that translates a resultset into a given rust type
-    /// that implements `serde::de::Deserialize`.
+    /// that implements `serde::Deserialize`.
     ///
     /// The type of the target variable needs to be specified explicitly, so that
-    /// `into_typed()` can derive the type it needs to serialize into:
+    /// `try_into()` can derive the type it needs to serialize into:
     ///
     /// ```ignore
     /// #[derive(Deserialize)]
     /// struct MyStruct {
     ///     ...
     /// }
-    /// let typed_result: Vec<MyStruct> = resultset.into_typed()?;
+    /// let typed_result: Vec<MyStruct> = resultset.try_into()?;
     /// ```
     ///
     /// # Errors
     ///
     /// An error is produced if deserialization into the target type is not possible,
     /// or if fetching fails.
-    fn into_typed<'de, T>(self) -> Result<T, Self::E>
+    fn try_into<'de, T>(self) -> Result<T, Self::E>
     where
-        T: serde::de::Deserialize<'de>,
+        T: serde::Deserialize<'de>,
         Self: Sized,
     {
-        Ok(serde::de::Deserialize::deserialize(
+        #[cfg(feature = "trace")]
+        log::trace!("DeserializableResultset::try_into()");
+        Ok(serde::Deserialize::deserialize(
             &mut RsDeserializer::try_new(self)?,
         )?)
     }

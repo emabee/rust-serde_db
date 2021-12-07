@@ -1,13 +1,12 @@
 #[macro_use]
 extern crate log;
-#[macro_use]
-extern crate serde_derive;
 
 mod mock_db;
 mod util;
 
 use crate::mock_db::{MValue, Resultset, Timestamp};
 use chrono::NaiveDateTime;
+use serde::Deserialize;
 
 const SIZE: usize = 20;
 

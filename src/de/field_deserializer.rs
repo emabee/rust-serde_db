@@ -1,4 +1,5 @@
 use crate::de::{DbValue, DbValueInto, DeserializationError, DeserializationResult};
+#[cfg(feature = "trace")]
 use log::trace;
 
 /// Deserialize a single `DbValue` into a normal rust type.
@@ -9,6 +10,7 @@ where
     DBV: DbValue,
 {
     pub fn new(value: DBV) -> FieldDeserializer<DBV> {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::new()");
         FieldDeserializer(value)
     }
@@ -21,96 +23,108 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_any()");
-        visitor.visit_string(self.0.try_into()?)
+        visitor.visit_string(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_bool<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_bool()");
-        visitor.visit_bool(self.0.try_into()?)
+        visitor.visit_bool(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_u8<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_u8()");
-        visitor.visit_u8(self.0.try_into()?)
+        visitor.visit_u8(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_u16<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_u16()");
-        visitor.visit_u16(self.0.try_into()?)
+        visitor.visit_u16(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_u32<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_u32()");
-        visitor.visit_u32(self.0.try_into()?)
+        visitor.visit_u32(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_u64<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_u64()");
-        visitor.visit_u64(self.0.try_into()?)
+        visitor.visit_u64(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_i8<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_i8()");
-        visitor.visit_i8(self.0.try_into()?)
+        visitor.visit_i8(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_i16<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_i16()");
-        visitor.visit_i16(self.0.try_into()?)
+        visitor.visit_i16(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_i32<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_i32()");
-        visitor.visit_i32(self.0.try_into()?)
+        visitor.visit_i32(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_i64<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_i64()");
-        visitor.visit_i64(self.0.try_into()?)
+        visitor.visit_i64(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_f32<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_f32()");
-        visitor.visit_f32(self.0.try_into()?)
+        visitor.visit_f32(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_f64<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_f64()");
-        visitor.visit_f64(self.0.try_into()?)
+        visitor.visit_f64(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_char<V>(self, _visitor: V) -> DeserializationResult<V::Value>
@@ -126,6 +140,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_str(), delegates to deserialize_string()");
         self.deserialize_string(visitor)
     }
@@ -134,8 +149,9 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_string()");
-        visitor.visit_string(self.0.try_into()?)
+        visitor.visit_string(DbValueInto::try_into(self.0)?)
     }
 
     fn deserialize_unit<V>(self, _visitor: V) -> DeserializationResult<V::Value>
@@ -151,6 +167,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_option()");
         if self.0.is_null() {
             visitor.visit_none()
@@ -198,6 +215,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_newtype_struct()");
         visitor.visit_newtype_struct(self)
     }
@@ -234,6 +252,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_bytes()");
         visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.0)?)
     }
@@ -242,6 +261,7 @@ impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldDeserializer::deserialize_bytes()");
         visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.0)?)
     }

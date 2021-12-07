@@ -1,7 +1,5 @@
 #[macro_use]
 extern crate log;
-#[macro_use]
-extern crate serde_derive;
 
 mod mock_db;
 mod util;
@@ -10,6 +8,7 @@ use crate::mock_db::{MValue, Resultset, Timestamp};
 use chrono::NaiveDateTime;
 #[allow(unused_imports)]
 use flexi_logger::{LogSpecification, LoggerHandle};
+use serde::Deserialize;
 
 const SIZE: usize = 20;
 
@@ -208,10 +207,10 @@ fn pick_values_individually(_loghandle: &mut LoggerHandle) -> mock_db::Result<()
 fn convert_values_one_by_one(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     info!("Loop over rows, convert single values");
     for mut row in get_resultset_string_ts_short_short(5) {
-        let f1: String = row.next_into_typed()?;
-        let f2: NaiveDateTime = row.next_into_typed()?;
-        let f3: i32 = row.next_into_typed()?;
-        let f4: Option<i32> = Some(row.next_into_typed()?);
+        let f1: String = row.next_try_into()?;
+        let f2: NaiveDateTime = row.next_try_into()?;
+        let f3: i32 = row.next_try_into()?;
+        let f4: Option<i32> = Some(row.next_try_into()?);
         debug!("Got {}, {}, {}, {:?}", f1, f2, f3, f4);
     }
     Ok(())
@@ -251,6 +250,7 @@ fn not_row_into_value(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
 fn not_rows_into_vec_of_short_struct(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
     let s = "Negative test: no conversion of rows into vec of too short struct";
     info!("{}", s);
+    #[allow(dead_code)]
     #[derive(Debug, Deserialize)]
     struct TestData {
         f1: String,

@@ -58,10 +58,10 @@ impl Resultset {
     // Expose the capability from serde_db: see module serde_db_impl for more...
     pub fn try_into<'de, T>(self) -> mock_db::Result<T>
     where
-        T: serde::de::Deserialize<'de>,
+        T: serde::Deserialize<'de>,
     {
         trace!("Resultset::try_into()");
-        Ok(DeserializableResultset::into_typed(self)?)
+        Ok(DeserializableResultset::try_into(self)?)
     }
 }
 

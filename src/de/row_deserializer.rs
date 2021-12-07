@@ -2,8 +2,9 @@ use crate::de::field_deserializer::FieldDeserializer;
 use crate::de::{
     DbValue, DbValueInto, DeserializableRow, DeserializationError, DeserializationResult,
 };
+#[cfg(feature = "trace")]
 use log::trace;
-use serde::de::Deserialize as SD;
+use serde::Deserialize as SD;
 
 #[derive(Debug)]
 enum MCD {
@@ -25,6 +26,7 @@ where
     <ROW as DeserializableRow>::V: DbValue,
 {
     pub fn new(row: ROW) -> RowDeserializer<ROW> {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::new()");
         let cols_treat = match row.len() {
             1 => MCD::Can,
@@ -45,6 +47,7 @@ where
     }
 
     fn next_value(&mut self) -> DeserializationResult<ROW::V> {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::next_value()");
         self.value_deserialization_allowed()?;
         match self.row.next() {
@@ -64,6 +67,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_any()");
         visitor.visit_string(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -72,6 +76,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_bool()");
         visitor.visit_bool(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -80,6 +85,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_u8()");
         visitor.visit_u8(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -88,6 +94,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_u16()");
         visitor.visit_u16(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -96,6 +103,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_u32()");
         visitor.visit_u32(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -104,6 +112,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_u64()");
         visitor.visit_u64(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -112,6 +121,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_i8()");
         visitor.visit_i8(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -120,6 +130,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_i16()");
         visitor.visit_i16(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -128,6 +139,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_i32()");
         visitor.visit_i32(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -136,6 +148,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_i64()");
         visitor.visit_i64(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -144,6 +157,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_f32()");
         visitor.visit_f32(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -152,6 +166,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_f64()");
         visitor.visit_f64(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -169,6 +184,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_str(), delegates to deserialize_string()");
         self.deserialize_string(visitor)
     }
@@ -177,6 +193,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_string()");
         visitor.visit_string(SD::deserialize(FieldDeserializer::new(self.next_value()?))?)
     }
@@ -194,6 +211,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_option()");
         FieldDeserializer::new(self.next_value()?).deserialize_option(visitor)
     }
@@ -203,6 +221,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_seq()");
         if let MCD::Done = self.cols_treat {
             Err(impl_err(
@@ -210,7 +229,7 @@ where
             ))
         } else {
             self.cols_treat = MCD::Done;
-            visitor.visit_seq(FieldsSeqVisitor::new(&mut self))
+            visitor.visit_seq(FieldsSeqVisitor::new(self))
         }
     }
 
@@ -238,15 +257,16 @@ where
 
     fn deserialize_newtype_struct<V>(
         self,
-        name: &'static str,
+        _name: &'static str,
         visitor: V,
     ) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!(
             "RowDeserializer::deserialize_newtype_struct() with _name = {}",
-            name
+            _name
         );
         visitor.visit_newtype_struct(self)
     }
@@ -274,12 +294,13 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_struct()");
         if let MCD::Done = self.cols_treat {
             Err(impl_err("double-nesting (struct in struct) not possible"))
         } else {
             self.cols_treat = MCD::Done;
-            visitor.visit_map(FieldsMapVisitor::new(&mut self))
+            visitor.visit_map(FieldsMapVisitor::new(self))
         }
     }
 
@@ -287,6 +308,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_bytes()");
         visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.next_value()?)?)
     }
@@ -295,6 +317,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_byte_buf()");
         visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.next_value()?)?)
     }
@@ -303,6 +326,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_tuple()");
         if let MCD::Done = self.cols_treat {
             Err(impl_err(
@@ -310,7 +334,7 @@ where
             ))
         } else {
             self.cols_treat = MCD::Done;
-            visitor.visit_seq(FieldsSeqVisitor::new(&mut self))
+            visitor.visit_seq(FieldsSeqVisitor::new(self))
         }
     }
 
@@ -340,6 +364,7 @@ where
                 let idx = self.row.number_of_fields() - curr_len;
                 match self.get_fieldname(idx) {
                     Some(fieldname) => {
+                        #[cfg(feature = "trace")]
                         trace!(
                             "RowDeserializer::deserialize_identifier(): column {:?} ({})",
                             idx,
@@ -359,6 +384,7 @@ where
     where
         V: serde::de::Visitor<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_ignored_any()");
         let fieldname = self
             .get_fieldname(self.row.number_of_fields() - self.row.len())
@@ -379,6 +405,7 @@ where
     <R as DeserializableRow>::V: DbValue,
 {
     pub fn new(de: &'a mut RowDeserializer<R>) -> Self {
+        #[cfg(feature = "trace")]
         trace!("FieldsMapVisitor::new()");
         FieldsMapVisitor { de }
     }
@@ -396,17 +423,20 @@ where
     {
         match self.de.row.len() {
             0 => {
+                #[cfg(feature = "trace")]
                 trace!("FieldsMapVisitor::next_key_seed() on empty row");
                 Ok(None)
             }
             len => {
                 let idx = self.de.row.number_of_fields() - len;
+                #[cfg(feature = "trace")]
                 trace!("FieldsMapVisitor::next_key_seed() for col {}", idx);
                 let value = seed.deserialize(&mut *self.de);
                 if let Ok(res) = value {
                     Ok(Some(res))
                 } else {
                     let fname = self.de.get_fieldname(idx).unwrap();
+                    #[cfg(feature = "trace")]
                     trace!("FieldsMapVisitor::next_key_seed(): Error at {}", fname);
                     Err(DeserializationError::UnknownField(fname.to_string()))
                 }
@@ -422,10 +452,11 @@ where
             0 => Err(impl_err(
                 "FieldsMapVisitor::next_value_seed(): no more value",
             )),
-            len => {
+            _len => {
+                #[cfg(feature = "trace")]
                 trace!(
                     "FieldsMapVisitor::next_value_seed() for col {}",
-                    self.de.row.number_of_fields() - len
+                    self.de.row.number_of_fields() - _len
                 );
                 seed.deserialize(&mut *self.de)
             }
@@ -448,6 +479,7 @@ where
     <R as DeserializableRow>::V: DbValue,
 {
     pub fn new(de: &'a mut RowDeserializer<R>) -> Self {
+        #[cfg(feature = "trace")]
         trace!("FieldsSeqVisitor::new()");
         FieldsSeqVisitor { de }
     }
@@ -464,6 +496,7 @@ where
     where
         T: serde::de::DeserializeSeed<'x>,
     {
+        #[cfg(feature = "trace")]
         trace!("FieldsSeqVisitor.next_element_seed()");
         match self.de.row.next() {
             None => Ok(None),
