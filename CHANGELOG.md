@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.10.1]  2022-02-22
+
+Update dependencies.
+
 ## [0.10.0]  2021-12-08
 
 Rename `into_typed` into the more idiomatic `try_into`.

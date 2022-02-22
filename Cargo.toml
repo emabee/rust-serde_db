@@ -1,6 +1,6 @@
 [package]
 name = "serde_db"
-version = "0.10.0"
+version = "0.10.1"
 authors = ["emabee <meinolf.block@sap.com>"]
 edition = "2021"
 description = "Deserialization of database resultsets, and serialization of database parameters"
@@ -21,7 +21,7 @@ thiserror = "1.0"
 [dev-dependencies]
 bigdecimal = {version = "0.3", features = ["serde"]}
 chrono = { version = "0.4", features = ["serde"] }
-flexi_logger = "0.20"
+flexi_logger = "0.22"
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 version-sync = "0.9"
