@@ -52,7 +52,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_bool(self, value: bool) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_bool()");
-        let val = self.get_current_field()?.from_bool(value)?;
+        let val = self.get_current_field()?.serialize_bool(value)?;
         self.push(val);
         Ok(())
     }
@@ -60,7 +60,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_i8(self, value: i8) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_i8()");
-        let val = self.get_current_field()?.from_i8(value)?;
+        let val = self.get_current_field()?.serialize_i8(value)?;
         self.push(val);
         Ok(())
     }
@@ -68,7 +68,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_i16(self, value: i16) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_i16()");
-        let val = self.get_current_field()?.from_i16(value)?;
+        let val = self.get_current_field()?.serialize_i16(value)?;
         self.push(val);
         Ok(())
     }
@@ -76,7 +76,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_i32(self, value: i32) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_i32() for {}", value);
-        let val = self.get_current_field()?.from_i32(value)?;
+        let val = self.get_current_field()?.serialize_i32(value)?;
         self.push(val);
         Ok(())
     }
@@ -84,7 +84,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_i64(self, value: i64) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_i64()");
-        let val = self.get_current_field()?.from_i64(value)?;
+        let val = self.get_current_field()?.serialize_i64(value)?;
         self.push(val);
         Ok(())
     }
@@ -92,7 +92,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_u8(self, value: u8) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_u8()");
-        let val = self.get_current_field()?.from_u8(value)?;
+        let val = self.get_current_field()?.serialize_u8(value)?;
         self.push(val);
         Ok(())
     }
@@ -100,7 +100,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_u16(self, value: u16) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_u16()");
-        let val = self.get_current_field()?.from_u16(value)?;
+        let val = self.get_current_field()?.serialize_u16(value)?;
         self.push(val);
         Ok(())
     }
@@ -108,7 +108,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_u32(self, value: u32) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_u32()");
-        let val = self.get_current_field()?.from_u32(value)?;
+        let val = self.get_current_field()?.serialize_u32(value)?;
         self.push(val);
         Ok(())
     }
@@ -116,7 +116,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_u64(self, value: u64) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_u64()");
-        let val = self.get_current_field()?.from_u64(value)?;
+        let val = self.get_current_field()?.serialize_u64(value)?;
         self.push(val);
         Ok(())
     }
@@ -124,7 +124,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_f32(self, value: f32) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_f32()");
-        let val = self.get_current_field()?.from_f32(value)?;
+        let val = self.get_current_field()?.serialize_f32(value)?;
         self.push(val);
         Ok(())
     }
@@ -132,7 +132,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_f64(self, value: f64) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_f64()");
-        let val = self.get_current_field()?.from_f64(value)?;
+        let val = self.get_current_field()?.serialize_f64(value)?;
         self.push(val);
         Ok(())
     }
@@ -140,7 +140,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_char(self, value: char) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_char()");
-        let val = self.get_current_field()?.from_char(value)?;
+        let val = self.get_current_field()?.serialize_char(value)?;
         self.push(val);
         Ok(())
     }
@@ -159,7 +159,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
                 );
             }
         }
-        let val = self.get_current_field()?.from_str(value)?;
+        let val = self.get_current_field()?.serialize_str(value)?;
         self.push(val);
         Ok(())
     }
@@ -167,7 +167,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_bytes(self, value: &[u8]) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_bytes()");
-        let val = self.get_current_field()?.from_bytes(value)?;
+        let val = self.get_current_field()?.serialize_bytes(value)?;
         self.push(val);
         Ok(())
     }
@@ -175,7 +175,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_unit(self) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_unit()");
-        let val = self.get_current_field()?.from_none()?;
+        let val = self.get_current_field()?.serialize_none()?;
         self.push(val);
         Ok(())
     }
@@ -228,7 +228,7 @@ impl<'a, 'm: 'a, DF: DbvFactory> serde::Serializer for &'a mut Serializer<'m, DF
     fn serialize_none(self) -> SerializationResult<Self::Ok> {
         #[cfg(feature = "trace")]
         trace!("Serializer::serialize_none()");
-        let val = self.get_current_field()?.from_none()?;
+        let val = self.get_current_field()?.serialize_none()?;
         self.push(val);
         Ok(())
     }
@@ -327,10 +327,10 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeSeq for Compound<'a, 'm, 
     type Ok = ();
     type Error = SerializationError;
 
-    fn serialize_element<T: ?Sized>(&mut self, value: &T) -> SerializationResult<()>
-    where
-        T: serde::Serialize,
-    {
+    fn serialize_element<T: ?Sized + serde::Serialize>(
+        &mut self,
+        value: &T,
+    ) -> SerializationResult<()> {
         #[cfg(feature = "trace")]
         trace!("Compound: SerializeSeq::serialize_element()");
         let t: &mut Serializer<DF> = self.ser;
@@ -348,10 +348,10 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeTuple for Compound<'a, 'm
     type Ok = ();
     type Error = SerializationError;
 
-    fn serialize_element<T: ?Sized>(&mut self, value: &T) -> SerializationResult<()>
-    where
-        T: serde::Serialize,
-    {
+    fn serialize_element<T: ?Sized + serde::Serialize>(
+        &mut self,
+        value: &T,
+    ) -> SerializationResult<()> {
         #[cfg(feature = "trace")]
         trace!("Compound: SerializeTuple::serialize_element()");
         serde::ser::SerializeSeq::serialize_element(self, value)
@@ -368,10 +368,10 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeTupleStruct for Compound<
     type Ok = ();
     type Error = SerializationError;
 
-    fn serialize_field<T: ?Sized>(&mut self, value: &T) -> SerializationResult<()>
-    where
-        T: serde::Serialize,
-    {
+    fn serialize_field<T: ?Sized + serde::Serialize>(
+        &mut self,
+        value: &T,
+    ) -> SerializationResult<()> {
         #[cfg(feature = "trace")]
         trace!("Compound: SerializeTupleStruct::serialize_field()");
         serde::ser::SerializeSeq::serialize_element(self, value)
@@ -388,10 +388,10 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeTupleVariant for Compound
     type Ok = ();
     type Error = SerializationError;
 
-    fn serialize_field<T: ?Sized>(&mut self, value: &T) -> SerializationResult<()>
-    where
-        T: serde::Serialize,
-    {
+    fn serialize_field<T: ?Sized + serde::Serialize>(
+        &mut self,
+        value: &T,
+    ) -> SerializationResult<()> {
         #[cfg(feature = "trace")]
         trace!("Compound: SerializeTupleVariant::serialize_field()");
         serde::ser::SerializeSeq::serialize_element(self, value)
@@ -408,19 +408,16 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeMap for Compound<'a, 'm, 
     type Ok = ();
     type Error = SerializationError;
 
-    fn serialize_key<T: ?Sized>(&mut self, _key: &T) -> SerializationResult<()>
-    where
-        T: serde::Serialize,
-    {
+    fn serialize_key<T: ?Sized + serde::Serialize>(&mut self, _key: &T) -> SerializationResult<()> {
         #[cfg(feature = "trace")]
         trace!("Compound: SerializeMap::serialize_key()");
         Ok(())
     }
 
-    fn serialize_value<T: ?Sized>(&mut self, value: &T) -> SerializationResult<()>
-    where
-        T: serde::Serialize,
-    {
+    fn serialize_value<T: ?Sized + serde::Serialize>(
+        &mut self,
+        value: &T,
+    ) -> SerializationResult<()> {
         #[cfg(feature = "trace")]
         trace!("Compound: SerializeMap::serialize_value()");
         let t: &mut Serializer<DF> = self.ser;
@@ -438,14 +435,11 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeStruct for Compound<'a, '
     type Ok = ();
     type Error = SerializationError;
 
-    fn serialize_field<T: ?Sized>(
+    fn serialize_field<T: ?Sized + serde::Serialize>(
         &mut self,
         key: &'static str,
         value: &T,
-    ) -> SerializationResult<()>
-    where
-        T: serde::Serialize,
-    {
+    ) -> SerializationResult<()> {
         #[cfg(feature = "trace")]
         trace!("Compound: SerializeStruct::serialize_field()");
         serde::ser::SerializeMap::serialize_key(self, key)?;
@@ -463,14 +457,11 @@ impl<'a, 'm, DF: 'm + DbvFactory> serde::ser::SerializeStructVariant for Compoun
     type Ok = ();
     type Error = SerializationError;
 
-    fn serialize_field<T: ?Sized>(
+    fn serialize_field<T: ?Sized + serde::Serialize>(
         &mut self,
         key: &'static str,
         value: &T,
-    ) -> SerializationResult<()>
-    where
-        T: serde::Serialize,
-    {
+    ) -> SerializationResult<()> {
         #[cfg(feature = "trace")]
         trace!("Compound: SerializeStructVariant::serialize_field()");
         serde::ser::SerializeStruct::serialize_field(self, key, value)

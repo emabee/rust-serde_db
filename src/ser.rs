@@ -51,12 +51,13 @@ use self::serializer::Serializer;
 ///
 /// `SerializationError` if the value cannot be translated into a database value of
 /// the required type.
-pub fn to_params<T: ?Sized, DF: DbvFactory>(
+pub fn to_params<T, DF>(
     value: &T,
     metadata: &mut dyn std::iter::Iterator<Item = DF>,
 ) -> Result<Vec<DF::DBV>, SerializationError>
 where
-    T: serde::Serialize,
+    T: Sized + serde::Serialize,
+    DF: DbvFactory,
 {
     #[cfg(feature = "trace")]
     log::trace!("serde_db::to_params()");

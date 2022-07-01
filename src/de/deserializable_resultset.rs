@@ -50,7 +50,6 @@ pub trait DeserializableResultset: Sized {
     fn try_into<'de, T>(self) -> Result<T, Self::E>
     where
         T: serde::Deserialize<'de>,
-        Self: Sized,
     {
         #[cfg(feature = "trace")]
         log::trace!("DeserializableResultset::try_into()");

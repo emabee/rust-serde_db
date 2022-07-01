@@ -255,6 +255,7 @@ where
         ))
     }
 
+    #[allow(clippy::used_underscore_binding)]
     fn deserialize_newtype_struct<V>(
         self,
         _name: &'static str,
@@ -444,6 +445,7 @@ where
         }
     }
 
+    #[allow(clippy::used_underscore_binding)]
     fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value, Self::Error>
     where
         V: serde::de::DeserializeSeed<'x>,

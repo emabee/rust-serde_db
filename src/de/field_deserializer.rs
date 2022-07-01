@@ -16,7 +16,7 @@ where
     }
 }
 
-impl<'x, 'a, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
+impl<'x, DBV: DbValue> serde::Deserializer<'x> for FieldDeserializer<DBV> {
     type Error = DeserializationError;
 
     fn deserialize_any<V>(self, visitor: V) -> DeserializationResult<V::Value>

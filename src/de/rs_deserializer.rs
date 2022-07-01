@@ -277,6 +277,7 @@ where
         ))
     }
 
+    #[allow(clippy::used_underscore_binding)]
     fn deserialize_newtype_struct<V>(
         self,
         _name: &'static str,

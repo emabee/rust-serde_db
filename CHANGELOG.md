@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0]  2022-07-01
+
+Rename methods `DbvFactory::from_<...>` to `DbvFactory::serialize_<...>` to align with the 
+[Rust API Guidelines](https://rust-lang.github.io/api-guidelines/naming.html).
+
+Fix new clippies.
+
 ## [0.10.1]  2022-02-22
 
 Update dependencies.
@@ -10,7 +17,7 @@ Rename `into_typed` into the more idiomatic `try_into`.
 
 Factor out dependency to log into an optional feature.
 
-Make it an edition 2021.
+Move to edition 2021.
 
 ## [0.9.2]  2020-06-16
 

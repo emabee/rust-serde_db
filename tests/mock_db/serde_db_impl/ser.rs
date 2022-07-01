@@ -7,10 +7,10 @@ use std::{i16, i32, i8, u16, u32, u8};
 impl DbvFactory for &ParameterType {
     type DBV = MValue;
 
-    fn from_bool(&self, _value: bool) -> Result<Self::DBV, SerializationError> {
+    fn serialize_bool(&self, _value: bool) -> Result<Self::DBV, SerializationError> {
         Err(type_error("bool", self.descriptor()))
     }
-    fn from_i8(&self, value: i8) -> Result<Self::DBV, SerializationError> {
+    fn serialize_i8(&self, value: i8) -> Result<Self::DBV, SerializationError> {
         match *self {
             ParameterType::Short | ParameterType::NullableShort => {
                 Ok(MValue::Short(i16::from(value)))
@@ -19,13 +19,13 @@ impl DbvFactory for &ParameterType {
         }
     }
 
-    fn from_i16(&self, value: i16) -> Result<Self::DBV, SerializationError> {
+    fn serialize_i16(&self, value: i16) -> Result<Self::DBV, SerializationError> {
         match *self {
             ParameterType::Short | ParameterType::NullableShort => Ok(MValue::Short(value)),
             _ => Err(type_error("i16", self.descriptor())),
         }
     }
-    fn from_i32(&self, value: i32) -> Result<Self::DBV, SerializationError> {
+    fn serialize_i32(&self, value: i32) -> Result<Self::DBV, SerializationError> {
         match *self {
             ParameterType::Short | ParameterType::NullableShort => {
                 if (value >= i32::from(i16::MIN)) && (value <= i32::from(i16::MAX)) {
@@ -37,7 +37,7 @@ impl DbvFactory for &ParameterType {
             _ => Err(type_error("i32", self.descriptor())),
         }
     }
-    fn from_i64(&self, value: i64) -> Result<Self::DBV, SerializationError> {
+    fn serialize_i64(&self, value: i64) -> Result<Self::DBV, SerializationError> {
         match *self {
             ParameterType::Short | ParameterType::NullableShort => {
                 if (value >= i64::from(i16::MIN)) && (value <= i64::from(i16::MAX)) {
@@ -49,28 +49,28 @@ impl DbvFactory for &ParameterType {
             _ => Err(type_error("i64", self.descriptor())),
         }
     }
-    fn from_u8(&self, _value: u8) -> Result<Self::DBV, SerializationError> {
+    fn serialize_u8(&self, _value: u8) -> Result<Self::DBV, SerializationError> {
         Err(type_error("u8", self.descriptor()))
     }
-    fn from_u16(&self, _value: u16) -> Result<Self::DBV, SerializationError> {
+    fn serialize_u16(&self, _value: u16) -> Result<Self::DBV, SerializationError> {
         Err(type_error("u16", self.descriptor()))
     }
-    fn from_u32(&self, _value: u32) -> Result<Self::DBV, SerializationError> {
+    fn serialize_u32(&self, _value: u32) -> Result<Self::DBV, SerializationError> {
         Err(type_error("u32", self.descriptor()))
     }
-    fn from_u64(&self, _value: u64) -> Result<Self::DBV, SerializationError> {
+    fn serialize_u64(&self, _value: u64) -> Result<Self::DBV, SerializationError> {
         Err(type_error("u64", self.descriptor()))
     }
-    fn from_f32(&self, _value: f32) -> Result<Self::DBV, SerializationError> {
+    fn serialize_f32(&self, _value: f32) -> Result<Self::DBV, SerializationError> {
         Err(type_error("f32", self.descriptor()))
     }
-    fn from_f64(&self, _value: f64) -> Result<Self::DBV, SerializationError> {
+    fn serialize_f64(&self, _value: f64) -> Result<Self::DBV, SerializationError> {
         Err(type_error("f64", self.descriptor()))
     }
-    fn from_char(&self, _value: char) -> Result<Self::DBV, SerializationError> {
+    fn serialize_char(&self, _value: char) -> Result<Self::DBV, SerializationError> {
         Err(type_error("char", self.descriptor()))
     }
-    fn from_str(&self, value: &str) -> Result<Self::DBV, SerializationError> {
+    fn serialize_str(&self, value: &str) -> Result<Self::DBV, SerializationError> {
         match *self {
             ParameterType::String | ParameterType::NullableString => {
                 Ok(MValue::String(value.to_owned()))
@@ -81,10 +81,10 @@ impl DbvFactory for &ParameterType {
             _ => Err(type_error("str", self.descriptor())),
         }
     }
-    fn from_bytes(&self, _value: &[u8]) -> Result<Self::DBV, SerializationError> {
+    fn serialize_bytes(&self, _value: &[u8]) -> Result<Self::DBV, SerializationError> {
         Err(type_error("bytes", self.descriptor()))
     }
-    fn from_none(&self) -> Result<Self::DBV, SerializationError> {
+    fn serialize_none(&self) -> Result<Self::DBV, SerializationError> {
         match *self {
             ParameterType::NullableShort => Ok(MValue::Null),
             ParameterType::NullableString => Ok(MValue::Null),
