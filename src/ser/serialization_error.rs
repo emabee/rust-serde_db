@@ -74,8 +74,8 @@ impl serde::ser::Error for SerializationError {
 impl std::fmt::Debug for SerializationError {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
-            SerializationError::Serde(ref s) => write!(fmt, "{}: {}", self, s),
-            SerializationError::StructuralMismatch(s) => write!(fmt, "{}: {}", self, s),
+            SerializationError::Serde(ref s) => write!(fmt, "{self}: {s}"),
+            SerializationError::StructuralMismatch(s) => write!(fmt, "{self}: {s}"),
             SerializationError::Parse {
                 value: ref v,
                 db_type: ref t,

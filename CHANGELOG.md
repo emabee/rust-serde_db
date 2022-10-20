@@ -1,8 +1,12 @@
 # Changelog
 
+## [0.11.1]  unpublished
+
+Fix some new clippies. Improve code readability.
+
 ## [0.11.0]  2022-07-01
 
-Rename methods `DbvFactory::from_<...>` to `DbvFactory::serialize_<...>` to align with the 
+Rename methods `DbvFactory::from_<...>` to `DbvFactory::serialize_<...>` to align with the
 [Rust API Guidelines](https://rust-lang.github.io/api-guidelines/naming.html).
 
 Fix new clippies.

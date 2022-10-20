@@ -7,7 +7,7 @@ use log::trace;
 use serde::Deserialize as SD;
 
 #[derive(Debug)]
-enum MCD {
+enum Need {
     Must,
     Can,
     Done,
@@ -17,7 +17,7 @@ enum MCD {
 #[derive(Debug)]
 pub struct RowDeserializer<ROW> {
     row: ROW,
-    cols_treat: MCD,
+    need: Need,
 }
 
 impl<ROW> RowDeserializer<ROW>
@@ -29,16 +29,12 @@ where
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::new()");
         let cols_treat = match row.len() {
-            1 => MCD::Can,
-            _ => MCD::Must,
+            1 => Need::Can,
+            _ => Need::Must,
         };
-        RowDeserializer { row, cols_treat }
-    }
-
-    fn value_deserialization_allowed(&self) -> DeserializationResult<()> {
-        match self.cols_treat {
-            MCD::Must => Err(DeserializationError::TrailingCols),
-            _ => Ok(()),
+        RowDeserializer {
+            row,
+            need: cols_treat,
         }
     }
 
@@ -49,7 +45,10 @@ where
     fn next_value(&mut self) -> DeserializationResult<ROW::V> {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::next_value()");
-        self.value_deserialization_allowed()?;
+
+        if let Need::Must = self.need {
+            return Err(DeserializationError::TrailingCols);
+        }
         match self.row.next() {
             Some(tv) => Ok(tv),
             None => Err(impl_err("next_value(): no more value found in row")),
@@ -223,12 +222,12 @@ where
     {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_seq()");
-        if let MCD::Done = self.cols_treat {
+        if let Need::Done = self.need {
             Err(impl_err(
                 "double-nesting (struct/tuple in struct/tuple) not possible",
             ))
         } else {
-            self.cols_treat = MCD::Done;
+            self.need = Need::Done;
             visitor.visit_seq(FieldsSeqVisitor::new(self))
         }
     }
@@ -297,10 +296,10 @@ where
     {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_struct()");
-        if let MCD::Done = self.cols_treat {
+        if let Need::Done = self.need {
             Err(impl_err("double-nesting (struct in struct) not possible"))
         } else {
-            self.cols_treat = MCD::Done;
+            self.need = Need::Done;
             visitor.visit_map(FieldsMapVisitor::new(self))
         }
     }
@@ -329,12 +328,12 @@ where
     {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_tuple()");
-        if let MCD::Done = self.cols_treat {
+        if let Need::Done = self.need {
             Err(impl_err(
                 "double-nesting (struct/tuple in struct/tuple) not possible",
             ))
         } else {
-            self.cols_treat = MCD::Done;
+            self.need = Need::Done;
             visitor.visit_seq(FieldsSeqVisitor::new(self))
         }
     }

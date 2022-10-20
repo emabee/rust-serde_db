@@ -8,7 +8,7 @@ use log::trace;
 use serde::Deserialize as SD;
 
 #[derive(Debug)]
-enum MCD {
+enum Need {
     Must,
     Can,
     Done,
@@ -18,7 +18,7 @@ enum MCD {
 #[derive(Debug)]
 pub struct RsDeserializer<RS> {
     rs: RS,
-    rows_treat: MCD,
+    need: Need,
 }
 
 impl<RS> RsDeserializer<RS>
@@ -29,28 +29,23 @@ where
     pub fn try_new(mut rs: RS) -> Result<RsDeserializer<RS>, DeserializationError> {
         #[cfg(feature = "trace")]
         trace!("RsDeserializer::new()");
-        let rows_treat = if rs.has_multiple_rows()? {
-            MCD::Must
+        let need = if rs.has_multiple_rows()? {
+            Need::Must
         } else {
-            MCD::Can
+            Need::Can
         };
-        Ok(RsDeserializer { rs, rows_treat })
+        Ok(RsDeserializer { rs, need })
     }
 
     fn pop_single_row(&mut self) -> DeserializationResult<<RS as DeserializableResultset>::ROW> {
-        self.single_row_deserialization_allowed()?;
+        if let Need::Must = self.need {
+            return Err(DeserializationError::TrailingRows);
+        };
         match self.rs.next()? {
             None => Err(DeserializationError::Usage(String::from(
                 "no row found in resultset",
             ))),
             Some(row) => Ok(row),
-        }
-    }
-
-    fn single_row_deserialization_allowed(&self) -> DeserializationResult<()> {
-        match self.rows_treat {
-            MCD::Must => Err(DeserializationError::TrailingRows),
-            _ => Ok(()),
         }
     }
 }
@@ -245,12 +240,12 @@ where
     {
         #[cfg(feature = "trace")]
         trace!("RsDeserializer::deserialize_seq()");
-        if let MCD::Done = self.rows_treat {
+        if let Need::Done = self.need {
             Err(DeserializationError::Usage(
-                "deserialize_seq() when rows_treat = MCD::Done".to_string(),
+                "deserialize_seq() when already done".to_string(),
             ))
         } else {
-            self.rows_treat = MCD::Done;
+            self.need = Need::Done;
             Ok(visitor.visit_seq(RowsVisitor::new(self))?)
         }
     }
