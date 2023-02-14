@@ -2,6 +2,7 @@ use thiserror::Error;
 
 /// An error type for implementors of `DbValue`.
 #[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum ConversionError {
     /// The DbValue cannot be converted into the desired rust type.
     #[error(
@@ -20,4 +21,8 @@ pub enum ConversionError {
         "The DbValue was not yet completely loaded, and further loading is not possible anymore"
     )]
     Incomplete(String),
+
+    /// A custom error that describes another reason for a conversion failure
+    #[error("Conversion fails due to given root cause")]
+    Other(Box<dyn std::error::Error + Send + Sync>),
 }

@@ -1,6 +1,8 @@
 # Changelog
 
-## [0.11.1]  unpublished
+## [0.11.1]  2023-02-14
+
+Introduce `ConversionError::Other`.
 
 Fix some new clippies. Improve code readability.
 

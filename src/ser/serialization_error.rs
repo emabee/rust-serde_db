@@ -77,33 +77,29 @@ impl std::fmt::Debug for SerializationError {
             SerializationError::Serde(ref s) => write!(fmt, "{self}: {s}"),
             SerializationError::StructuralMismatch(s) => write!(fmt, "{self}: {s}"),
             SerializationError::Parse {
-                value: ref v,
-                db_type: ref t,
-                cause: ref c,
-            } => match c {
+                ref value,
+                ref db_type,
+                ref cause,
+            } => match cause {
                 Some(e) => write!(
                     fmt,
-                    "given String \"{}\" cannot be parsed into SQL type {} due to {}",
-                    v, t, e,
+                    "given String \"{value}\" cannot be parsed into SQL type {db_type} due to {e}",
                 ),
                 None => write!(
                     fmt,
-                    "given String \"{}\" cannot be parsed into SQL type {}",
-                    v, t,
+                    "given String \"{value}\" cannot be parsed into SQL type {db_type}",
                 ),
             },
             SerializationError::Type {
-                value_type: v,
-                db_type: ref d,
+                value_type,
+                ref db_type,
             } => write!(
                 fmt,
-                "given value of type \"{}\" cannot be converted into value of type code {}",
-                v, d
+                "given value of type \"{value_type}\" cannot be converted into value of type code {db_type}",
             ),
             SerializationError::Range(s1, ref s2) => write!(
                 fmt,
-                "given value of type \"{}\" does not fit into supported range of SQL type {}",
-                s1, s2
+                "given value of type \"{s1}\" does not fit into supported range of SQL type {s2}",
             ),
         }
     }
