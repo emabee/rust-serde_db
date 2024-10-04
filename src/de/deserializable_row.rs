@@ -11,7 +11,7 @@ pub trait DeserializableRow: Sized {
     /// The value type used by the database driver.
     type V: DbValue;
 
-    /// Returns the current length of the row (which is decremented with each call to next()).
+    /// Returns the current length of the row (which is decremented with each call to `.next()`).
     fn len(&self) -> usize;
 
     /// Removes and returns the next value.

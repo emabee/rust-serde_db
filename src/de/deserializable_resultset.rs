@@ -6,7 +6,7 @@ use std::marker::Sized;
 pub trait DeserializableResultset: Sized {
     /// Error type of the database driver.
     type E: From<DeserializationError> + Sized;
-    /// Concrete type for the DB row, which must implement `DeserializabeRow`.
+    /// Concrete type for the DB row, which must implement `DeserializableRow`.
     type ROW: DeserializableRow;
 
     /// Returns true if more than one row is contained, including eventually not yet fetched rows.
