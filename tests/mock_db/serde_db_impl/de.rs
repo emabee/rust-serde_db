@@ -1,7 +1,7 @@
 use crate::mock_db;
-use crate::mock_db::{MValue, Resultset};
+use crate::mock_db::{MValue, ResultSet};
 use serde_db::de::{
-    ConversionError, DbValue, DbValueInto, DeserializableResultset, DeserializationError,
+    ConversionError, DbValue, DbValueInto, DeserializableResultSet, DeserializationError,
 };
 use std::{i16, i32, i8, u16, u32, u8};
 
@@ -112,7 +112,7 @@ impl DbValueInto<Vec<u8>> for MValue {
     }
 }
 
-impl DeserializableResultset for Resultset {
+impl DeserializableResultSet for ResultSet {
     type E = mock_db::Error;
     type Row = mock_db::Row;
 
