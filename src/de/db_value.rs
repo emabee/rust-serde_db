@@ -1,7 +1,6 @@
 use crate::de::field_deserializer::FieldDeserializer;
 use crate::de::{DbValueInto, DeserializationError};
 use std::marker::Sized;
-use std::{i16, i32, i8, u16, u32, u8};
 
 /// Provides the conversion of a database value into a standard rust type.
 pub trait DbValue:
