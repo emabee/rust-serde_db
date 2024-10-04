@@ -113,7 +113,7 @@ impl DbValueInto<Vec<u8>> for MValue {
 }
 
 impl DeserializableResultSet for ResultSet {
-    type E = mock_db::Error;
+    type Error = mock_db::Error;
     type Row = mock_db::Row;
 
     fn has_multiple_rows(&mut self) -> Result<bool, DeserializationError> {

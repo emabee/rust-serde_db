@@ -59,8 +59,8 @@ impl Row {
 }
 
 impl DeserializableRow for mock_db::Row {
-    type V = mock_db::MValue;
-    type E = mock_db::Error;
+    type Value = mock_db::MValue;
+    type Error = mock_db::Error;
 
     fn len(&self) -> usize {
         trace!("<mock_db::Row as DeserializableRow>::len()");

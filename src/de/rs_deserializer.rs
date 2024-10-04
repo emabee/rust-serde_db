@@ -24,7 +24,7 @@ pub struct RsDeserializer<RS> {
 impl<RS> RsDeserializer<RS>
 where
     RS: DeserializableResultSet,
-    <<RS as DeserializableResultSet>::Row as DeserializableRow>::V: DbValue,
+    <<RS as DeserializableResultSet>::Row as DeserializableRow>::Value: DbValue,
 {
     pub fn try_new(mut rs: RS) -> Result<RsDeserializer<RS>, DeserializationError> {
         #[cfg(feature = "trace")]
@@ -52,7 +52,7 @@ where
 
 impl<'x, 'a, RS: DeserializableResultSet> serde::Deserializer<'x> for &'a mut RsDeserializer<RS>
 where
-    <<RS as DeserializableResultSet>::Row as DeserializableRow>::V: DbValue,
+    <<RS as DeserializableResultSet>::Row as DeserializableRow>::Value: DbValue,
 {
     type Error = DeserializationError;
 

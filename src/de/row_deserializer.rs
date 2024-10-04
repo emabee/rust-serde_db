@@ -23,7 +23,7 @@ pub struct RowDeserializer<Row> {
 impl<Row> RowDeserializer<Row>
 where
     Row: DeserializableRow,
-    <Row as DeserializableRow>::V: DbValue,
+    <Row as DeserializableRow>::Value: DbValue,
 {
     pub fn new(row: Row) -> RowDeserializer<Row> {
         #[cfg(feature = "trace")]
@@ -42,7 +42,7 @@ where
         self.row.field_name(idx)
     }
 
-    fn next_value(&mut self) -> DeserializationResult<Row::V> {
+    fn next_value(&mut self) -> DeserializationResult<Row::Value> {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::next_value()");
 
@@ -58,7 +58,7 @@ where
 
 impl<'x, 'a, Row: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDeserializer<Row>
 where
-    <Row as DeserializableRow>::V: DbValue,
+    <Row as DeserializableRow>::Value: DbValue,
 {
     type Error = DeserializationError;
 
@@ -395,14 +395,14 @@ where
 
 struct FieldsMapVisitor<'a, R: 'a + DeserializableRow>
 where
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     de: &'a mut RowDeserializer<R>,
 }
 
 impl<'a, R: DeserializableRow> FieldsMapVisitor<'a, R>
 where
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     pub fn new(de: &'a mut RowDeserializer<R>) -> Self {
         #[cfg(feature = "trace")]
@@ -413,7 +413,7 @@ where
 
 impl<'x, 'a, R: DeserializableRow> serde::de::MapAccess<'x> for FieldsMapVisitor<'a, R>
 where
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     type Error = DeserializationError;
 
@@ -471,13 +471,13 @@ fn impl_err(s: &'static str) -> DeserializationError {
 
 struct FieldsSeqVisitor<'a, R: 'a + DeserializableRow>
 where
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     de: &'a mut RowDeserializer<R>,
 }
 impl<'a, R: DeserializableRow> FieldsSeqVisitor<'a, R>
 where
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     pub fn new(de: &'a mut RowDeserializer<R>) -> Self {
         #[cfg(feature = "trace")]
@@ -489,7 +489,7 @@ where
 impl<'x, 'a, R> serde::de::SeqAccess<'x> for FieldsSeqVisitor<'a, R>
 where
     R: DeserializableRow,
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     type Error = DeserializationError;
 
