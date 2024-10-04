@@ -7,7 +7,7 @@ pub trait DeserializableResultset: Sized {
     /// Error type of the database driver.
     type E: From<DeserializationError> + Sized;
     /// Concrete type for the DB row, which must implement `DeserializabeRow`.
-    type ROW: DeserializableRow;
+    type Row: DeserializableRow;
 
     /// Returns true if more than one row is contained, including eventually not yet fetched rows.
     ///
@@ -21,7 +21,7 @@ pub trait DeserializableResultset: Sized {
     /// # Errors
     ///
     /// E.g. fetching can fail.
-    fn next(&mut self) -> DeserializationResult<Option<Self::ROW>>;
+    fn next(&mut self) -> DeserializationResult<Option<Self::Row>>;
 
     /// Returns the number of fields in each (complete) row.
     fn number_of_fields(&self) -> usize;

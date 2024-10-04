@@ -15,17 +15,17 @@ enum Need {
 
 // Deserialize a single Row into a normal rust type.
 #[derive(Debug)]
-pub struct RowDeserializer<ROW> {
-    row: ROW,
+pub struct RowDeserializer<Row> {
+    row: Row,
     need: Need,
 }
 
-impl<ROW> RowDeserializer<ROW>
+impl<Row> RowDeserializer<Row>
 where
-    ROW: DeserializableRow,
-    <ROW as DeserializableRow>::V: DbValue,
+    Row: DeserializableRow,
+    <Row as DeserializableRow>::V: DbValue,
 {
-    pub fn new(row: ROW) -> RowDeserializer<ROW> {
+    pub fn new(row: Row) -> RowDeserializer<Row> {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::new()");
         let cols_treat = match row.len() {
@@ -42,7 +42,7 @@ where
         self.row.fieldname(idx)
     }
 
-    fn next_value(&mut self) -> DeserializationResult<ROW::V> {
+    fn next_value(&mut self) -> DeserializationResult<Row::V> {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::next_value()");
 
@@ -56,9 +56,9 @@ where
     }
 }
 
-impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDeserializer<ROW>
+impl<'x, 'a, Row: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDeserializer<Row>
 where
-    <ROW as DeserializableRow>::V: DbValue,
+    <Row as DeserializableRow>::V: DbValue,
 {
     type Error = DeserializationError;
 

@@ -24,7 +24,7 @@ pub struct RsDeserializer<RS> {
 impl<RS> RsDeserializer<RS>
 where
     RS: DeserializableResultset,
-    <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue,
+    <<RS as DeserializableResultset>::Row as DeserializableRow>::V: DbValue,
 {
     pub fn try_new(mut rs: RS) -> Result<RsDeserializer<RS>, DeserializationError> {
         #[cfg(feature = "trace")]
@@ -37,7 +37,7 @@ where
         Ok(RsDeserializer { rs, need })
     }
 
-    fn pop_single_row(&mut self) -> DeserializationResult<<RS as DeserializableResultset>::ROW> {
+    fn pop_single_row(&mut self) -> DeserializationResult<<RS as DeserializableResultset>::Row> {
         if let Need::Must = self.need {
             return Err(DeserializationError::TrailingRows);
         };
@@ -52,7 +52,7 @@ where
 
 impl<'x, 'a, RS: DeserializableResultset> serde::Deserializer<'x> for &'a mut RsDeserializer<RS>
 where
-    <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue,
+    <<RS as DeserializableResultset>::Row as DeserializableRow>::V: DbValue,
 {
     type Error = DeserializationError;
 
