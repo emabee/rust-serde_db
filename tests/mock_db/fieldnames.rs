@@ -14,7 +14,7 @@ impl Fieldnames {
         self.fields.len()
     }
 
-    pub fn fieldname(&self, i: usize) -> Option<&str> {
+    pub fn field_name(&self, i: usize) -> Option<&str> {
         self.fields.get(i).map(String::as_str)
     }
 }

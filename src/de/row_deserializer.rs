@@ -38,8 +38,8 @@ where
         }
     }
 
-    fn get_fieldname(&self, idx: usize) -> Option<&str> {
-        self.row.fieldname(idx)
+    fn get_field_name(&self, idx: usize) -> Option<&str> {
+        self.row.field_name(idx)
     }
 
     fn next_value(&mut self) -> DeserializationResult<Row::V> {
@@ -362,18 +362,18 @@ where
             )),
             curr_len => {
                 let idx = self.row.number_of_fields() - curr_len;
-                match self.get_fieldname(idx) {
-                    Some(fieldname) => {
+                match self.get_field_name(idx) {
+                    Some(field_name) => {
                         #[cfg(feature = "trace")]
                         trace!(
                             "RowDeserializer::deserialize_identifier(): column {:?} ({})",
                             idx,
-                            fieldname
+                            field_name
                         );
-                        visitor.visit_str(fieldname)
+                        visitor.visit_str(field_name)
                     }
                     None => Err(impl_err(
-                        "no fieldname in RowDeserializer::deserialize_identifier()",
+                        "no field_name in RowDeserializer::deserialize_identifier()",
                     )),
                 }
             }
@@ -386,10 +386,10 @@ where
     {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_ignored_any()");
-        let fieldname = self
-            .get_fieldname(self.row.number_of_fields() - self.row.len())
+        let field_name = self
+            .get_field_name(self.row.number_of_fields() - self.row.len())
             .unwrap_or("unknown");
-        Err(DeserializationError::UnknownField(fieldname.to_string()))
+        Err(DeserializationError::UnknownField(field_name.to_string()))
     }
 }
 
@@ -435,7 +435,7 @@ where
                 if let Ok(res) = value {
                     Ok(Some(res))
                 } else {
-                    let fname = self.de.get_fieldname(idx).unwrap();
+                    let fname = self.de.get_field_name(idx).unwrap();
                     #[cfg(feature = "trace")]
                     trace!("FieldsMapVisitor::next_key_seed(): Error at {}", fname);
                     Err(DeserializationError::UnknownField(fname.to_string()))

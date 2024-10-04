@@ -51,8 +51,8 @@ impl ResultSet {
         self.md.number_of_fields()
     }
 
-    pub fn fieldname(&self, i: usize) -> Option<&str> {
-        self.md.fieldname(i)
+    pub fn field_name(&self, i: usize) -> Option<&str> {
+        self.md.field_name(i)
     }
 
     // Expose the capability from serde_db: see module serde_db_impl for more...

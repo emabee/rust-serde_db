@@ -21,7 +21,7 @@ pub trait DeserializableRow: Sized {
     fn number_of_fields(&self) -> usize;
 
     /// Returns the name of the column at the specified index.
-    fn fieldname(&self, field_idx: usize) -> Option<&str>;
+    fn field_name(&self, field_idx: usize) -> Option<&str>;
 
     /// Converts the row into a struct, a tuple, or (if applicable) into a plain rust value.
     ///

@@ -5,7 +5,7 @@ use std::marker::Sized;
 /// Interface for a database result set to support deserialization.
 pub trait DeserializableResultSet: Sized {
     /// Error type of the database driver.
-    type E: From<DeserializationError> + Sized;
+    type Error: From<DeserializationError> + Sized;
     /// Concrete type for the DB row, which must implement `DeserializabeRow`.
     type Row: DeserializableRow;
 
@@ -27,7 +27,7 @@ pub trait DeserializableResultSet: Sized {
     fn number_of_fields(&self) -> usize;
 
     /// Returns the name of the column at the specified index.
-    fn fieldname(&self, field_idx: usize) -> Option<&str>;
+    fn field_name(&self, field_idx: usize) -> Option<&str>;
 
     /// A _provided method_ that translates a result set into a given rust type
     /// that implements `serde::Deserialize`.
@@ -47,7 +47,7 @@ pub trait DeserializableResultSet: Sized {
     ///
     /// An error is produced if deserialization into the target type is not possible,
     /// or if fetching fails.
-    fn try_into<'de, T>(self) -> Result<T, Self::E>
+    fn try_into<'de, T>(self) -> Result<T, Self::Error>
     where
         T: serde::Deserialize<'de>,
     {

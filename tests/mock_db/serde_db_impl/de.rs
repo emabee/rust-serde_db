@@ -128,8 +128,8 @@ impl DeserializableResultSet for ResultSet {
         self.number_of_fields()
     }
 
-    fn fieldname(&self, i: usize) -> Option<&str> {
-        self.fieldname(i)
+    fn field_name(&self, i: usize) -> Option<&str> {
+        self.field_name(i)
     }
 }
 
