@@ -7,12 +7,12 @@ use crate::mock_db;
 // A generic implementation of a single line of a `ResultSet`.
 #[derive(Clone, Debug)]
 pub struct Row {
-    metadata: Rc<mock_db::Fieldnames>,
+    metadata: Rc<mock_db::FieldNames>,
     value_iter: <Vec<mock_db::MValue> as IntoIterator>::IntoIter,
 }
 
 impl Row {
-    pub fn new(metadata: Rc<mock_db::Fieldnames>, values: Vec<mock_db::MValue>) -> mock_db::Row {
+    pub fn new(metadata: Rc<mock_db::FieldNames>, values: Vec<mock_db::MValue>) -> mock_db::Row {
         mock_db::Row {
             metadata: metadata,
             value_iter: values.into_iter(),

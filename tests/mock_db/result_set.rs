@@ -10,14 +10,14 @@ use crate::mock_db;
 pub struct ResultSet {
     next_rows: Vec<mock_db::Row>,
     row_iter: <Vec<mock_db::Row> as IntoIterator>::IntoIter,
-    md: Rc<mock_db::Fieldnames>,
+    md: Rc<mock_db::FieldNames>,
 }
 impl ResultSet {
     pub fn new(fields: &[&'static str]) -> ResultSet {
         ResultSet {
             next_rows: Vec::<mock_db::Row>::new(),
             row_iter: Vec::<mock_db::Row>::new().into_iter(),
-            md: Rc::new(mock_db::Fieldnames::new(fields)),
+            md: Rc::new(mock_db::FieldNames::new(fields)),
         }
     }
 

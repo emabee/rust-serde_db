@@ -1,11 +1,11 @@
 // Metadata for the fields in a result row
 #[derive(Debug)]
-pub struct Fieldnames {
+pub struct FieldNames {
     fields: Vec<String>,
 }
-impl Fieldnames {
-    pub fn new(fields: &[&'static str]) -> Fieldnames {
-        Fieldnames {
+impl FieldNames {
+    pub fn new(fields: &[&'static str]) -> FieldNames {
+        FieldNames {
             fields: fields.iter().map(|s| String::from(*s)).collect(),
         }
     }
