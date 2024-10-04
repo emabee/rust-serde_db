@@ -234,7 +234,7 @@ where
         rd.deserialize_option(visitor)
     }
 
-    fn deserialize_seq<V>(mut self, visitor: V) -> DeserializationResult<V::Value>
+    fn deserialize_seq<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
