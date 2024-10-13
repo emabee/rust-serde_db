@@ -1,5 +1,5 @@
 use serde;
-use serde_db::de::DeserializableResultset;
+use serde_db::de::DeserializableResultSet;
 use std::rc::Rc;
 
 use crate::mock_db;
@@ -7,17 +7,17 @@ use crate::mock_db;
 // Simple ResultSet for test purposes.
 // Rows are added using push().
 #[derive(Debug)]
-pub struct Resultset {
+pub struct ResultSet {
     next_rows: Vec<mock_db::Row>,
     row_iter: <Vec<mock_db::Row> as IntoIterator>::IntoIter,
-    md: Rc<mock_db::Fieldnames>,
+    md: Rc<mock_db::FieldNames>,
 }
-impl Resultset {
-    pub fn new(fields: &[&'static str]) -> Resultset {
-        Resultset {
+impl ResultSet {
+    pub fn new(fields: &[&'static str]) -> ResultSet {
+        ResultSet {
             next_rows: Vec::<mock_db::Row>::new(),
             row_iter: Vec::<mock_db::Row>::new().into_iter(),
-            md: Rc::new(mock_db::Fieldnames::new(fields)),
+            md: Rc::new(mock_db::FieldNames::new(fields)),
         }
     }
 
@@ -51,8 +51,8 @@ impl Resultset {
         self.md.number_of_fields()
     }
 
-    pub fn fieldname(&self, i: usize) -> Option<&str> {
-        self.md.fieldname(i)
+    pub fn field_name(&self, i: usize) -> Option<&str> {
+        self.md.field_name(i)
     }
 
     // Expose the capability from serde_db: see module serde_db_impl for more...
@@ -60,12 +60,12 @@ impl Resultset {
     where
         T: serde::Deserialize<'de>,
     {
-        trace!("Resultset::try_into()");
-        Ok(DeserializableResultset::try_into(self)?)
+        trace!("ResultSet::try_into()");
+        Ok(DeserializableResultSet::try_into(self)?)
     }
 }
 
-impl Iterator for Resultset {
+impl Iterator for ResultSet {
     type Item = mock_db::Row;
     fn next(&mut self) -> Option<mock_db::Row> {
         self.next()

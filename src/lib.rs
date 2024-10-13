@@ -1,4 +1,4 @@
-//! Support for deserializing database resultsets and rows into rust types,
+//! Support for deserializing database result sets and rows into rust types,
 //! and for serializing rust types into database parameter values.
 //!
 //! Being based on serde, this crate can facilitate the data exchange

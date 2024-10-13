@@ -15,17 +15,17 @@ enum Need {
 
 // Deserialize a single Row into a normal rust type.
 #[derive(Debug)]
-pub struct RowDeserializer<ROW> {
-    row: ROW,
+pub struct RowDeserializer<Row> {
+    row: Row,
     need: Need,
 }
 
-impl<ROW> RowDeserializer<ROW>
+impl<Row> RowDeserializer<Row>
 where
-    ROW: DeserializableRow,
-    <ROW as DeserializableRow>::V: DbValue,
+    Row: DeserializableRow,
+    <Row as DeserializableRow>::Value: DbValue,
 {
-    pub fn new(row: ROW) -> RowDeserializer<ROW> {
+    pub fn new(row: Row) -> RowDeserializer<Row> {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::new()");
         let cols_treat = match row.len() {
@@ -38,11 +38,11 @@ where
         }
     }
 
-    fn get_fieldname(&self, idx: usize) -> Option<&str> {
-        self.row.fieldname(idx)
+    fn get_field_name(&self, idx: usize) -> Option<&str> {
+        self.row.field_name(idx)
     }
 
-    fn next_value(&mut self) -> DeserializationResult<ROW::V> {
+    fn next_value(&mut self) -> DeserializationResult<Row::Value> {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::next_value()");
 
@@ -56,9 +56,9 @@ where
     }
 }
 
-impl<'x, 'a, ROW: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDeserializer<ROW>
+impl<'x, 'a, Row: DeserializableRow> serde::Deserializer<'x> for &'a mut RowDeserializer<Row>
 where
-    <ROW as DeserializableRow>::V: DbValue,
+    <Row as DeserializableRow>::Value: DbValue,
 {
     type Error = DeserializationError;
 
@@ -362,18 +362,18 @@ where
             )),
             curr_len => {
                 let idx = self.row.number_of_fields() - curr_len;
-                match self.get_fieldname(idx) {
-                    Some(fieldname) => {
+                match self.get_field_name(idx) {
+                    Some(field_name) => {
                         #[cfg(feature = "trace")]
                         trace!(
                             "RowDeserializer::deserialize_identifier(): column {:?} ({})",
                             idx,
-                            fieldname
+                            field_name
                         );
-                        visitor.visit_str(fieldname)
+                        visitor.visit_str(field_name)
                     }
                     None => Err(impl_err(
-                        "no fieldname in RowDeserializer::deserialize_identifier()",
+                        "no field_name in RowDeserializer::deserialize_identifier()",
                     )),
                 }
             }
@@ -386,23 +386,23 @@ where
     {
         #[cfg(feature = "trace")]
         trace!("RowDeserializer::deserialize_ignored_any()");
-        let fieldname = self
-            .get_fieldname(self.row.number_of_fields() - self.row.len())
+        let field_name = self
+            .get_field_name(self.row.number_of_fields() - self.row.len())
             .unwrap_or("unknown");
-        Err(DeserializationError::UnknownField(fieldname.to_string()))
+        Err(DeserializationError::UnknownField(field_name.to_string()))
     }
 }
 
 struct FieldsMapVisitor<'a, R: 'a + DeserializableRow>
 where
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     de: &'a mut RowDeserializer<R>,
 }
 
 impl<'a, R: DeserializableRow> FieldsMapVisitor<'a, R>
 where
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     pub fn new(de: &'a mut RowDeserializer<R>) -> Self {
         #[cfg(feature = "trace")]
@@ -413,7 +413,7 @@ where
 
 impl<'x, 'a, R: DeserializableRow> serde::de::MapAccess<'x> for FieldsMapVisitor<'a, R>
 where
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     type Error = DeserializationError;
 
@@ -435,7 +435,7 @@ where
                 if let Ok(res) = value {
                     Ok(Some(res))
                 } else {
-                    let fname = self.de.get_fieldname(idx).unwrap();
+                    let fname = self.de.get_field_name(idx).unwrap();
                     #[cfg(feature = "trace")]
                     trace!("FieldsMapVisitor::next_key_seed(): Error at {}", fname);
                     Err(DeserializationError::UnknownField(fname.to_string()))
@@ -471,13 +471,13 @@ fn impl_err(s: &'static str) -> DeserializationError {
 
 struct FieldsSeqVisitor<'a, R: 'a + DeserializableRow>
 where
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     de: &'a mut RowDeserializer<R>,
 }
 impl<'a, R: DeserializableRow> FieldsSeqVisitor<'a, R>
 where
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     pub fn new(de: &'a mut RowDeserializer<R>) -> Self {
         #[cfg(feature = "trace")]
@@ -489,7 +489,7 @@ where
 impl<'x, 'a, R> serde::de::SeqAccess<'x> for FieldsSeqVisitor<'a, R>
 where
     R: DeserializableRow,
-    <R as DeserializableRow>::V: DbValue,
+    <R as DeserializableRow>::Value: DbValue,
 {
     type Error = DeserializationError;
 

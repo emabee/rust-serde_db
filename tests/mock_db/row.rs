@@ -7,12 +7,12 @@ use crate::mock_db;
 // A generic implementation of a single line of a `ResultSet`.
 #[derive(Clone, Debug)]
 pub struct Row {
-    metadata: Rc<mock_db::Fieldnames>,
+    metadata: Rc<mock_db::FieldNames>,
     value_iter: <Vec<mock_db::MValue> as IntoIterator>::IntoIter,
 }
 
 impl Row {
-    pub fn new(metadata: Rc<mock_db::Fieldnames>, values: Vec<mock_db::MValue>) -> mock_db::Row {
+    pub fn new(metadata: Rc<mock_db::FieldNames>, values: Vec<mock_db::MValue>) -> mock_db::Row {
         mock_db::Row {
             metadata: metadata,
             value_iter: values.into_iter(),
@@ -59,8 +59,8 @@ impl Row {
 }
 
 impl DeserializableRow for mock_db::Row {
-    type V = mock_db::MValue;
-    type E = mock_db::Error;
+    type Value = mock_db::MValue;
+    type Error = mock_db::Error;
 
     fn len(&self) -> usize {
         trace!("<mock_db::Row as DeserializableRow>::len()");
@@ -76,9 +76,9 @@ impl DeserializableRow for mock_db::Row {
         self.metadata.number_of_fields()
     }
 
-    fn fieldname(&self, field_idx: usize) -> Option<&str> {
-        trace!("<mock_db::Row as DeserializableRow>::fieldname()");
-        self.metadata.fieldname(field_idx)
+    fn field_name(&self, field_idx: usize) -> Option<&str> {
+        trace!("<mock_db::Row as DeserializableRow>::field_name()");
+        self.metadata.field_name(field_idx)
     }
 }
 

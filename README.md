@@ -1,6 +1,6 @@
 # serde_db
 
-Support for flexibly deserializing database resultsets and rows into rust types,
+Support for flexibly deserializing database result sets and rows into rust types,
 and for serializing rust types into database parameter values.
 
 Being based on serde, this crate can facilitate the data exchange between applications
@@ -19,7 +19,7 @@ serde_db = "0.11"
 ## Examples for Deserialization
 
 The below examples assume the DB driver exposes on its
-resultset type a function
+result set type a function
 
 ```rust
     fn try_into<'de, T: serde::Deserialize<'de>>(self) -> Result<T, E>
@@ -29,7 +29,7 @@ which is implemented using `serde_db`.
 
 The application then can directly assign the database results to appropriate rust variables!
 
-### Convert a n×m resultset into a Vec of structs
+### Convert a n×m result set into a Vec of structs
 
 ```rust
 #[macro_use]
@@ -38,30 +38,30 @@ extern crate serde_derive;
 #[derive(Deserialize)]
 struct MyStruct {...}
 ...
-let resultset = ...;
-let data: Vec<MyStruct> = resultset.try_into()?;
+let result_set = ...;
+let data: Vec<MyStruct> = result_set.try_into()?;
 ```
 
 Note that `MyStruct` has to implement `serde::Deserialize`.
 
-### Assign a n×1 resultset to a Vec of fields
+### Assign a n×1 result set to a Vec of fields
 
 ```rust
-let vec_s: Vec<String> = resultset.try_into()?;
+let vec_s: Vec<String> = result_set.try_into()?;
 ```
 
-### Assign a 1×1 resultset to a single field
+### Assign a 1×1 result set to a single field
 
 ```rust
-let s: String = resultset.try_into()?;
+let s: String = result_set.try_into()?;
 ```
 
 ### Assign rows to tuples or structs
 
-For better streaming of large resultsets, you might want to iterate over the rows, like in
+For better streaming of large result sets, you might want to iterate over the rows, like in
 
 ```rust
-for row in resultset {
+for row in result_set {
     let t: (String, NaiveDateTime, i32, Option<i32>) = row.try_into()?;
 }
 ```
@@ -69,7 +69,7 @@ for row in resultset {
 or
 
 ```rust
-for row in resultset {
+for row in result_set {
     let data: MyStruct = row.try_into()?;
 }
 ```

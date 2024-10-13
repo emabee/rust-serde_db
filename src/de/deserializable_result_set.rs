@@ -2,12 +2,12 @@ use crate::de::rs_deserializer::RsDeserializer;
 use crate::de::{DeserializableRow, DeserializationError, DeserializationResult};
 use std::marker::Sized;
 
-/// Interface for a database resultset to support deserialization.
-pub trait DeserializableResultset: Sized {
+/// Interface for a database result set to support deserialization.
+pub trait DeserializableResultSet: Sized {
     /// Error type of the database driver.
-    type E: From<DeserializationError> + Sized;
+    type Error: From<DeserializationError> + Sized;
     /// Concrete type for the DB row, which must implement `DeserializabeRow`.
-    type ROW: DeserializableRow;
+    type Row: DeserializableRow;
 
     /// Returns true if more than one row is contained, including eventually not yet fetched rows.
     ///
@@ -21,15 +21,15 @@ pub trait DeserializableResultset: Sized {
     /// # Errors
     ///
     /// E.g. fetching can fail.
-    fn next(&mut self) -> DeserializationResult<Option<Self::ROW>>;
+    fn next(&mut self) -> DeserializationResult<Option<Self::Row>>;
 
     /// Returns the number of fields in each (complete) row.
     fn number_of_fields(&self) -> usize;
 
     /// Returns the name of the column at the specified index.
-    fn fieldname(&self, field_idx: usize) -> Option<&str>;
+    fn field_name(&self, field_idx: usize) -> Option<&str>;
 
-    /// A _provided method_ that translates a resultset into a given rust type
+    /// A _provided method_ that translates a result set into a given rust type
     /// that implements `serde::Deserialize`.
     ///
     /// The type of the target variable needs to be specified explicitly, so that
@@ -40,19 +40,19 @@ pub trait DeserializableResultset: Sized {
     /// struct MyStruct {
     ///     ...
     /// }
-    /// let typed_result: Vec<MyStruct> = resultset.try_into()?;
+    /// let typed_result: Vec<MyStruct> = result_set.try_into()?;
     /// ```
     ///
     /// # Errors
     ///
     /// An error is produced if deserialization into the target type is not possible,
     /// or if fetching fails.
-    fn try_into<'de, T>(self) -> Result<T, Self::E>
+    fn try_into<'de, T>(self) -> Result<T, Self::Error>
     where
         T: serde::Deserialize<'de>,
     {
         #[cfg(feature = "trace")]
-        log::trace!("DeserializableResultset::try_into()");
+        log::trace!("DeserializableResultSet::try_into()");
         Ok(serde::Deserialize::deserialize(
             &mut RsDeserializer::try_new(self)?,
         )?)
