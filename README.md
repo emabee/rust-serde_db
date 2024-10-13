@@ -13,7 +13,7 @@ Add `serde_db` to the dependencies section in your project's `Cargo.toml`, with
 
 ```toml
 [dependencies]
-serde_db = "0.11"
+serde_db = "0.12"
 ```
 
 ## Examples for Deserialization

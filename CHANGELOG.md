@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.12.0]  2024-10-13
+
+Fix some unidiomatic type names (kudos to [regexident](https://github.com/regexident)).
+
 ## [0.11.1]  2023-02-14
 
 Introduce `ConversionError::Other`.
