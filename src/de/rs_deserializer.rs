@@ -1,6 +1,6 @@
 use crate::de::row_deserializer::RowDeserializer;
 use crate::de::{
-    DbValue, DeserializableResultset, DeserializableRow, DeserializationError,
+    DbValue, DeserializableResultSet, DeserializableRow, DeserializationError,
     DeserializationResult,
 };
 #[cfg(feature = "trace")]
@@ -23,8 +23,8 @@ pub struct RsDeserializer<RS> {
 
 impl<RS> RsDeserializer<RS>
 where
-    RS: DeserializableResultset,
-    <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue,
+    RS: DeserializableResultSet,
+    <<RS as DeserializableResultSet>::Row as DeserializableRow>::Value: DbValue,
 {
     pub fn try_new(mut rs: RS) -> Result<RsDeserializer<RS>, DeserializationError> {
         #[cfg(feature = "trace")]
@@ -37,22 +37,22 @@ where
         Ok(RsDeserializer { rs, need })
     }
 
-    fn pop_single_row(&mut self) -> DeserializationResult<<RS as DeserializableResultset>::ROW> {
+    fn pop_single_row(&mut self) -> DeserializationResult<<RS as DeserializableResultSet>::Row> {
         if let Need::Must = self.need {
             return Err(DeserializationError::TrailingRows);
         };
         match self.rs.next()? {
             None => Err(DeserializationError::Usage(String::from(
-                "no row found in resultset",
+                "no row found in result set",
             ))),
             Some(row) => Ok(row),
         }
     }
 }
 
-impl<'x, 'a, RS: DeserializableResultset> serde::Deserializer<'x> for &'a mut RsDeserializer<RS>
+impl<'x, 'a, RS: DeserializableResultSet> serde::Deserializer<'x> for &'a mut RsDeserializer<RS>
 where
-    <<RS as DeserializableResultset>::ROW as DeserializableRow>::V: DbValue,
+    <<RS as DeserializableResultSet>::Row as DeserializableRow>::Value: DbValue,
 {
     type Error = DeserializationError;
 
@@ -398,7 +398,7 @@ impl<'a, R> RowsVisitor<'a, R> {
     }
 }
 
-impl<'x, 'a, R: DeserializableResultset> serde::de::SeqAccess<'x> for RowsVisitor<'a, R> {
+impl<'x, 'a, R: DeserializableResultSet> serde::de::SeqAccess<'x> for RowsVisitor<'a, R> {
     type Error = DeserializationError;
 
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
