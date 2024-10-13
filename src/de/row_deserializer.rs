@@ -216,7 +216,7 @@ where
     }
 
     #[inline]
-    fn deserialize_seq<V>(mut self, visitor: V) -> DeserializationResult<V::Value>
+    fn deserialize_seq<V>(self, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
@@ -286,7 +286,7 @@ where
     }
 
     fn deserialize_struct<V>(
-        mut self,
+        self,
         _name: &'static str,
         _fields: &'static [&'static str],
         visitor: V,
@@ -322,7 +322,7 @@ where
         visitor.visit_bytes(&DbValueInto::<Vec<u8>>::try_into(self.next_value()?)?)
     }
 
-    fn deserialize_tuple<V>(mut self, _len: usize, visitor: V) -> DeserializationResult<V::Value>
+    fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> DeserializationResult<V::Value>
     where
         V: serde::de::Visitor<'x>,
     {
