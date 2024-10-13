@@ -71,10 +71,26 @@ fn tuple_serialization(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
         Some("Eight".to_string()),
         s_none,
         // timestamp
-        NaiveDate::from_ymd(2011, 1, 1).and_hms_nano(1, 1, 1, 100_000_000),
-        Some(NaiveDate::from_ymd(2012, 2, 2).and_hms_nano(2, 2, 2, 200_000_000)),
-        NaiveDate::from_ymd(2013, 3, 3).and_hms_nano(3, 3, 3, 300_000_000),
-        Some(NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000)),
+        NaiveDate::from_ymd_opt(2011, 1, 1)
+            .unwrap()
+            .and_hms_nano_opt(1, 1, 1, 100_000_000)
+            .unwrap(),
+        Some(
+            NaiveDate::from_ymd_opt(2012, 2, 2)
+                .unwrap()
+                .and_hms_nano_opt(2, 2, 2, 200_000_000)
+                .unwrap(),
+        ),
+        NaiveDate::from_ymd_opt(2013, 3, 3)
+            .unwrap()
+            .and_hms_nano_opt(3, 3, 3, 300_000_000)
+            .unwrap(),
+        Some(
+            NaiveDate::from_ymd_opt(2014, 4, 4)
+                .unwrap()
+                .and_hms_nano_opt(4, 4, 4, 400_000_000),
+        )
+        .unwrap(),
         t_none,
     );
     _loghandle.parse_new_spec("info").unwrap();
@@ -95,16 +111,28 @@ fn tuple_serialization(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
         MValue::Null,
         // timestamp
         MValue::Timestamp(mock_db::Timestamp(
-            NaiveDate::from_ymd(2011, 1, 1).and_hms_nano(1, 1, 1, 100_000_000),
+            NaiveDate::from_ymd_opt(2011, 1, 1)
+                .unwrap()
+                .and_hms_nano_opt(1, 1, 1, 100_000_000)
+                .unwrap(),
         )),
         MValue::Timestamp(mock_db::Timestamp(
-            NaiveDate::from_ymd(2012, 2, 2).and_hms_nano(2, 2, 2, 200_000_000),
+            NaiveDate::from_ymd_opt(2012, 2, 2)
+                .unwrap()
+                .and_hms_nano_opt(2, 2, 2, 200_000_000)
+                .unwrap(),
         )),
         MValue::Timestamp(mock_db::Timestamp(
-            NaiveDate::from_ymd(2013, 3, 3).and_hms_nano(3, 3, 3, 300_000_000),
+            NaiveDate::from_ymd_opt(2013, 3, 3)
+                .unwrap()
+                .and_hms_nano_opt(3, 3, 3, 300_000_000)
+                .unwrap(),
         )),
         MValue::Timestamp(mock_db::Timestamp(
-            NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000),
+            NaiveDate::from_ymd_opt(2014, 4, 4)
+                .unwrap()
+                .and_hms_nano_opt(4, 4, 4, 400_000_000)
+                .unwrap(),
         )),
         MValue::Null,
     ];
@@ -173,10 +201,26 @@ fn struct_serialization(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
         seven: "Seven".to_string(),
         eight: Some("Eight".to_string()),
         nine: s_none,
-        eleven: NaiveDate::from_ymd(2011, 1, 1).and_hms_nano(1, 1, 1, 100_000_000),
-        twelve: Some(NaiveDate::from_ymd(2012, 2, 2).and_hms_nano(2, 2, 2, 200_000_000)),
-        thirteen: NaiveDate::from_ymd(2013, 3, 3).and_hms_nano(3, 3, 3, 300_000_000),
-        fourteen: Some(NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000)),
+        eleven: NaiveDate::from_ymd_opt(2011, 1, 1)
+            .unwrap()
+            .and_hms_nano_opt(1, 1, 1, 100_000_000)
+            .unwrap(),
+        twelve: Some(
+            NaiveDate::from_ymd_opt(2012, 2, 2)
+                .unwrap()
+                .and_hms_nano_opt(2, 2, 2, 200_000_000),
+        )
+        .unwrap(),
+        thirteen: NaiveDate::from_ymd_opt(2013, 3, 3)
+            .unwrap()
+            .and_hms_nano_opt(3, 3, 3, 300_000_000)
+            .unwrap(),
+        fourteen: Some(
+            NaiveDate::from_ymd_opt(2014, 4, 4)
+                .unwrap()
+                .and_hms_nano_opt(4, 4, 4, 400_000_000),
+        )
+        .unwrap(),
         fifteen: t_none,
     };
     _loghandle.parse_new_spec("info").unwrap();
@@ -194,16 +238,28 @@ fn struct_serialization(_loghandle: &mut LoggerHandle) -> mock_db::Result<()> {
         MValue::String("Eight".to_string()),
         MValue::Null,
         MValue::Timestamp(mock_db::Timestamp(
-            NaiveDate::from_ymd(2011, 1, 1).and_hms_nano(1, 1, 1, 100_000_000),
+            NaiveDate::from_ymd_opt(2011, 1, 1)
+                .unwrap()
+                .and_hms_nano_opt(1, 1, 1, 100_000_000)
+                .unwrap(),
         )),
         MValue::Timestamp(mock_db::Timestamp(
-            NaiveDate::from_ymd(2012, 2, 2).and_hms_nano(2, 2, 2, 200_000_000),
+            NaiveDate::from_ymd_opt(2012, 2, 2)
+                .unwrap()
+                .and_hms_nano_opt(2, 2, 2, 200_000_000)
+                .unwrap(),
         )),
         MValue::Timestamp(mock_db::Timestamp(
-            NaiveDate::from_ymd(2013, 3, 3).and_hms_nano(3, 3, 3, 300_000_000),
+            NaiveDate::from_ymd_opt(2013, 3, 3)
+                .unwrap()
+                .and_hms_nano_opt(3, 3, 3, 300_000_000)
+                .unwrap(),
         )),
         MValue::Timestamp(mock_db::Timestamp(
-            NaiveDate::from_ymd(2014, 4, 4).and_hms_nano(4, 4, 4, 400_000_000),
+            NaiveDate::from_ymd_opt(2014, 4, 4)
+                .unwrap()
+                .and_hms_nano_opt(4, 4, 4, 400_000_000)
+                .unwrap(),
         )),
         MValue::Null,
     ];

@@ -26,7 +26,7 @@ impl Row {
     }
 
     // Removes and converts the next field into a plain rust value.
-    pub fn next_try_into<'de, T>(&mut self) -> Result<T, <mock_db::Row as DeserializableRow>::E>
+    pub fn next_try_into<'de, T>(&mut self) -> Result<T, <mock_db::Row as DeserializableRow>::Error>
     where
         T: serde::Deserialize<'de>,
     {
