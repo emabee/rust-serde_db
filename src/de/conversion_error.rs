@@ -17,9 +17,7 @@ pub enum ConversionError {
     NumberRange(String),
 
     /// The DbValue was not yet completely loaded, and further loading is not possible anymore.
-    #[error(
-        "The DbValue was not yet completely loaded, and further loading is not possible anymore"
-    )]
+    #[error("Conversion fails because the DbValue is not completely loaded")]
     Incomplete(String),
 
     /// A custom error that describes another reason for a conversion failure

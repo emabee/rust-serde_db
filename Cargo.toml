@@ -14,14 +14,14 @@ readme = "README.md"
 trace = ["log"]
 
 [dependencies]
-log = { version = "0.4", optional = true}
+log = { version = "0.4", optional = true }
 serde = "1.0"
 thiserror = "1.0"
 
 [dev-dependencies]
-bigdecimal = {version = "0.3", features = ["serde"]}
+bigdecimal = { version = "0.4", features = ["serde"] }
 chrono = { version = "0.4", features = ["serde"] }
-flexi_logger = "0.24"
+flexi_logger = "0.29"
 log = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 version-sync = "0.9"

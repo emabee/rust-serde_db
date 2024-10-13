@@ -18,8 +18,7 @@ pub enum DeserializationError {
     Usage(String),
 
     /// Thrown by functions in the Deserializer interface that are not implemented.
-    /// This exception should never be seen in practice.
-    #[error("this exception should never be seen in practice")]
+    #[error("missing implementation (or deserializing bytes into Vec<u8>? Use `serde_bytes::ByteBuf` instead)")]
     NotImplemented(&'static str),
 
     /// The target structure misses a field for which data are provided.
