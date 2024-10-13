@@ -1,5 +1,10 @@
 # serde_db
 
+[![Latest version](https://img.shields.io/crates/v/serde_db.svg)](https://crates.io/crates/serde_db)
+[![Documentation](https://docs.rs/serde_db/badge.svg)](https://docs.rs/serde_db)
+[![License](https://img.shields.io/crates/l/serde_db.svg)](https://github.com/emabee/serde_db)
+[![unsafe forbidden](https://img.shields.io/badge/unsafe-forbidden-success.svg)](https://github.com/rust-secure-code/safety-dance/)
+
 Support for flexibly deserializing database result sets and rows into rust types,
 and for serializing rust types into database parameter values.
 

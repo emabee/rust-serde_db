@@ -12,6 +12,7 @@
 #![deny(missing_debug_implementations)]
 #![deny(clippy::all)]
 #![deny(clippy::pedantic)]
+#![forbid(unsafe_code)]
 
 pub mod de;
 pub mod ser;
